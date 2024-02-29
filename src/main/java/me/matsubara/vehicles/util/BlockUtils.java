@@ -5,6 +5,7 @@ import me.matsubara.vehicles.vehicle.VehicleType;
 import org.apache.commons.lang3.ArrayUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.*;
 import org.bukkit.block.data.type.*;
 import org.bukkit.entity.Player;
@@ -238,6 +239,34 @@ public class BlockUtils {
         }
 
         return location;
+    }
+
+    public static @Nullable Location getHighestLocation(@NotNull Location location) {
+        World world = location.getWorld();
+        Objects.requireNonNull(world);
+
+        Block highest = world.getHighestBlockAt(location);
+
+        if (highest.getY() > location.getBlockY()) {
+            if (highest.getY() < world.getMinHeight()) return null;
+
+            while (true) {
+                if (highest.getY() < world.getMinHeight()) return null;
+
+                highest = highest.getRelative(BlockFace.DOWN);
+
+                if (!highest.isPassable()) {
+                    Block top = highest.getRelative(BlockFace.UP);
+                    if (top.isPassable() && top.getRelative(BlockFace.UP).isPassable()) {
+                        location.setY(highest.getY() + 1);
+                        return location;
+                    }
+                }
+            }
+        } else {
+            location.setY(highest.getY() + 1);
+            return location;
+        }
     }
 
     public static float yaw(float yaw) {

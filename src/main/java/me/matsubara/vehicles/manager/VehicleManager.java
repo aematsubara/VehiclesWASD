@@ -80,9 +80,17 @@ public class VehicleManager implements Listener {
 
     @EventHandler
     public void onPlayerQuit(@NotNull PlayerQuitEvent event) {
-        UUID playerUUID = event.getPlayer().getUniqueId();
+        Player player = event.getPlayer();
+        UUID playerUUID = player.getUniqueId();
+
         selectedShopCategory.remove(playerUUID);
         invalidateGPSResult(playerUUID);
+
+        Vehicle vehicle = getPlayerVehicle(player);
+        if (!(vehicle instanceof Helicopter) || vehicle.getVelocityStand().isOnGround()) return;
+
+        Location highest = BlockUtils.getHighestLocation(player.getLocation());
+        if (highest != null) PluginUtils.teleportWithPassengers(player, highest);
     }
 
     public boolean invalidateGPSResult(UUID uuid) {

@@ -15,6 +15,7 @@ import me.matsubara.vehicles.vehicle.VehicleData;
 import me.matsubara.vehicles.vehicle.gps.GPSResultHandler;
 import me.matsubara.vehicles.vehicle.gps.GPSTick;
 import me.matsubara.vehicles.vehicle.type.Generic;
+import me.matsubara.vehicles.vehicle.type.Helicopter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -86,6 +87,8 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             return true;
         }
 
+        VehicleManager vehicleManager = plugin.getVehicleManager();
+
         if (subCommand.equalsIgnoreCase("reload")) {
             if (notAllowed(sender, "vehicleswasd.reload")) return true;
 
@@ -96,7 +99,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
                 InventoryHolder holder = top.getHolder();
 
                 if (holder instanceof Llama llama
-                        && plugin.getVehicleManager().getVehicleFromLlama(llama) == null) {
+                        && vehicleManager.getVehicleFromLlama(llama) == null) {
                     continue;
                 }
 
@@ -118,23 +121,27 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
 
                 // Save data and remove vehicle(s) from world.
                 List<VehicleData> datas = new ArrayList<>();
-                for (Vehicle vehicle : plugin.getVehicleManager().getVehicles()) {
+                for (Vehicle vehicle : vehicleManager.getVehicles()) {
                     datas.add(vehicle.createSaveData());
-                    plugin.getVehicleManager().removeVehicle(vehicle, null);
+
+                    // If passengers are riding a helicopter, teleport them to the ground.
+                    if (vehicle instanceof Helicopter helicopter) {
+                        helicopter.safePassengerTeleport();
+                    }
+
+                    vehicleManager.removeVehicle(vehicle, null);
                 }
-                plugin.getVehicleManager().getVehicles().clear();
+                vehicleManager.getVehicles().clear();
 
                 // Respawn vehicles.
                 for (VehicleData data : datas) {
-                    plugin.getVehicleManager().createVehicle(null, data);
+                    vehicleManager.createVehicle(null, data);
                 }
 
                 messages.send(sender, Messages.Message.RELOAD);
             }));
             return true;
         }
-
-        VehicleManager vehicleManager = plugin.getVehicleManager();
 
         if (subCommand.equalsIgnoreCase("shop")) {
             Player player = isPlayer(sender);
