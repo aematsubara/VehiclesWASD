@@ -1,0 +1,66 @@
+# Don't touch this!
+config-version: 1
+
+an-error-occurred: "&cAn error has occurred, report it to an administrator."
+
+commands:
+  not-from-console: "&cThis command cannot be used from the console!"
+  reloading: "&6The plugin is being reloaded in another thread, wait a few seconds..."
+  reload: "&6The plugin has been reloaded!"
+  no-permission: "&cYou don't have permission to execute this command!"
+  invalid-command: "&cThat command doesn't exist or was used incorrectly! Do /vwasd to see all commands."
+  shop:
+    economy-disabled: "&cEconomy is disabled, use /vwasd give <type> to get a vehicle."
+  gps:
+    disabled: "&cThis feature is disabled."
+    essentials-not-found: "&cEssentialsX is required for the GPS function."
+    not-driving: "&cYou must be driving a vehicle to use this command!"
+    not-generic: "&cThis vehicle doesn't have an integrated GPS system!"
+    specify-home: "&cYou must specify a destination home!"
+    home-not-found: "&cThat home couldn't be found!"
+    different-world: "The destination home is in a different world!"
+    too-far: "&cThat home is too far away (>%max-distance%m)!"
+    too-close: "&cThat home is too close (<%min-distance%m)!"
+    previous-cancelled: "&cThe previous path was cancelled!"
+    starting: "&aStarting GPS, wait a moment..."
+    path-not-found: "&cA suitable route to the destination could not be found!"
+    full-of-water: "&cThe road home has plenty of water ahead!"
+    went-crazy: "&cGPS went crazy, canceling destination! Try restarting the GPS."
+    stopped: "&cThe GPS has been stopped."
+    arrived: "&aYou have arrived at your destination!"
+  give:
+    specify-type: "&cYou must specify a vehicle type!"
+    type-not-found: "&cThis type of vehicle doesn't exist!"
+    player-not-found: "&cThe player couldn't be found!"
+
+vehicle:
+  place:
+    not-on-lava: "&cYou cannot put this vehicle on lava!"
+    not-on-water: "&cYou cannot put this vehicle on water!"
+    invalid-block: "&cYou cannot place this vehicle on this block!"
+    boat-on-water: "&cBoats may only be placed on water!"
+    occupied: "&cA vehicle has already been placed here!"
+    duplicated: "&cThis vehicle is already in the world!"
+    top-blocked-or-invalid: "&cYou cannot place this vehicle on this block, the top is blocked or invalid!"
+  interact:
+    not-your-vehicle: "&cYou cannot remove this vehicle, it's not yours."
+    vehicle-in-water: "&cYou cannot enter a vehicle stuck in water."
+    vehicle-locked: "&cThis vehicle is locked and you are not the owner."
+    vehicle-full: "&cThis vehicle is already full!"
+    allowed-as-passenger: "&cThis vehicle is locked and you are not the owner, you can only sit as a passenger."
+    occupied-by-unknown: "&cYour vehicle is occupied, shift + right click to kick him out of the vehicle."
+    occupant-kicked: "&cThe occupant has been ejected from your vehicle!"
+  transfer-ownership:
+    specify-player: "&cYou must specify the name of the new owner!"
+    same-owner: "&cYou are already the owner of this vehicle!"
+    new-owner: "&aThis vehicle now belongs to %player%!"
+    offline-player: "&cThe new owner must be online during the transfer!"
+
+shop:
+  not-enough-money: "&cYou need $%money% to purchase this vehicle."
+
+customization:
+  invalid-cursor: "&cYou must click with a valid item in your cursor!"
+  already-in-use: "&cThis item is already in use!"
+  different-amount: "&cThe amount must be the same as the original!"
+  successful-purchase: "&aEnjoy your new vehicle! $%money% has been taken from your account."

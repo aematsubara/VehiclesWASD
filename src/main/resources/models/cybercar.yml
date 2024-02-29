@@ -1,0 +1,2107 @@
+parts:
+  BACK_LIGHTS_1:
+    offset:
+      x: 0.5562
+      y: 0.3521
+      z: -2.0625
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: HEAVY_WEIGHTED_PRESSURE_PLATE
+  BACK_LIGHTS_2:
+    offset:
+      x: -0.5688
+      y: 0.3521
+      z: -2.0625
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: HEAVY_WEIGHTED_PRESSURE_PLATE
+  FRONT_LIGHTS_1:
+    offset:
+      x: -0.475
+      y: 0.2583
+      z: 0.9375
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 0.0
+        y: 45.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: HEAVY_WEIGHTED_PRESSURE_PLATE
+  FRONT_LIGHTS_2:
+    offset:
+      x: 0.4625
+      y: 0.2583
+      z: 0.9375
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 0.0
+        y: 45.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: HEAVY_WEIGHTED_PRESSURE_PLATE
+  BACK_WHEELS_1:
+    offset:
+      x: 0.6
+      y: -1.425
+      z: -1.62
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: PLAYER_HEAD
+        url: ddfe5a963869415340d2cec0f82d08df73dcb168428487b514aa8d4ec19fe2c
+  BACK_WHEELS_2:
+    offset:
+      x: -0.6
+      y: -1.425
+      z: -1.62
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: PLAYER_HEAD
+        url: ddfe5a963869415340d2cec0f82d08df73dcb168428487b514aa8d4ec19fe2c
+  FRONT_WHEELS_1:
+    offset:
+      x: 0.6
+      y: -1.425
+      z: 0.28
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: PLAYER_HEAD
+        url: ddfe5a963869415340d2cec0f82d08df73dcb168428487b514aa8d4ec19fe2c
+  FRONT_WHEELS_2:
+    offset:
+      x: -0.6
+      y: -1.425
+      z: 0.28
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: PLAYER_HEAD
+        url: ddfe5a963869415340d2cec0f82d08df73dcb168428487b514aa8d4ec19fe2c
+  FENDER_1:
+    offset:
+      x: -0.803
+      y: -0.1604
+      z: 0.03
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      arms: true
+    pose:
+      right-arm:
+        x: -105.0
+        y: -90.0
+        z: 0.0
+    equipment:
+      main-hand:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER:MAINHAND
+  FENDER_2:
+    offset:
+      x: -0.3618
+      y: 0.3606
+      z: 0.024
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      right-arm:
+        x: -15.1
+        y: 45.0
+        z: 0.0
+    equipment:
+      main-hand:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER:MAINHAND
+  FENDER_3:
+    offset:
+      x: -0.3618
+      y: 0.3606
+      z: 0.211
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      right-arm:
+        x: -15.1
+        y: 45.0
+        z: 0.0
+    equipment:
+      main-hand:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER:MAINHAND
+  FENDER_4:
+    offset:
+      x: -0.803
+      y: -0.1604
+      z: 0.47
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      arms: true
+    pose:
+      right-arm:
+        x: -105.0
+        y: -90.0
+        z: 0.0
+    equipment:
+      main-hand:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER:MAINHAND
+  FENDER_5:
+    offset:
+      x: -0.3618
+      y: 0.3606
+      z: 0.275
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      right-arm:
+        x: -15.1
+        y: 45.0
+        z: 0.0
+    equipment:
+      main-hand:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER:MAINHAND
+  FENDER_6:
+    offset:
+      x: -0.803
+      y: -0.1604
+      z: -1.874
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      arms: true
+    pose:
+      right-arm:
+        x: -105.0
+        y: -90.0
+        z: 0.0
+    equipment:
+      main-hand:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER:MAINHAND
+  FENDER_7:
+    offset:
+      x: -0.3618
+      y: 0.3606
+      z: -1.88
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      right-arm:
+        x: -15.1
+        y: 45.0
+        z: 0.0
+    equipment:
+      main-hand:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER:MAINHAND
+  FENDER_8:
+    offset:
+      x: -0.3618
+      y: 0.3606
+      z: -1.693
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      right-arm:
+        x: -15.1
+        y: 45.0
+        z: 0.0
+    equipment:
+      main-hand:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER:MAINHAND
+  FENDER_9:
+    offset:
+      x: -0.803
+      y: -0.1604
+      z: -1.434
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      arms: true
+    pose:
+      right-arm:
+        x: -105.0
+        y: -90.0
+        z: 0.0
+    equipment:
+      main-hand:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER:MAINHAND
+  FENDER_10:
+    offset:
+      x: -0.3618
+      y: 0.3606
+      z: -1.629
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      right-arm:
+        x: -15.1
+        y: 45.0
+        z: 0.0
+    equipment:
+      main-hand:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER:MAINHAND
+  FENDER_11:
+    offset:
+      x: 1.0132
+      y: 0.3606
+      z: -1.88
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      right-arm:
+        x: -15.1
+        y: 45.0
+        z: 0.0
+    equipment:
+      main-hand:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER:MAINHAND
+  FENDER_12:
+    offset:
+      x: 0.572
+      y: -0.1604
+      z: -1.874
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      arms: true
+    pose:
+      right-arm:
+        x: -105.0
+        y: -90.0
+        z: 0.0
+    equipment:
+      main-hand:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER:MAINHAND
+  FENDER_13:
+    offset:
+      x: 1.0132
+      y: 0.3606
+      z: 0.275
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      right-arm:
+        x: -15.1
+        y: 45.0
+        z: 0.0
+    equipment:
+      main-hand:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER:MAINHAND
+  FENDER_14:
+    offset:
+      x: 0.572
+      y: -0.1604
+      z: 0.47
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      arms: true
+    pose:
+      right-arm:
+        x: -105.0
+        y: -90.0
+        z: 0.0
+    equipment:
+      main-hand:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER:MAINHAND
+  FENDER_15:
+    offset:
+      x: 1.0132
+      y: 0.3606
+      z: 0.211
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      right-arm:
+        x: -15.1
+        y: 45.0
+        z: 0.0
+    equipment:
+      main-hand:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER:MAINHAND
+  FENDER_16:
+    offset:
+      x: 1.0132
+      y: 0.3606
+      z: 0.024
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      right-arm:
+        x: -15.1
+        y: 45.0
+        z: 0.0
+    equipment:
+      main-hand:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER:MAINHAND
+  FENDER_17:
+    offset:
+      x: 0.572
+      y: -0.1604
+      z: 0.03
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      arms: true
+    pose:
+      right-arm:
+        x: -105.0
+        y: -90.0
+        z: 0.0
+    equipment:
+      main-hand:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER:MAINHAND
+  FENDER_18:
+    offset:
+      x: 1.0132
+      y: 0.3606
+      z: -1.693
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      right-arm:
+        x: -15.1
+        y: 45.0
+        z: 0.0
+    equipment:
+      main-hand:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER:MAINHAND
+  FENDER_19:
+    offset:
+      x: 0.572
+      y: -0.1604
+      z: -1.434
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      arms: true
+    pose:
+      right-arm:
+        x: -105.0
+        y: -90.0
+        z: 0.0
+    equipment:
+      main-hand:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER:MAINHAND
+  FENDER_20:
+    offset:
+      x: 1.0132
+      y: 0.3606
+      z: -1.629
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      right-arm:
+        x: -15.1
+        y: 45.0
+        z: 0.0
+    equipment:
+      main-hand:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER:MAINHAND
+  INSIDE_WHEEL_1:
+    offset:
+      x: 0.4937
+      y: -0.2729
+      z: 0.2813
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: GRAY_TERRACOTTA
+  INSIDE_WHEEL_2:
+    offset:
+      x: -0.5063
+      y: -0.2729
+      z: 0.2813
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: GRAY_TERRACOTTA
+  INSIDE_WHEEL_3:
+    offset:
+      x: 0.4937
+      y: -0.2729
+      z: -1.625
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: GRAY_TERRACOTTA
+  INSIDE_WHEEL_4:
+    offset:
+      x: -0.5063
+      y: -0.2729
+      z: -1.625
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: GRAY_TERRACOTTA
+  PART_1:
+    offset:
+      x: -0.4438
+      y: -0.1479
+      z: 0.9063
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 0.0
+        y: 45.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_2:
+    offset:
+      x: -0.225
+      y: -0.1479
+      z: 1.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_3:
+    offset:
+      x: 0.2125
+      y: -0.1479
+      z: 1.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_4:
+    offset:
+      x: 0.2125
+      y: -0.0409
+      z: 0.8705
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 22.0
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_5:
+    offset:
+      x: -0.2563
+      y: 0.2583
+      z: 1.0313
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: HEAVY_WEIGHTED_PRESSURE_PLATE
+  PART_6:
+    offset:
+      x: 0.2437
+      y: 0.2583
+      z: 1.0313
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: HEAVY_WEIGHTED_PRESSURE_PLATE
+  PART_7:
+    offset:
+      x: -0.0063
+      y: 0.2583
+      z: 1.0313
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: HEAVY_WEIGHTED_PRESSURE_PLATE
+  PART_8:
+    offset:
+      x: -0.225
+      y: -0.0409
+      z: 0.8705
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 22.0
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_9:
+    offset:
+      x: -0.225
+      y: 0.1154
+      z: 0.4955
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 22.0
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GLASS
+    tags:
+    - CUSTOMIZABLE:GLASS:HEAD
+  PART_10:
+    offset:
+      x: 0.2125
+      y: 0.1154
+      z: 0.4955
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 22.0
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GLASS
+    tags:
+    - CUSTOMIZABLE:GLASS:HEAD
+  PART_11:
+    offset:
+      x: -0.225
+      y: -0.3354
+      z: 1.0313
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER_2:HEAD:FENDER
+  PART_12:
+    offset:
+      x: 0.2125
+      y: -0.3354
+      z: 1.0313
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER_2:HEAD:FENDER
+  PART_13:
+    offset:
+      x: 0.4312
+      y: -0.1479
+      z: 0.9063
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 0.0
+        y: 45.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_14:
+    offset:
+      x: 0.4312
+      y: -0.3354
+      z: 0.9375
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 0.0
+        y: 45.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER_2:HEAD:FENDER
+  PART_15:
+    offset:
+      x: -0.4438
+      y: -0.3354
+      z: 0.9375
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 0.0
+        y: 45.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER_2:HEAD:FENDER
+  PART_16:
+    offset:
+      x: -0.5375
+      y: 0.0083
+      z: -0.1562
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_17:
+    offset:
+      x: 0.525
+      y: 0.0083
+      z: -0.1562
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_18:
+    offset:
+      x: -0.5688
+      y: -0.3354
+      z: 0.7188
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER_2:HEAD:FENDER
+  PART_19:
+    offset:
+      x: -0.5688
+      y: -0.3354
+      z: -0.1562
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER_2:HEAD:FENDER
+  PART_20:
+    offset:
+      x: 0.5562
+      y: -0.3354
+      z: 0.7188
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER_2:HEAD:FENDER
+  PART_21:
+    offset:
+      x: 0.5562
+      y: -0.3354
+      z: -0.1562
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER_2:HEAD:FENDER
+  PART_22:
+    offset:
+      x: -0.5375
+      y: 0.0083
+      z: 0.2813
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_23:
+    offset:
+      x: 0.525
+      y: 0.0083
+      z: 0.2813
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_26:
+    offset:
+      x: 0.2125
+      y: -0.0542
+      z: -1.9687
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_27:
+    offset:
+      x: 0.2125
+      y: 0.4175
+      z: -1.6591
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 168.0
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_28:
+    offset:
+      x: -0.225
+      y: 0.4175
+      z: -1.6591
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 168.0
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_29:
+    offset:
+      x: 0.2125
+      y: 0.355
+      z: -1.9716
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 168.0
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_30:
+    offset:
+      x: -0.225
+      y: 0.355
+      z: -1.9716
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 168.0
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_31:
+    offset:
+      x: -0.225
+      y: -0.0542
+      z: -1.9687
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_32:
+    offset:
+      x: 0.525
+      y: 0.0083
+      z: -0.5937
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_33:
+    offset:
+      x: 0.525
+      y: 0.0083
+      z: -1.0312
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_34:
+    offset:
+      x: -0.5375
+      y: 0.0083
+      z: -0.5937
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_35:
+    offset:
+      x: -0.5375
+      y: 0.0083
+      z: -1.0312
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_36:
+    offset:
+      x: 0.525
+      y: 0.0083
+      z: -1.4687
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_37:
+    offset:
+      x: -0.5375
+      y: 0.0083
+      z: -1.4687
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_38:
+    offset:
+      x: 0.525
+      y: 0.0083
+      z: -1.7187
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_39:
+    offset:
+      x: 0.525
+      y: 0.0083
+      z: -1.7187
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_40:
+    offset:
+      x: -0.5375
+      y: 0.355
+      z: -1.9716
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 168.0
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_41:
+    offset:
+      x: -0.5375
+      y: 0.0083
+      z: -1.7187
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_43:
+    offset:
+      x: 0.5562
+      y: -0.3354
+      z: -2.0625
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER_2:HEAD:FENDER
+  PART_44:
+    offset:
+      x: 0.5562
+      y: -0.3354
+      z: -1.1875
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER_2:HEAD:FENDER
+  PART_45:
+    offset:
+      x: 0.5562
+      y: -0.3354
+      z: -0.5937
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER_2:HEAD:FENDER
+  PART_46:
+    offset:
+      x: 0.5562
+      y: -0.3354
+      z: -0.75
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER_2:HEAD:FENDER
+  PART_47:
+    offset:
+      x: -0.5688
+      y: -0.3354
+      z: -0.5937
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER_2:HEAD:FENDER
+  PART_48:
+    offset:
+      x: -0.5688
+      y: -0.3354
+      z: -0.75
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER_2:HEAD:FENDER
+  PART_49:
+    offset:
+      x: -0.5688
+      y: -0.3354
+      z: -1.1875
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER_2:HEAD:FENDER
+  PART_51:
+    offset:
+      x: -0.5688
+      y: -0.3354
+      z: -2.0625
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER_2:HEAD:FENDER
+  PART_52:
+    offset:
+      x: 0.1187
+      y: -0.3354
+      z: -2.0625
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER_2:HEAD:FENDER
+  PART_53:
+    offset:
+      x: -0.2875
+      y: -0.3354
+      z: -2.0625
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: BLACK_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:FENDER_2:HEAD:FENDER
+  PART_54:
+    offset:
+      x: 0.525
+      y: -0.0542
+      z: -2.0312
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_55:
+    offset:
+      x: 0.0875
+      y: -0.0542
+      z: -2.0312
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_56:
+    offset:
+      x: -0.5375
+      y: -0.0542
+      z: -2.0312
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_57:
+    offset:
+      x: -0.1625
+      y: -0.0542
+      z: -2.0312
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_58:
+    offset:
+      x: -0.1938
+      y: 0.3521
+      z: -2.0625
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: HEAVY_WEIGHTED_PRESSURE_PLATE
+  PART_59:
+    offset:
+      x: 0.1812
+      y: 0.3521
+      z: -2.0625
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: HEAVY_WEIGHTED_PRESSURE_PLATE
+  PART_60:
+    offset:
+      x: -0.5375
+      y: -0.0409
+      z: 0.558
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 22.0
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_61:
+    offset:
+      x: 0.525
+      y: -0.0409
+      z: 0.558
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 22.0
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_66:
+    offset:
+      x: -0.225
+      y: 0.6362
+      z: -0.6904
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 168.0
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_67:
+    offset:
+      x: 0.2125
+      y: 0.6362
+      z: -0.6904
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 168.0
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_68:
+    offset:
+      x: 0.525
+      y: 0.355
+      z: -1.9716
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 168.0
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_69:
+    offset:
+      x: 0.3075
+      y: 0.1846
+      z: -0.6875
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 0.0
+        y: 0.0
+        z: 45.0
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_70:
+    offset:
+      x: -0.5675
+      y: 0.1846
+      z: -0.6875
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 0.0
+        y: 0.0
+        z: 45.0
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_71:
+    offset:
+      x: -0.1625
+      y: -0.2417
+      z: 0.625
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: STONE_PRESSURE_PLATE
+  PART_72:
+    offset:
+      x: 0.2125
+      y: -0.2417
+      z: 0.625
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: STONE_PRESSURE_PLATE
+  PART_73:
+    offset:
+      x: 0.2125
+      y: -0.2417
+      z: 0.25
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: STONE_PRESSURE_PLATE
+  PART_74:
+    offset:
+      x: -0.1625
+      y: -0.2417
+      z: 0.25
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: STONE_PRESSURE_PLATE
+  PART_75:
+    offset:
+      x: -0.1625
+      y: -0.2417
+      z: -0.125
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: STONE_PRESSURE_PLATE
+  PART_76:
+    offset:
+      x: 0.2125
+      y: -0.2417
+      z: -0.125
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: STONE_PRESSURE_PLATE
+  PART_77:
+    offset:
+      x: -0.1625
+      y: -0.2417
+      z: -0.5
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: STONE_PRESSURE_PLATE
+  PART_78:
+    offset:
+      x: 0.2125
+      y: -0.2417
+      z: -0.5
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: STONE_PRESSURE_PLATE
+  PART_79:
+    offset:
+      x: -0.1625
+      y: -0.2417
+      z: -0.875
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: STONE_PRESSURE_PLATE
+  PART_80:
+    offset:
+      x: 0.2125
+      y: -0.2417
+      z: -0.875
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: STONE_PRESSURE_PLATE
+  PART_81:
+    offset:
+      x: -0.1625
+      y: -0.2417
+      z: -1.25
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: STONE_PRESSURE_PLATE
+  PART_82:
+    offset:
+      x: 0.2125
+      y: -0.2417
+      z: -1.25
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: STONE_PRESSURE_PLATE
+  PART_83:
+    offset:
+      x: 0.2125
+      y: -0.2417
+      z: -1.625
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: STONE_PRESSURE_PLATE
+  PART_84:
+    offset:
+      x: -0.1625
+      y: -0.2417
+      z: -1.625
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: STONE_PRESSURE_PLATE
+  PART_85:
+    offset:
+      x: 0.4875
+      y: -0.4057
+      z: -1.8437
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 30.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: END_ROD
+  PART_86:
+    offset:
+      x: -0.5
+      y: -0.4057
+      z: -1.8437
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 30.0
+        y: -90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: END_ROD
+  PART_87:
+    offset:
+      x: 0.2125
+      y: 0.2271
+      z: -0.6875
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_88:
+    offset:
+      x: -0.225
+      y: 0.2271
+      z: -0.6875
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_89:
+    offset:
+      x: -0.225
+      y: -0.2104
+      z: -0.6875
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_90:
+    offset:
+      x: 0.2125
+      y: -0.2104
+      z: -0.6875
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_91:
+    offset:
+      x: -0.0063
+      y: 0.0396
+      z: -0.125
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: QUARTZ_SLAB
+    tags:
+    - CUSTOMIZABLE:BACK_CHAIR:HEAD
+  PART_92:
+    offset:
+      x: -0.0063
+      y: 0.3992
+      z: -0.3904
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 78.0
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: QUARTZ_SLAB
+    tags:
+    - CUSTOMIZABLE:BACK_CHAIR:HEAD
+  PART_93:
+    offset:
+      x: -0.0063
+      y: 0.2583
+      z: -0.125
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: WHITE_CARPET
+    tags:
+    - CUSTOMIZABLE:CHAIR:HEAD
+  PART_94:
+    offset:
+      x: -0.0063
+      y: 0.4304
+      z: -0.1716
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 78.0
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: WHITE_CARPET
+    tags:
+    - CUSTOMIZABLE:CHAIR:HEAD
+  HANDLE:
+    offset:
+      x: 0.52
+      y: 0.2
+      z: -0.27
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 0.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: STONE_BUTTON
+  HANDLE_2:
+    offset:
+      x: -0.52
+      y: 0.2
+      z: -0.27
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 0.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: STONE_BUTTON
+  HANDLE_2_2:
+    offset:
+      x: -0.52
+      y: 0.2
+      z: -1.27
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 0.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: STONE_BUTTON
+  HANDLE_2_2_2:
+    offset:
+      x: 0.52
+      y: 0.2
+      z: -1.27
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 0.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: STONE_BUTTON
+  CHAIR_1:
+    offset:
+      x: 0.0
+      y: -0.19
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+  PART_82_2:
+    offset:
+      x: 0.2125
+      y: 0.3583
+      z: -1.25
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: HEAVY_WEIGHTED_PRESSURE_PLATE
+  PART_81_2:
+    offset:
+      x: -0.1625
+      y: 0.3583
+      z: -1.25
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: HEAVY_WEIGHTED_PRESSURE_PLATE
+  PART_80_2:
+    offset:
+      x: 0.2125
+      y: 0.3583
+      z: -0.875
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: HEAVY_WEIGHTED_PRESSURE_PLATE
+  PART_79_2:
+    offset:
+      x: -0.1625
+      y: 0.3583
+      z: -0.875
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: HEAVY_WEIGHTED_PRESSURE_PLATE
+  CENTER:
+    offset:
+      x: 0.0
+      y: 0.0
+      z: -0.6
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true

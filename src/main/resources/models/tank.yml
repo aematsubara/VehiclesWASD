@@ -1,0 +1,1819 @@
+parts:
+  X_TOP_PART_1:
+    offset:
+      x: -0.525
+      y: -0.8775
+      z: -0.0077
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  X_TOP_PART_2:
+    offset:
+      x: 0.525
+      y: -0.8775
+      z: 0.6173
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  X_TOP_PART_3:
+    offset:
+      x: -0.525
+      y: -0.8775
+      z: 0.6173
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  X_TOP_PART_4:
+    offset:
+      x: 0.525
+      y: -0.8775
+      z: -0.0077
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  X_TOP_PART_5:
+    offset:
+      x: 0.0
+      y: -0.8775
+      z: 0.6173
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  X_TOP_PART_6:
+    offset:
+      x: -0.525
+      y: -0.8775
+      z: -0.6327
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  X_TOP_PART_7:
+    offset:
+      x: 0.525
+      y: -0.8775
+      z: -0.6327
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  TOP_PART_1:
+    offset:
+      x: -0.1
+      y: 0.71
+      z: 1.0848
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -45.0
+        y: -135.0
+        z: 0.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      main-hand:
+        material: PLAYER_HEAD
+        url: 63586fdc36e647a8216d7af3869790aabcf45255f6e6175dcbf3bb3e24f0d352
+  TOP_PART_2:
+    offset:
+      x: -0.1
+      y: 0.71
+      z: 1.2098
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -45.0
+        y: -135.0
+        z: 0.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      main-hand:
+        material: PLAYER_HEAD
+        url: 63586fdc36e647a8216d7af3869790aabcf45255f6e6175dcbf3bb3e24f0d352
+  TOP_PART_3:
+    offset:
+      x: -0.1
+      y: 0.71
+      z: 1.3348
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -45.0
+        y: -135.0
+        z: 0.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      main-hand:
+        material: PLAYER_HEAD
+        url: 63586fdc36e647a8216d7af3869790aabcf45255f6e6175dcbf3bb3e24f0d352
+  TOP_PART_4:
+    offset:
+      x: -0.1
+      y: 0.71
+      z: 1.4598
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -45.0
+        y: -135.0
+        z: 0.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      main-hand:
+        material: PLAYER_HEAD
+        url: 63586fdc36e647a8216d7af3869790aabcf45255f6e6175dcbf3bb3e24f0d352
+  TOP_PART_5:
+    offset:
+      x: -0.1
+      y: 0.71
+      z: 1.5848
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -45.0
+        y: -135.0
+        z: 0.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      main-hand:
+        material: PLAYER_HEAD
+        url: 63586fdc36e647a8216d7af3869790aabcf45255f6e6175dcbf3bb3e24f0d352
+  TOP_PART_6:
+    offset:
+      x: -0.1
+      y: 0.71
+      z: 1.7098
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -45.0
+        y: -135.0
+        z: 0.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      main-hand:
+        material: PLAYER_HEAD
+        url: 63586fdc36e647a8216d7af3869790aabcf45255f6e6175dcbf3bb3e24f0d352
+  TOP_PART_8:
+    offset:
+      x: -0.1
+      y: 0.71
+      z: 1.8348
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -45.0
+        y: -135.0
+        z: 0.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      main-hand:
+        material: PLAYER_HEAD
+        url: 63586fdc36e647a8216d7af3869790aabcf45255f6e6175dcbf3bb3e24f0d352
+  TOP_PART_7:
+    offset:
+      x: -0.1
+      y: 0.71
+      z: 1.9598
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -45.0
+        y: -135.0
+        z: 0.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      main-hand:
+        material: PLAYER_HEAD
+        url: af0456da4c554de9593d257745b59b4d4addac18b6feda85a511bf766c4048c7
+  TOP_PART_15:
+    offset:
+      x: 0.0
+      y: -0.6775
+      z: 0.5173
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  TOP_PART_16:
+    offset:
+      x: 0.0
+      y: -0.6775
+      z: -0.0077
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  TOP_PART_17:
+    offset:
+      x: 0.0
+      y: -0.7535
+      z: -0.3987
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -22.0
+        y: 0.0
+        z: 0.0
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  TOP_PART_18:
+    offset:
+      x: -0.2
+      y: -0.6775
+      z: 0.5173
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  TOP_PART_19:
+    offset:
+      x: -0.2
+      y: -0.6775
+      z: -0.0077
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  TOP_PART_20:
+    offset:
+      x: -0.2
+      y: -0.7535
+      z: -0.3987
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -22.0
+        y: 0.0
+        z: 0.0
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  TOP_PART_21:
+    offset:
+      x: 0.2
+      y: -0.7535
+      z: -0.3987
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -22.0
+        y: 0.0
+        z: 0.0
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  TOP_PART_22:
+    offset:
+      x: 0.2
+      y: -0.6775
+      z: -0.0077
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  TOP_PART_23:
+    offset:
+      x: 0.2
+      y: -0.6775
+      z: 0.5173
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  TOP_PART_24:
+    offset:
+      x: 0.0
+      y: -0.5
+      z: 0.2023
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: 0.0
+        z: 45.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  TOP_PART_25:
+    offset:
+      x: 0.0
+      y: -0.5
+      z: 0.2023
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: 0.0
+        z: -45.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  TOP_PART_26:
+    offset:
+      x: 0.0
+      y: -0.5
+      z: 0.2023
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: -45.0
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  TOP_PART_27:
+    offset:
+      x: 0.0
+      y: -0.5
+      z: 0.2023
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 45.0
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  TOP_PART_28:
+    offset:
+      x: 0.0
+      y: -0.4
+      z: 0.2023
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  tempppp_1:
+    offset:
+      x: 0.0
+      y: -1.1524
+      z: 0.9898
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  tempppp_2:
+    offset:
+      x: -0.625
+      y: -1.1524
+      z: 0.9898
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  tempppp_3:
+    offset:
+      x: 0.625
+      y: -1.1524
+      z: 0.9898
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  WHEELS_LEFT_1:
+    offset:
+      x: 0.7
+      y: -1.425
+      z: -0.6139
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 0.0
+        y: 270.0
+        z: 0.0
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: PLAYER_HEAD
+        url: 3af3f1d5141ba1dc2a65d7ef2029dc186e93af20da0e9210e2cfcaab1435cd13
+  WHEELS_LEFT_2:
+    offset:
+      x: 0.7
+      y: -1.425
+      z: -0.0202
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 0.0
+        y: 270.0
+        z: 0.0
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: PLAYER_HEAD
+        url: ba6d8aae73b321694a0dee7df9be2f28f8c3ec9e22287350d444c3f62be49cdc
+  WHEELS_LEFT_3:
+    offset:
+      x: 0.7
+      y: -1.425
+      z: 0.5735
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 0.0
+        y: 270.0
+        z: 0.0
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: PLAYER_HEAD
+        url: 76dbb69d9f70fb5278d86bc6beb8d6662a451caf312e05ef332c49aaf83ae9a2
+  WHEELS_RIGHT_1:
+    offset:
+      x: -0.7
+      y: -1.425
+      z: -0.6139
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 0.0
+        y: 90.0
+        z: 0.0
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: PLAYER_HEAD
+        url: 76dbb69d9f70fb5278d86bc6beb8d6662a451caf312e05ef332c49aaf83ae9a2
+  WHEELS_RIGHT_2:
+    offset:
+      x: -0.7
+      y: -1.425
+      z: -0.0202
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 0.0
+        y: 90.0
+        z: 0.0
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: PLAYER_HEAD
+        url: ba6d8aae73b321694a0dee7df9be2f28f8c3ec9e22287350d444c3f62be49cdc
+  WHEELS_RIGHT_3:
+    offset:
+      x: -0.7
+      y: -1.425
+      z: 0.5735
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 0.0
+        y: 90.0
+        z: 0.0
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: PLAYER_HEAD
+        url: 3af3f1d5141ba1dc2a65d7ef2029dc186e93af20da0e9210e2cfcaab1435cd13
+  PART_9:
+    offset:
+      x: -0.625
+      y: -1.05
+      z: 1.0298
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 20.0
+        y: 0.0
+        z: 0.0
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_11:
+    offset:
+      x: 0.625
+      y: -1.05
+      z: 1.0298
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 20.0
+        y: 0.0
+        z: 0.0
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_12:
+    offset:
+      x: -0.625
+      y: -0.9775
+      z: 0.6173
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_14:
+    offset:
+      x: 0.625
+      y: -0.9775
+      z: 0.6173
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_15:
+    offset:
+      x: -0.625
+      y: -0.9775
+      z: -0.0077
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_17:
+    offset:
+      x: 0.625
+      y: -0.9775
+      z: -0.0077
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_18:
+    offset:
+      x: -0.625
+      y: -0.9775
+      z: -0.6327
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_20:
+    offset:
+      x: 0.625
+      y: -0.9775
+      z: -0.6327
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_21:
+    offset:
+      x: -0.625
+      y: -1.05
+      z: -1.0452
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -20.0
+        y: 0.0
+        z: 0.0
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_23:
+    offset:
+      x: 0.625
+      y: -1.05
+      z: -1.0452
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -20.0
+        y: 0.0
+        z: 0.0
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_9_2_2:
+    offset:
+      x: 0.0
+      y: -1.05
+      z: 1.0298
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 20.0
+        y: 0.0
+        z: 0.0
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_12_2:
+    offset:
+      x: 0.0
+      y: -0.9775
+      z: 0.6173
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_15_2:
+    offset:
+      x: 0.0
+      y: -0.9775
+      z: -0.0077
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_18_2:
+    offset:
+      x: 0.0
+      y: -0.9775
+      z: -0.6327
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  PART_21_2:
+    offset:
+      x: 0.0
+      y: -1.05
+      z: -1.0452
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -20.0
+        y: 0.0
+        z: 0.0
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  tempppp_1_2:
+    offset:
+      x: 0.0
+      y: -1.1524
+      z: -1.0102
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  tempppp_2_2:
+    offset:
+      x: -0.625
+      y: -1.1524
+      z: -1.0102
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  tempppp_3_2:
+    offset:
+      x: 0.625
+      y: -1.1524
+      z: -1.0102
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  CHAIR_1:
+    offset:
+      x: 0.0
+      y: -0.2
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+  X_TOP_PART_6_2:
+    offset:
+      x: -0.095
+      y: -0.8775
+      z: -0.6327
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      left-arm:
+        x: -10.0
+        y: 0.0
+        z: -10.0
+      right-arm:
+        x: -15.0
+        y: 0.0
+        z: 10.0
+      left-leg:
+        x: -1.0
+        y: 0.0
+        z: -1.0
+      right-leg:
+        x: 1.0
+        y: 0.0
+        z: 1.0
+    equipment:
+      helmet:
+        material: BLUE_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD

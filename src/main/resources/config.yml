@@ -1,0 +1,849 @@
+# ITEM FORMAT:
+# @url: the URL of the texture to be used (@material should be PLAYER_HEAD).
+# @material: the material of the item.
+# @model-data: the custom model data id, used for custom resource packs.
+# @display_name & lore: self-explanatory.
+# @crafting.shaped: whether the item recipe is shaped (like WORKBENCH) or not (like FLINT_AND_STEEL).
+# @crafting.ingredients: the ingredients that'll be used for the recipe. Format: MATERIAL_NAME, KEY (used for shape, see below).
+# @crafting.shape: the shape that'll be used on the crafting table, using the KEY specified (only 3 lines required, spaces are used as AIR).
+# @flags: which attributes to hide.
+# @enchantments: the enchantments to be applied.
+# @leather-color: the color of the leather armor.
+# * Use a color from: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Color.html (e.g. AQUA, BLACK, etc.)
+# * Use a random color with: $RANDOM
+# * Use a color using RGB format: &#RRGGBB
+# @damage: the amount of damage to apply to the item (maximum durability - given damage, can be $RANDOM or X-Y).
+# @tipped: the potion effect the arrow will have (must be a TIPPED_ARROW).
+# @amount: the amount of items.
+#
+# $RANDOM:
+# Color: a random color. (@leather-color)
+# PotionType: a random potion effect. (@tipped)
+# For @damage, a random value between 1 and max item durability is used.
+#
+# RANGED AMOUNT (X-Y): A random value between x and y. (@amount / @enchantments (level))
+#
+# PERCENTAGE (only valid for @damage, NOT DECIMAL): X% / %X (% must be included); for example: 50% (same as %50) would be half-damage.
+# NOTE: The percentage is taken from the maximum durability; this means:
+# * WOODEN_SWORD max durability = 60; if @damage is 50% (60 * 0.50) -> 30. if @damage is 25% (60 * 0.25) -> 15.
+# That value will be the damage added to the item; so, if @damage is %25, the new durability of the WOODEN_SWORD will be 60 - 15 = 45.
+#
+# In this example, the required ingredients are 7 of GOLD_INGOT and 1 of DIAMOND.
+# You can use spaces to represent AIR (nothing).
+# ingredients:
+#   - DIAMOND, D
+#   - GOLD_INGOT, G
+# shape:
+#   - "GDG"
+#   - "G G"
+#   - "GGG"
+#
+# USEFUL LINKS:
+#
+# Materials: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+# Flags: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/inventory/ItemFlag.html
+# Enchantments: https://www.digminecraft.com/lists/enchantment_list_pc.php
+# Colors: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Color.html
+# Sounds: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
+
+# Don't touch this!
+config-version: 1
+
+# The rendering distance of the vehicles.
+render-distance: 80
+
+# If true, the vehicle will face the opposite direction to the one the player is facing.
+# If false, the vehicle will face the direction in which the player is facing.
+opposite-face-spawn: false
+
+# Whether to close the customization GUI after a customization has been made.
+close-customization-gui-if-successful: false
+
+input-gui:
+  customization-search:
+    title: "Customization"
+    text: "Search..."
+  transfer-search:
+    title: "Transfer ownership"
+    text: "Search"
+
+# This feature allows the vehicle to automatically drive to an EssentialsX home.
+gps:
+  # Whether this feature is enabled (requires EssentialsX).
+  enabled: true
+  # The maximum distance to a destination, be careful with this.
+  max-distance: 512
+  # The minimum distance required before starting.
+  min-distance: 5
+
+# The message that will be shown to both the driver and passengers of a vehicle.
+action-bar:
+  enabled: true
+  message:
+    # The separator between fuel and speed (if fuel is activated).
+    separator: " &7| "
+    # If the vehicle doesn't have fuel enabled, it won't be shown in the message, only @speed. If not, it'll be displayed as: %fuel%|%separator%|%speed%
+    # %bar% - the bar that represents the remaining fuel, you can modify it below in @{action-bar.fuel-bar}.
+    fuel: "&6&lFuel: &8[%bar%&8]"
+    # %speed% - the current speed of the vehicle, or the distance to the destination if the GPS is running.
+    speed: "&e&lSpeed: &f%speed%"
+    # If GPS is running, the distance to the destination will be shown instead of the speed.
+    gps: "GPS (%distance%m away - ≪%home%≫)"
+  fuel-bar:
+    symbol: "▉"
+    color:
+      completed: "&a"
+      empty: "&7"
+
+# Here you can create special tags that contain the necessary materials for your customizations.
+# You can also combine materials with existing tags.
+#
+# If you have knowledge of regular expressions, you can use them to add materials with a certain pattern, using ";" at the beginning.
+# For example: ;.*_STAINED_GLASS$ - this expression will add all materials that end with _STAINED_GLASS.
+# You can try this using the following page: https://regexr.com/
+#
+# NOTE: Do not use tag names that already exist in Minecraft as these have priority.
+# NOTE 2: You can assign a name to these tags to be used in GUIs below at @{translations.tag}.
+extra-tags:
+  lantern:
+    - LANTERN
+    - SOUL_LANTERN
+  glass:
+    - GLASS
+    - TINTED_GLASS
+    - ;.*_STAINED_GLASS$
+  glass-pane:
+    - GLASS_PANE
+    - ;.*_STAINED_GLASS_PANE$
+  concrete:
+    - ;.*_CONCRETE$
+
+# Here you can choose the materials that can be used as fuel.
+# You can add materials and tags, those already existing in minecraft and those you created above in @{extra-tags}.
+# To specify a tag, simply use the format: ${TAG_NAME} (in uppercase and using "_" instead of "-").
+# For example: $WOOL_CARPETS - the tag that contains all the wool carpets.
+#
+# You can specify the amount of fuel a material gives per unit.
+# For example:
+# * COAL(3) - will give 3 fuel for each coal; if you put 10 coals, it will add = (10 * 3 = 30) fuel.
+# * $LOGS - will give 1 fuel for each log; If you put 10 logs, it will add = (10 * 1 = 10) fuel.
+#
+# You can also specify if a material is only a valid fuel for a certain vehicle, indicating it with a "?" at the beginning next to the type of vehicle, ending with ":".
+# For example:
+# * ?TANK:NETHERITE_INGOT(30) - Each netherite ingot will add 30 fuel ONLY to the tanks.
+#
+# Types of vehicles: BIKE, BOAT, CYBERCAR, HELICOPTER, KART, QUAD, TANK.
+fuel-items:
+  - COAL(3)
+  - LAVA_BUCKET(10)
+  - $LOGS
+  - ?TANK:NETHERITE_INGOT(30)
+
+# Both materials and tags must use "-" instead of "_".
+translations:
+  unknown: "Unknown"
+  no-customization: "&cNo customization!"
+  no-types: "&cNo types!"
+  no-fuel: "&cNo fuel!"
+  only-owner: "&cOnly the owner can perform this action!"
+  # %name% - the name of the vehicle purchased.
+  from-shop: "&8&oFrom shop: %name%"
+  vehicle:
+    bike: "Bike"
+    boat: "Boat"
+    cybercar: "Cybercar"
+    helicopter: "Helicopter"
+    kart: "Kart"
+    quad: "Quad"
+    tank: "Tank"
+  material:
+    coal: "Coal"
+    lava-bucket: "Lava Bucket"
+    netherite-ingot: "Netherite Ingot"
+  tag:
+    wool-carpets: "Wool Carpet*"
+    terracotta: "Terracotta*"
+    fences: "Fence*"
+    logs: "Log*"
+    concrete: "Concrete*"
+    wool: "Wool*"
+    glass: "Glass*"
+    glass-pane: "Glass pane*"
+    lantern: "Lantern*"
+    slabs: "Slab*"
+    trapdoors: "Trapdoor*"
+
+shop:
+  # If you must confirm the purchase instead of buying instantly with a single click.
+  confirm-shop: true
+  # You can start a preview of the vehicle by right clicking on one.
+  preview:
+    enabled: true
+    # The seconds that the preview will last.
+    seconds: 10
+    # %remaining% - the remaining seconds of preview.
+    message: "Preview finishing in %remaining% seconds! Shift + left click to cancel."
+    # If true, the message will have a rainbow effect (similar to the jukebox effect when a record is playing).
+    rainbow-message: true
+  # %customization-on% - modified parts of the vehicle.
+  # %money% - the price of the vehicle.
+  vehicle-item-lore:
+    - "&7You're about to buy this fantastic vehicle!"
+    - "&7"
+    - "&7Contain customizations on:"
+    - "&8* &f%customization-on%"
+    - "&7"
+    - "&ePrice: &a$%money%"
+    - "&7"
+    - "&6Left click to buy!"
+    - "&6Right click to preview!"
+  vehicles:
+    # Here you can add the amount of vehicles you want in the shop.
+    #
+    # Store vehicles (unlike those given with the {/vwasd give} command) can have customizations already applied.
+    # You simply must specify the name of the customization (you can find the names of the customizations for each vehicle below in @{customizations})
+    # and the material that will be used.
+    #
+    # NOTE: Vault and an economy provider (like EssentialsX, CMI, etc...) are required to open the shop.
+    bike:
+      '1':
+        display-name: "&8&lBlack Bike"
+        changes:
+          - CHAIR:BLACK_CARPET
+        price: 5000
+      '2':
+        display-name: "&f&lWhite Bike"
+        changes:
+          - CHAIR:WHITE_CARPET
+        price: 5000
+      '3':
+        display-name: "&c&lRed Bike"
+        changes:
+          - CHAIR:RED_CARPET
+        price: 5000
+    boat:
+      '1':
+        display-name: "&#73532c&lOak Boat"
+        changes:
+          - SECONDARY-COLOR:OAK_TRAPDOOR
+        price: 3000
+      '2':
+        display-name: "&#2b1f13&lSpruce Boat"
+        changes:
+          - COLOR:SPRUCE_LOG
+        price: 3000
+      '3':
+        display-name: "&#b85eac&lCherry Boat"
+        changes:
+          - COLOR:CHERRY_LOG
+          - SECONDARY-COLOR:CHERRY_TRAPDOOR
+        price: 3000
+    cybercar:
+      '1':
+        display-name: "&8&lBlack Cybercar"
+        changes:
+          - COLOR:BLACK_CONCRETE
+          - FENDER:BLACK_CONCRETE
+          - GLASS:TINTED_GLASS
+        price: 7500
+      '2':
+        display-name: "&f&lWhite Cybercar"
+        changes:
+          - COLOR:WHITE_CONCRETE
+          - FENDER:WHITE_CONCRETE
+          - GLASS:TINTED_GLASS
+        price: 7500
+      '3':
+        display-name: "&c&lRed Cybercar"
+        changes:
+          - COLOR:RED_CONCRETE
+          - FENDER:RED_CONCRETE
+          - GLASS:TINTED_GLASS
+        price: 7500
+    helicopter:
+      '1':
+        display-name: "&8&lGray Helicopter"
+        changes:
+          - GLASS:BLACK_STAINED_GLASS_PANE
+          - BACK-CHAIR:BLACKSTONE_SLAB
+          - CHAIR:BLACK_CARPET
+          - COLOR:CYAN_TERRACOTTA
+          - BLADES:BLACK_BANNER
+        price: 8000
+      '2':
+        display-name: "&c&lRed Helicopter"
+        changes:
+          - GLASS:RED_STAINED_GLASS_PANE
+          - BACK-CHAIR:BLACKSTONE_SLAB
+          - CHAIR:BLACK_CARPET
+          - COLOR:RED_TERRACOTTA
+          - BLADES:LIGHT_GRAY_BANNER
+        price: 8000
+      '3':
+        display-name: "&8&lBlue Helicopter"
+        changes:
+          - GLASS:LIGHT_BLUE_STAINED_GLASS_PANE
+          - BACK-CHAIR:BLACKSTONE_SLAB
+          - CHAIR:BLACK_CARPET
+          - COLOR:BLUE_TERRACOTTA
+        price: 8000
+    kart:
+      '1':
+        display-name: "&3&lWarped Kart"
+        changes:
+          - CHAIR:CYAN_CARPET
+          - COLOR:WARPED_SLAB
+          - SPOILER:WARPED_FENCE
+          - SECONDARY-COLOR:WARPED_TRAPDOOR
+        price: 5000
+      '2':
+        display-name: "&c&lMangrove Kart"
+        changes:
+          - COLOR:MANGROVE_SLAB
+          - SPOILER:MANGROVE_FENCE
+          - SECONDARY-COLOR:MANGROVE_TRAPDOOR
+        price: 5000
+      '3':
+        display-name: "&e&lBamboo Kart"
+        changes:
+          - CHAIR:YELLOW_CARPET
+          - COLOR:BAMBOO_MOSAIC_SLAB
+          - SPOILER:BAMBOO_FENCE
+          - SECONDARY-COLOR:BAMBOO_TRAPDOOR
+        price: 5000
+    quad:
+      '1':
+        display-name: "&5&lDark Quad"
+        changes:
+          - COLOR:GRAY_CONCRETE
+          - SECONDARY-COLOR:BLACKSTONE_SLAB
+          - TERTIARY-COLOR:CRIMSON_TRAPDOOR
+        price: 6000
+      '2':
+        display-name: "&d&lPink Quad"
+        changes:
+          - COLOR:PINK_CONCRETE
+          - SECONDARY-COLOR:CHERRY_SLAB
+          - TERTIARY-COLOR:CHERRY_TRAPDOOR
+        price: 6000
+      '3':
+        display-name: "&6&lOrange Quad"
+        changes:
+          - COLOR:ORANGE_CONCRETE
+          - SECONDARY-COLOR:ACACIA_SLAB
+          - TERTIARY-COLOR:ACACIA_TRAPDOOR
+        price: 6000
+    tank:
+      '1':
+        display-name: "&c&lRed Tank"
+        changes:
+          - COLOR:RED_TERRACOTTA
+        price: 8000
+      '2':
+        display-name: "&8&lBlue Tank"
+        changes:
+          - COLOR:BLUE_TERRACOTTA
+        price: 8000
+      '3':
+        display-name: "&e&lGreen Tank"
+        changes:
+          - COLOR:GREEN_TERRACOTTA
+        price: 8000
+
+# Here you can specify the valid materials for each vehicle customization (which can be applied in the customizations menu).
+#
+# You can add materials and tags, those already existing in minecraft and those you created above in @{extra-tags}.
+# To specify a tag, simply use the format: ${TAG_NAME} (in uppercase and using "_" instead of "-").
+# For example: $WOOL_CARPETS - the tag that contains all the wool carpets.
+#
+# NOTE: Priority is only used to sort them in the GUI, you can ignore them.
+customizations:
+  bike:
+    chair:
+      priority: 1
+      name: "Chair"
+      items:
+        - $WOOL_CARPETS
+  boat:
+    color:
+      priority: 1
+      name: "Primary color"
+      items:
+        - $LOGS
+    secondary-color:
+      priority: 2
+      name: "Secondary color"
+      items:
+        - $TRAPDOORS
+    lantern:
+      priority: 3
+      name: "Lantern type"
+      items:
+        - $LANTERN
+  cybercar:
+    color:
+      priority: 1
+      name: "Color"
+      items:
+        - $TERRACOTTA
+        - $CONCRETE
+        - $WOOL
+      childs:
+        fender: "Fender"
+    fender:
+      priority: 2
+      name: "Fender color"
+      items:
+        - $TERRACOTTA
+        - $CONCRETE
+        - $WOOL
+    chair:
+      priority: 3
+      name: "Chair color"
+      items:
+        - $WOOL_CARPETS
+    back-chair:
+      priority: 4
+      name: "Back chair color"
+      items:
+        - $SLABS
+    glass:
+      priority: 5
+      name: "Glass"
+      items:
+        - $GLASS
+  helicopter:
+    color:
+      priority: 1
+      name: "Color"
+      items:
+        - $TERRACOTTA
+        - $CONCRETE
+        - $WOOL
+    blades:
+      priority: 2
+      name: "Blades"
+      items:
+        - $BANNERS
+    chair:
+      priority: 3
+      name: "Chair color"
+      items:
+        - $WOOL_CARPETS
+    back-chair:
+      priority: 4
+      name: "Back chair color"
+      items:
+        - $SLABS
+    glass:
+      priority: 5
+      name: "Glass"
+      items:
+        - $GLASS_PANE
+  kart:
+    color:
+      priority: 1
+      name: "Primary color"
+      items:
+        - $SLABS
+    secondary-color:
+      priority: 2
+      name: "Secondary color"
+      items:
+        - $TRAPDOORS
+    chair:
+      priority: 3
+      name: "Chair color"
+      items:
+        - $WOOL_CARPETS
+    spoiler:
+      priority: 4
+      name: "Spoiler"
+      items:
+        - $FENCES
+  quad:
+    color:
+      priority: 1
+      name: "Primary color"
+      items:
+        - $TERRACOTTA
+        - $CONCRETE
+        - $WOOL
+    secondary-color:
+      priority: 2
+      name: "Secondary color"
+      items:
+        - $SLABS
+    tertiary-color:
+      priority: 3
+      name: "Tertiary color"
+      items:
+        - $TRAPDOORS
+  tank:
+    color:
+      priority: 1
+      name: "Color"
+      items:
+        - $TERRACOTTA
+        - $CONCRETE
+        - $WOOL
+
+# Here you can modify the vehicle item obtained by using {/vwasd give} and the characteristics of each vehicle.
+#
+# Each vehicle can have a crafting recipe (If you don't want them to be crafted, simply remove the @{crafting} section).
+# More information on how to create a craft at the beginning of the configuration file.
+#
+# @min-speed: the minimum reverse speed.
+# @max-speed: the maximum forward speed.
+# @acceleration: the acceleration speed; The higher it is, the faster the speed limits will be reached.
+#
+# For the helicopter @{down-speed} replaces @{min-speed}, which will be the descent speed of the helicopter.
+# @{up-speed} is the helicopter's ascent speed.
+# @{max-speed} as before, is the forward speed.0
+# NOTE: Helicopters cannot move backwards.
+#
+# All vehicles can have fuel, although boats have it disabled by default.
+# To remove fuel from a vehicle, simply set @{max-fuel} = 0.0.
+# To add or modify a vehicle's fuel, you must add @fuel.max-fuel (maximum fuel capacity) and @fuel.reduction-per-second (reduction amount per second).
+#
+# All vehicles can have engine sounds, refueling sounds, and starting and stopping sounds.
+# You can specify the sound, volume and pitch (separated by "," or " ").
+# NOTE: 2: The engine sound for the boats will only sound when the boat is moving.
+#
+# NOTE 3: Once the vehicle is generated (whether obtained by the {/vw give} command or from the store) the maximum fuel won't be modified for them
+# until the server is restarted (the same for storage).
+#
+# The storage can have between 1 and 6 rows. If left at 0, the vehicle storage will be disabled.
+# NOTE 4: If you reduce the number of rows, any items left outside will be lost. It is RECOMMENDED that you adjust this before giving players access.
+# For example: If the bikes had a @{storage-rows} of 3 rows and you change it to 2, the items in the deleted third row will be lost (the same if you set it to 0).
+vehicles:
+  bike:
+    item:
+      url: d9c394fd624e447d125ef3fb54d82a6fa4b0c6188e304d33352d13fbdb0c751b
+      material: PLAYER_HEAD
+      display-name: "&a&lBike"
+      lore:
+        - "&7Right click to place it!"
+      crafting:
+        shaped: true
+        ingredients:
+          - STICK, S
+          - REDSTONE, R
+        shape:
+          - "S  "
+          - "SRS"
+          - "S S"
+    min-speed: -75.0
+    max-speed: 120.0
+    acceleration: 0.5
+    storage-rows: 3
+    fuel:
+      max-fuel: 1000.0
+      reduction-per-second: 1.5
+    sounds:
+      engine: ENTITY_ENDER_DRAGON_FLAP, 0.475, 1.5
+      refuel: BLOCK_FURNACE_FIRE_CRACKLE, 0.75, 1.0
+      turn-on: BLOCK_PISTON_EXTEND, 0.5725, 0.75
+      turn-off: BLOCK_PISTON_CONTRACT, 0.5725, 0.75
+  boat:
+    item:
+      url: afea7dddd176199362e99e4724f7bf87886b0d596914bd1097b475a1d97ebbdb
+      material: PLAYER_HEAD
+      display-name: "&1&lBoat"
+      lore:
+        - "&7Right click (on water) to place it!"
+    min-speed: -25.0
+    max-speed: 25.0
+    acceleration: 0.275
+    storage-rows: 1
+    fuel:
+      max-fuel: 0.0
+      reduction-per-second: 0.0
+    sounds:
+      engine: ENTITY_BOAT_PADDLE_WATER, 0.65, 1.5
+      refuel: BLOCK_FURNACE_FIRE_CRACKLE, 0.75, 1.0
+      turn-on: ENTITY_BOAT_PADDLE_LAND, 0.5725, 0.75
+      turn-off: ENTITY_BOAT_PADDLE_LAND, 0.5725, 0.75
+  cybercar:
+    item:
+      url: ddfe5a963869415340d2cec0f82d08df73dcb168428487b514aa8d4ec19fe2c
+      material: PLAYER_HEAD
+      display-name: "&b&lCybercar"
+      lore:
+        - "&7Right click to place it!"
+    min-speed: -65.0
+    max-speed: 100.0
+    acceleration: 0.5
+    storage-rows: 3
+    fuel:
+      max-fuel: 1800.0
+      reduction-per-second: 2.0
+    sounds:
+      engine: ENTITY_ENDER_DRAGON_FLAP, 0.475, 1.5
+      refuel: BLOCK_FURNACE_FIRE_CRACKLE, 0.75, 1.0
+      turn-on: BLOCK_PISTON_EXTEND, 0.5725, 0.75
+      turn-off: BLOCK_PISTON_CONTRACT, 0.5725, 0.75
+  helicopter:
+    item:
+      url: 3e1b468242a3c3aa4544f5389a12bb4f8675f0b14ef7f3a27fe194284802046b
+      material: PLAYER_HEAD
+      display-name: "&9&lHelicopter"
+      lore:
+        - "&7Right click to place it!"
+    down-speed: -45.0
+    up-speed: 45.0
+    max-speed: 80.0
+    acceleration: 0.4
+    storage-rows: 6
+    fuel:
+      max-fuel: 1500.0
+      reduction-per-second: 1.75
+    sounds:
+      engine: ENTITY_WOLF_SHAKE, 0.475, 1.5
+      refuel: BLOCK_FURNACE_FIRE_CRACKLE, 0.75, 1.0
+      turn-on: BLOCK_PISTON_EXTEND, 0.5725, 0.75
+      turn-off: BLOCK_PISTON_CONTRACT, 0.5725, 0.75
+  kart:
+    item:
+      url: 2ce0746b12ee4053958e140ba29593272bd84ca34baf50d0d80b5bc3c615e9c6
+      material: PLAYER_HEAD
+      display-name: "&b&lKart"
+      lore:
+        - "&7Right click to place it!"
+    min-speed: -75.0
+    max-speed: 120.0
+    acceleration: 0.5
+    storage-rows: 2
+    fuel:
+      max-fuel: 1100.0
+      reduction-per-second: 1.5
+    sounds:
+      engine: ENTITY_ENDER_DRAGON_FLAP, 0.475, 1.5
+      refuel: BLOCK_FURNACE_FIRE_CRACKLE, 0.75, 1.0
+      turn-on: BLOCK_PISTON_EXTEND, 0.5725, 0.75
+      turn-off: BLOCK_PISTON_CONTRACT, 0.5725, 0.75
+  quad:
+    item:
+      url: bb7d2e84ae10c971d92cb05b6ab4116f76503a87d3174249cd1f4992ba181db4
+      material: PLAYER_HEAD
+      display-name: "&c&lQuad"
+      lore:
+        - "&7Right click to place it!"
+    min-speed: -50.0
+    max-speed: 90.0
+    acceleration: 0.5
+    storage-rows: 3
+    fuel:
+      max-fuel: 1200.0
+      reduction-per-second: 1.85
+    sounds:
+      engine: ENTITY_ENDER_DRAGON_FLAP, 0.475, 1.5
+      refuel: BLOCK_FURNACE_FIRE_CRACKLE, 0.75, 1.0
+      turn-on: BLOCK_PISTON_EXTEND, 0.5725, 0.75
+      turn-off: BLOCK_PISTON_CONTRACT, 0.5725, 0.75
+  tank:
+    item:
+      url: b9ae2dfb5d44e97e3a95af9071711a3d0fb6899cd3a568df1c00daf4dabe918f
+      material: PLAYER_HEAD
+      display-name: "&4&lTank"
+      lore:
+        - "&7Right click to place it!"
+    min-speed: -25.0
+    max-speed: 45.0
+    acceleration: 0.4
+    storage-rows: 6
+    fuel:
+      max-fuel: 2000.0
+      reduction-per-second: 2.5
+    sounds:
+      engine: ENTITY_ENDER_DRAGON_FLAP, 0.475, 1.5
+      refuel: BLOCK_FURNACE_FIRE_CRACKLE, 0.75, 1.0
+      turn-on: BLOCK_PISTON_EXTEND, 0.5725, 0.75
+      turn-off: BLOCK_PISTON_CONTRACT, 0.5725, 0.75
+
+gui:
+  vehicle:
+    # %owner% - the owner of the vehicle.
+    # %type% - the type of the vehicle.
+    title: "%owner%'s %type%"
+    items:
+      storage:
+        material: CHEST
+        display-name: "&9&lStorage"
+        lore:
+          - "&7Click to open the storage!"
+      no-storage:
+        material: BARRIER
+        display-name: "&c&lNo storage"
+        lore:
+          - "&7This vehicle doesn't have storage."
+      lock:
+        material: TRIPWIRE_HOOK
+        display-name: "&c&lLock"
+        lore:
+          - "&7This vehicle is unlocked, everyone can drive."
+      unlock:
+        material: TRIPWIRE_HOOK
+        display-name: "&a&lUnlock"
+        lore:
+          - "&7This vehicle is locked, only the owner can drive."
+        enchantments:
+          - POWER
+        flags:
+          - HIDE_ENCHANTS
+      customization:
+        material: EMERALD
+        display-name: "&b&lCustomization"
+        lore:
+          - "&7This vehicle has customizations available!"
+      no-customization:
+        material: BARRIER
+        display-name: "&c&lNo customization"
+        lore:
+          - "&7No customizations available."
+      transfer-ownership:
+        material: LEAD
+        display-name: "&5&lTransfer ownership"
+        lore:
+          - "&7Click to change the owner of this vehicle!"
+      fuel-disabled:
+        material: BARRIER
+        display-name: "&c&lFuel disabled"
+        lore:
+          - "&7This feature is disabled."
+      fuel-below:
+        url: 7437346d8bda78d525d19f540a95e4e79daeda795cbc5a13256236312cf
+        material: PLAYER_HEAD
+        display-name: "&6&l⬇ Fuel ⬇"
+        # %fuel% - fuels and the amount they give.
+        lore:
+          - "&7Add any of the following items:"
+          - "&8* &f%fuel%"
+      fuel-above:
+        url: 7437346d8bda78d525d19f540a95e4e79daeda795cbc5a13256236312cf
+        material: PLAYER_HEAD
+        display-name: "&6&l⬆ Fuel ⬆"
+        # %fuel% - fuels and the amount they give.
+        lore:
+          - "&7Add any of the following items:"
+          - "&8* &f%fuel%"
+      helicopter-chair-empty:
+        material: SADDLE
+        # %chair% - the seat number
+        display-name: "&a&lChair %chair% (FREE)"
+        lore:
+          - "&7Click to sit outside."
+      helicopter-chair-occupied:
+        material: SADDLE
+        # %chair% - the seat number
+        display-name: "&e&lChair %chair% (OCCUPIED)"
+        # %player% - the player who is occupying the seat.
+        lore:
+          - "&7This chair is occupied by %player%."
+        enchantments:
+          - POWER
+        flags:
+          - HIDE_ENCHANTS
+      helicopter-chair-sitted:
+        material: SADDLE
+        # %chair% - the seat number
+        display-name: "&c&lChair %chair% (SITTED)"
+        lore:
+          - "&7Click to go back to the main sit."
+        enchantments:
+          - POWER
+        flags:
+          - HIDE_ENCHANTS
+  shop:
+    # %type% - the type of vehicle selected in the shop.
+    # %page% - current page.
+    # %max-page% - amount of pages
+    title: "%type% (%page%/%max-page%)"
+    items:
+      previous-type:
+        url: bd69e06e5dadfd84e5f3d1c21063f2553b2fa945ee1d4d7152fdc5425bc12a9
+        material: PLAYER_HEAD
+        display-name: "&6Previous type"
+        lore:
+          - "&7Go to the previous type."
+      next-type:
+        url: 19bf3292e126a105b54eba713aa1b152d541a1d8938829c56364d178ed22bf
+        material: PLAYER_HEAD
+        display-name: "&6Next type"
+        lore:
+          - "&7Go to the next type."
+      previous-page:
+        url: bd69e06e5dadfd84e5f3d1c21063f2553b2fa945ee1d4d7152fdc5425bc12a9
+        material: PLAYER_HEAD
+        display-name: "&aPrevious"
+        lore:
+          - "&7Go to the previous page."
+      next-page:
+        url: 19bf3292e126a105b54eba713aa1b152d541a1d8938829c56364d178ed22bf
+        material: PLAYER_HEAD
+        display-name: "&aNext"
+        lore:
+          - "&7Go to the next page."
+      close:
+        material: BARRIER
+        display-name: "&cClose"
+        lore:
+          - "&7Click to close this inventory."
+  shop-confirm:
+    # %name% - the name of the vehicle to be purchased.
+    title: "&7Buy %name%&7?"
+    items:
+      confirm:
+        material: LIME_STAINED_GLASS_PANE
+        display-name: "&a&lConfirm"
+        # %money% - the price of the vehicle.
+        lore:
+          - "&a$%money% &7will be taken from your account."
+      cancel:
+        material: RED_STAINED_GLASS_PANE
+        display-name: "&c&lCancel"
+        lore:
+          - "&7Go back to the shop."
+  customizations:
+    # %page% - current page.
+    # %max-page% - amount of pages
+    title: "Customizations (%page%/%max-page%)"
+    items:
+      previous-page:
+        url: bd69e06e5dadfd84e5f3d1c21063f2553b2fa945ee1d4d7152fdc5425bc12a9
+        material: PLAYER_HEAD
+        display-name: "&aPrevious"
+        lore:
+          - "&7Go to the previous page."
+      next-page:
+        url: 19bf3292e126a105b54eba713aa1b152d541a1d8938829c56364d178ed22bf
+        material: PLAYER_HEAD
+        display-name: "&aNext"
+        lore:
+          - "&7Go to the next page."
+      search:
+        material: COMPASS
+        display-name: "&9Search"
+        lore:
+          - "&7Click to search for a customization."
+      clear-search:
+        material: COMPASS
+        # %keyword% - the current word used as a filter.
+        display-name: "&cClear search: &8&o%keyword%"
+        lore:
+          - "&7Click to clear the browser!"
+      close:
+        material: BARRIER
+        display-name: "&cClose"
+        lore:
+          - "&7Click to close this inventory."
+      customization:
+        display-name: "&a%customization%"
+        # %material% - valid materials for customization.
+        lore:
+          - "&7This is a vehicle modification."
+          - "&7"
+          - "&7Click here with one of the following items:"
+          - "&8* &a%material%"
+          - "&7"
+          - "&6Right click to glow the parts to be modified!"

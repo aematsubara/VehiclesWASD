@@ -1,0 +1,790 @@
+parts:
+  BODY_CHASIS_1:
+    offset:
+      x: 0.221
+      y: -0.83
+      z: 1.19
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: -15.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  BODY_CHASIS_2:
+    offset:
+      x: 0.0
+      y: -1.3555
+      z: 1.365
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  BODY_CHASIS_3:
+    offset:
+      x: -0.2209
+      y: -0.83
+      z: 1.19
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: 15.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  BODY_CHASIS_4:
+    offset:
+      x: 0.0
+      y: -1.3555
+      z: 0.115
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  BODY_CHASIS_5:
+    offset:
+      x: 0.0
+      y: -1.1525
+      z: 0.251
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 45.0
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  BODY_CHASIS_6:
+    offset:
+      x: 0.0
+      y: -1.0964
+      z: 0.7404
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  BODY_CHASIS_7:
+    offset:
+      x: 0.0
+      y: -1.0964
+      z: 0.8704
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: 45.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  BODY_CHASIS_8:
+    offset:
+      x: 0.0
+      y: -1.3555
+      z: -0.51
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:COLOR:HEAD
+  BACK_LIGHTS_1:
+    offset:
+      x: 0.51
+      y: 0.24
+      z: -1.18
+      yaw: 195.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      right-arm:
+        x: 75.0
+        y: 0.0
+        z: 45.0
+    equipment:
+      main-hand:
+        material: DAYLIGHT_DETECTOR
+  BACK_LIGHTS_2:
+    offset:
+      x: 0.25
+      y: 0.24
+      z: -1.25
+      yaw: 195.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      right-arm:
+        x: 75.0
+        y: 0.0
+        z: 45.0
+    equipment:
+      main-hand:
+        material: DAYLIGHT_DETECTOR
+  BACK_LIGHTS_3:
+    offset:
+      x: -1.13
+      y: 0.24
+      z: -1.02
+      yaw: 165.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      right-arm:
+        x: 75.0
+        y: 0.0
+        z: 45.0
+    equipment:
+      main-hand:
+        material: DAYLIGHT_DETECTOR
+  BACK_LIGHTS_4:
+    offset:
+      x: -0.86
+      y: 0.24
+      z: -1.09
+      yaw: 165.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      right-arm:
+        x: 75.0
+        y: 0.0
+        z: 45.0
+    equipment:
+      main-hand:
+        material: DAYLIGHT_DETECTOR
+  FRONT_LIGHTS_1:
+    offset:
+      x: -0.24
+      y: 0.24
+      z: 2.01
+      yaw: 15.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      right-arm:
+        x: 75.0
+        y: 0.0
+        z: 45.0
+    equipment:
+      main-hand:
+        material: DAYLIGHT_DETECTOR
+  FRONT_LIGHTS_2:
+    offset:
+      x: -0.5
+      y: 0.24
+      z: 1.94
+      yaw: 15.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      right-arm:
+        x: 75.0
+        y: 0.0
+        z: 45.0
+    equipment:
+      main-hand:
+        material: DAYLIGHT_DETECTOR
+  FRONT_LIGHTS_3:
+    offset:
+      x: 0.85
+      y: 0.24
+      z: 1.85
+      yaw: -15.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      right-arm:
+        x: 75.0
+        y: 0.0
+        z: 45.0
+    equipment:
+      main-hand:
+        material: DAYLIGHT_DETECTOR
+  FRONT_LIGHTS_4:
+    offset:
+      x: 1.12
+      y: 0.24
+      z: 1.78
+      yaw: -15.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      right-arm:
+        x: 75.0
+        y: 0.0
+        z: 45.0
+    equipment:
+      main-hand:
+        material: DAYLIGHT_DETECTOR
+  FRONT_CHASIS_1:
+    offset:
+      x: 0.0
+      y: -0.9
+      z: 1.776
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 90.0
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: IRON_TRAPDOOR
+    tags:
+    - CUSTOMIZABLE:TERTIARY_COLOR:HEAD
+  FRONT_CHASIS_2:
+    offset:
+      x: 0.514
+      y: -0.2813
+      z: 1.7372
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 90.0
+        y: -15.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: IRON_TRAPDOOR
+    tags:
+    - CUSTOMIZABLE:TERTIARY_COLOR:HEAD
+  FRONT_CHASIS_3:
+    offset:
+      x: -0.514
+      y: -0.2813
+      z: 1.7372
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 90.0
+        y: 15.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: IRON_TRAPDOOR
+    tags:
+    - CUSTOMIZABLE:TERTIARY_COLOR:HEAD
+  FRONT_WHEELS_1:
+    offset:
+      x: 0.65
+      y: -1.43
+      z: 1.29
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: PLAYER_HEAD
+        url: ddfe5a963869415340d2cec0f82d08df73dcb168428487b514aa8d4ec19fe2c
+  FRONT_WHEELS_2:
+    offset:
+      x: -0.65
+      y: -1.43
+      z: 1.29
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: PLAYER_HEAD
+        url: ddfe5a963869415340d2cec0f82d08df73dcb168428487b514aa8d4ec19fe2c
+  asd:
+    offset:
+      x: 0.0
+      y: -0.72
+      z: 1.4
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    equipment:
+      helmet:
+        material: SMOOTH_STONE_SLAB
+    tags:
+    - CUSTOMIZABLE:SECONDARY_COLOR:HEAD
+  asd_2:
+    offset:
+      x: 0.533
+      y: -0.72
+      z: 1.3299
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: -15.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: SMOOTH_STONE_SLAB
+    tags:
+    - CUSTOMIZABLE:SECONDARY_COLOR:HEAD
+  asd_2_2:
+    offset:
+      x: -0.533
+      y: -0.72
+      z: 1.3299
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: 15.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: SMOOTH_STONE_SLAB
+    tags:
+    - CUSTOMIZABLE:SECONDARY_COLOR:HEAD
+  awqeqwe:
+    offset:
+      x: 0.0
+      y: 0.347
+      z: 1.147
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: PLAYER_HEAD
+        url: 647afb70af5f7471a31cc7c145a00876ab9334f6a753d9b4ba4731bc6c1fe6b
+  rttt:
+    offset:
+      x: 0.1
+      y: -0.32
+      z: 1.19
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 30.0
+        y: 105.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: END_ROD
+  rttt_2:
+    offset:
+      x: -0.1
+      y: -0.32
+      z: 1.19
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 30.0
+        y: 255.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: END_ROD
+  bbbb:
+    offset:
+      x: 0.44
+      y: -1.103
+      z: 0.772
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 112.5
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: IRON_TRAPDOOR
+    tags:
+    - CUSTOMIZABLE:TERTIARY_COLOR:HEAD
+  bbbb_2:
+    offset:
+      x: 0.44
+      y: -1.35
+      z: 0.39
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    equipment:
+      helmet:
+        material: IRON_TRAPDOOR
+    tags:
+    - CUSTOMIZABLE:TERTIARY_COLOR:HEAD
+  bbbb_2_2:
+    offset:
+      x: 0.44
+      y: -1.1
+      z: 0.015
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 67.5
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: IRON_TRAPDOOR
+    tags:
+    - CUSTOMIZABLE:TERTIARY_COLOR:HEAD
+  t_2_2:
+    offset:
+      x: 0.65
+      y: -1.43
+      z: -0.51
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: PLAYER_HEAD
+        url: ddfe5a963869415340d2cec0f82d08df73dcb168428487b514aa8d4ec19fe2c
+  t_2_2_2:
+    offset:
+      x: -0.65
+      y: -1.43
+      z: -0.51
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: PLAYER_HEAD
+        url: ddfe5a963869415340d2cec0f82d08df73dcb168428487b514aa8d4ec19fe2c
+  bbbb_2_2_2:
+    offset:
+      x: -0.46
+      y: -1.1
+      z: 0.015
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 67.5
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: IRON_TRAPDOOR
+    tags:
+    - CUSTOMIZABLE:TERTIARY_COLOR:HEAD
+  bbbb_2_2_2_2:
+    offset:
+      x: -0.46
+      y: -1.35
+      z: 0.39
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    equipment:
+      helmet:
+        material: IRON_TRAPDOOR
+    tags:
+    - CUSTOMIZABLE:TERTIARY_COLOR:HEAD
+  bbbb_2_2_2_2_2:
+    offset:
+      x: -0.46
+      y: -1.103
+      z: 0.772
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 112.5
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: IRON_TRAPDOOR
+    tags:
+    - CUSTOMIZABLE:TERTIARY_COLOR:HEAD
+  tt_2_2_2:
+    offset:
+      x: 0.0
+      y: -0.275
+      z: -0.9997
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 90.0
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: IRON_TRAPDOOR
+    tags:
+    - CUSTOMIZABLE:TERTIARY_COLOR:HEAD
+  bnyr_2_2_2:
+    offset:
+      x: -0.2077
+      y: -0.3455
+      z: -0.0453
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: PLAYER_HEAD
+        url: eb1b72531859dc89368f7ea5b09f93f0d5038653719978cabec7d88922625bdc
+  CHAIR_1:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+  asd_2_2_2:
+    offset:
+      x: 0.0
+      y: -0.72
+      z: -0.6404
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    equipment:
+      helmet:
+        material: SMOOTH_STONE_SLAB
+    tags:
+    - CUSTOMIZABLE:SECONDARY_COLOR:HEAD
+  asd_2_2_2_2:
+    offset:
+      x: 0.533
+      y: -0.72
+      z: -0.5701
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: 15.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: SMOOTH_STONE_SLAB
+    tags:
+    - CUSTOMIZABLE:SECONDARY_COLOR:HEAD
+  asd_2_2_2_2_2:
+    offset:
+      x: -0.533
+      y: -0.72
+      z: -0.5701
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: -15.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: SMOOTH_STONE_SLAB
+    tags:
+    - CUSTOMIZABLE:SECONDARY_COLOR:HEAD
+  FRONT_CHASIS_1_2:
+    offset:
+      x: 0.0
+      y: -0.9
+      z: -0.9997
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 90.0
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: IRON_TRAPDOOR
+    tags:
+    - CUSTOMIZABLE:TERTIARY_COLOR:HEAD
+  FRONT_CHASIS_2_2:
+    offset:
+      x: 0.514
+      y: -0.2813
+      z: -0.9628
+      yaw: 180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 90.0
+        y: -165.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: IRON_TRAPDOOR
+    tags:
+    - CUSTOMIZABLE:TERTIARY_COLOR:HEAD
+  FRONT_CHASIS_3_2:
+    offset:
+      x: -0.514
+      y: -0.2813
+      z: -0.9628
+      yaw: 180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 90.0
+        y: -195.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: IRON_TRAPDOOR
+    tags:
+    - CUSTOMIZABLE:TERTIARY_COLOR:HEAD
+  bnyr_2_2_2_2_2_2_2_2_2:
+    offset:
+      x: 0.2078
+      y: -0.3455
+      z: -0.0453
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: PLAYER_HEAD
+        url: eb1b72531859dc89368f7ea5b09f93f0d5038653719978cabec7d88922625bdc
+  CENTER:
+    offset:
+      x: 0.0
+      y: 0.0
+      z: 0.4
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true

@@ -1,0 +1,310 @@
+parts:
+  CARPET_1:
+    offset:
+      x: 0.0
+      y: -0.096
+      z: -0.0467
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: -10.0
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: RED_CARPET
+    tags:
+    - CUSTOMIZABLE:CHAIR:HEAD
+  CARPET_2:
+    offset:
+      x: 0.0
+      y: -0.164
+      z: -0.0347
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: -10.0
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: RED_CARPET
+    tags:
+    - CUSTOMIZABLE:CHAIR:HEAD
+  CARPET_3:
+    offset:
+      x: 0.0
+      y: -0.134
+      z: -0.04
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: -10.0
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: RED_CARPET
+    tags:
+    - CUSTOMIZABLE:CHAIR:HEAD
+  PART_1:
+    offset:
+      x: 0.0149
+      y: -0.76
+      z: 1.151
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      baseplate: false
+      arms: true
+    pose:
+      head:
+        x: 180.0
+        y: 90.0
+        z: 0.0
+      body:
+        x: 154.0
+        y: 0.0
+        z: 0.0
+      left-arm:
+        x: 155.0
+        y: 0.0
+        z: 0.0
+      right-arm:
+        x: 155.0
+        y: 0.0
+        z: 0.0
+      left-leg:
+        x: 180.0
+        y: 0.0
+        z: 0.0
+      right-leg:
+        x: 180.0
+        y: 0.0
+        z: 0.0
+  PART_2:
+    offset:
+      x: 0.0149
+      y: -0.21
+      z: 0.501
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      baseplate: false
+      arms: true
+    pose:
+      head:
+        x: 90.0
+        y: 0.0
+        z: 0.0
+      body:
+        x: 80.0
+        y: 0.0
+        z: 0.0
+      left-arm:
+        x: 45.0
+        y: 30.0
+        z: 45.0
+      right-arm:
+        x: 45.0
+        y: 50.0
+        z: 30.0
+      left-leg:
+        x: 495.0
+        y: 0.0
+        z: 0.0
+      right-leg:
+        x: 495.0
+        y: 0.0
+        z: 0.0
+  PART_3:
+    offset:
+      x: 0.0
+      y: -0.3
+      z: -0.3823
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      baseplate: false
+      arms: true
+    pose:
+      head:
+        x: 91.0
+        y: 0.1
+        z: 0.0
+      body:
+        x: 110.0
+        y: 0.0
+        z: 0.0
+      left-arm:
+        x: 300.0
+        y: 0.0
+        z: 20.0
+      right-arm:
+        x: 300.0
+        y: 0.0
+        z: 340.0
+      left-leg:
+        x: 225.0
+        y: 0.0
+        z: 0.0
+      right-leg:
+        x: 225.0
+        y: 0.0
+        z: 0.0
+  PART_4:
+    offset:
+      x: 0.0149
+      y: -0.76
+      z: -0.949
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      baseplate: false
+      arms: true
+    pose:
+      head:
+        x: 180.0
+        y: 90.0
+        z: 0.0
+      body:
+        x: 210.0
+        y: 0.0
+        z: 0.0
+      left-arm:
+        x: -150.0
+        y: 0.0
+        z: 0.0
+      right-arm:
+        x: -150.0
+        y: 0.0
+        z: 0.0
+      left-leg:
+        x: 180.0
+        y: 0.0
+        z: 0.0
+      right-leg:
+        x: 180.0
+        y: 0.0
+        z: 0.0
+  PART_5:
+    offset:
+      x: 0.0149
+      y: 0.29
+      z: 0.751
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      baseplate: false
+      arms: true
+    pose:
+      head:
+        x: 180.0
+        y: 0.0
+        z: 0.0
+      body:
+        x: 20.0
+        y: 0.0
+        z: 0.0
+      left-arm:
+        x: 90.0
+        y: 45.0
+        z: 0.0
+      right-arm:
+        x: 90.0
+        y: -45.0
+        z: 0.0
+      left-leg:
+        x: 190.0
+        y: 0.0
+        z: 0.0
+      right-leg:
+        x: 190.0
+        y: 0.0
+        z: 0.0
+  PART_6:
+    offset:
+      x: 0.0
+      y: -0.18
+      z: 0.05
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 180.0
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRINDSTONE
+  FRONT_LIGHTS_1:
+    offset:
+      x: 0.0
+      y: 0.54
+      z: 0.9
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    equipment:
+      helmet:
+        material: PLAYER_HEAD
+        url: 933799ab30ca9b167c0ee5456c7b12b1247714ff29fb16a491e7d3a636a9aaa3
+  PART_9:
+    offset:
+      x: 0.0
+      y: -1.43
+      z: 1.15
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: -90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: PLAYER_HEAD
+        url: ddfe5a963869415340d2cec0f82d08df73dcb168428487b514aa8d4ec19fe2c
+  PART_10:
+    offset:
+      x: 0.0
+      y: -1.43
+      z: -0.95
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: -90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: PLAYER_HEAD
+        url: ddfe5a963869415340d2cec0f82d08df73dcb168428487b514aa8d4ec19fe2c
+  CHAIR_1:
+    offset:
+      x: 0.0
+      y: 0.37
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true

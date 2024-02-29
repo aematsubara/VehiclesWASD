@@ -1,0 +1,21 @@
+name: VehiclesWASD
+version: '${project.version}'
+main: me.matsubara.vehicles.VehiclesPlugin
+api-version: 1.17
+author: Matsubara
+description: '${project.description}'
+load: STARTUP
+depend:
+  - ProtocolLib
+softdepend:
+  - WorldGuard
+  - Vault
+  - Essentials
+
+commands:
+  vehicleswasd:
+    description: main command.
+    usage: /<command>
+    aliases:
+      - vwasd
+      - vw

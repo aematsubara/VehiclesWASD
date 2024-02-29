@@ -1,0 +1,812 @@
+parts:
+  CHAIR_1:
+    offset:
+      x: 0.0
+      y: -0.734
+      z: 0.32
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+  CHAIR_2:
+    offset:
+      x: 0.0
+      y: -0.734
+      z: -0.32
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+  TOP_PART_1:
+    offset:
+      x: -0.3
+      y: -0.326
+      z: 0.66
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: -90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: BIG_DRIPLEAF
+  TOP_PART_2:
+    offset:
+      x: -0.19
+      y: -0.706
+      z: 0.15
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 90.0
+        y: -45.0
+        z: -90.0
+    equipment:
+      helmet:
+        material: STICK
+  TOP_PART_3:
+    offset:
+      x: -0.19
+      y: -0.706
+      z: -0.475
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 90.0
+        y: -45.0
+        z: -90.0
+    equipment:
+      helmet:
+        material: STICK
+  TOP_PART_4:
+    offset:
+      x: -0.3
+      y: -0.326
+      z: 0.035
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: -90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: BIG_DRIPLEAF
+  TOP_PART_5:
+    offset:
+      x: 0.325
+      y: -0.326
+      z: 0.66
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: BIG_DRIPLEAF
+  TOP_PART_6:
+    offset:
+      x: 0.325
+      y: -0.326
+      z: 0.035
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: BIG_DRIPLEAF
+  TOP_PART_7:
+    offset:
+      x: 0.75
+      y: -0.706
+      z: 0.15
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 90.0
+        y: -45.0
+        z: -90.0
+    equipment:
+      helmet:
+        material: STICK
+  TOP_PART_8:
+    offset:
+      x: 0.75
+      y: -0.706
+      z: -0.475
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 90.0
+        y: -45.0
+        z: -90.0
+    equipment:
+      helmet:
+        material: STICK
+  TOP_PART_9:
+    offset:
+      x: 0.28
+      y: 0.104
+      z: 0.345
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 0.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: LANTERN
+    tags:
+    - CUSTOMIZABLE:LANTERN:HEAD
+  TOP_PART_10:
+    offset:
+      x: 0.2
+      y: -0.367
+      z: -0.191
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: -90.0
+        y: 135.0
+        z: -90.0
+    equipment:
+      helmet:
+        material: STICK
+  TOP_PART_11:
+    offset:
+      x: -0.737
+      y: -0.367
+      z: -0.191
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: -90.0
+        y: 135.0
+        z: -90.0
+    equipment:
+      helmet:
+        material: STICK
+  SHOVEL:
+    offset:
+      x: -0.4
+      y: -0.174
+      z: 0.9
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: -90.0
+        y: -10.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: WOODEN_SHOVEL
+  vadd:
+    offset:
+      x: 0.11
+      y: -1.564
+      z: 0.741
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      arms: true
+    pose:
+      right-arm:
+        x: 75.0
+        y: 0.0
+        z: 135.0
+    equipment:
+      main-hand:
+        material: OAK_LOG
+    tags:
+    - CUSTOMIZABLE:COLOR:MAINHAND
+  vadd_2:
+    offset:
+      x: 0.11
+      y: -1.564
+      z: 1.116
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      arms: true
+    pose:
+      right-arm:
+        x: 75.0
+        y: 0.0
+        z: 135.0
+    equipment:
+      main-hand:
+        material: OAK_LOG
+    tags:
+    - CUSTOMIZABLE:COLOR:MAINHAND
+  vadd_2_2_2_2_2_2:
+    offset:
+      x: 1.05
+      y: -1.564
+      z: 1.116
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      arms: true
+    pose:
+      right-arm:
+        x: 75.0
+        y: 0.0
+        z: 135.0
+    equipment:
+      main-hand:
+        material: OAK_LOG
+    tags:
+    - CUSTOMIZABLE:COLOR:MAINHAND
+  vadd_2_2_2_2_2_2_2:
+    offset:
+      x: 1.05
+      y: -1.564
+      z: 0.741
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      arms: true
+    pose:
+      right-arm:
+        x: 75.0
+        y: 0.0
+        z: 135.0
+    equipment:
+      main-hand:
+        material: OAK_LOG
+    tags:
+    - CUSTOMIZABLE:COLOR:MAINHAND
+  zxc:
+    offset:
+      x: 0.005
+      y: -1.2708
+      z: 0.335
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    equipment:
+      helmet:
+        material: SPRUCE_TRAPDOOR
+    tags:
+    - CUSTOMIZABLE:SECONDARY_COLOR:HEAD
+  TOP_PART_2_2:
+    offset:
+      x: -0.19
+      y: -1.314
+      z: 0.15
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 90.0
+        y: -45.0
+        z: -90.0
+    equipment:
+      helmet:
+        material: STICK
+  TOP_PART_3_2:
+    offset:
+      x: -0.19
+      y: -1.314
+      z: -0.475
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 90.0
+        y: -45.0
+        z: -90.0
+    equipment:
+      helmet:
+        material: STICK
+  TOP_PART_8_2:
+    offset:
+      x: 0.75
+      y: -1.314
+      z: -0.475
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 90.0
+        y: -45.0
+        z: -90.0
+    equipment:
+      helmet:
+        material: STICK
+  TOP_PART_7_2:
+    offset:
+      x: 0.75
+      y: -1.314
+      z: 0.15
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 90.0
+        y: -45.0
+        z: -90.0
+    equipment:
+      helmet:
+        material: STICK
+  TOP_PART_1_2:
+    offset:
+      x: -0.3
+      y: -0.326
+      z: -0.59
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: -90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: BIG_DRIPLEAF
+  TOP_PART_2_2_2:
+    offset:
+      x: -0.19
+      y: -0.706
+      z: -1.1
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 90.0
+        y: -45.0
+        z: -90.0
+    equipment:
+      helmet:
+        material: STICK
+  TOP_PART_5_2:
+    offset:
+      x: 0.325
+      y: -0.326
+      z: -0.59
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: BIG_DRIPLEAF
+  TOP_PART_7_2_2:
+    offset:
+      x: 0.75
+      y: -0.706
+      z: -1.1
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 90.0
+        y: -45.0
+        z: -90.0
+    equipment:
+      helmet:
+        material: STICK
+  vadd_2_2_2:
+    offset:
+      x: 0.11
+      y: -1.564
+      z: -0.009
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      arms: true
+    pose:
+      right-arm:
+        x: 75.0
+        y: 0.0
+        z: 135.0
+    equipment:
+      main-hand:
+        material: OAK_LOG
+    tags:
+    - CUSTOMIZABLE:COLOR:MAINHAND
+  vadd_2_2_2_2_2_2_2_2:
+    offset:
+      x: 1.05
+      y: -1.564
+      z: -0.009
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      arms: true
+    pose:
+      right-arm:
+        x: 75.0
+        y: 0.0
+        z: 135.0
+    equipment:
+      main-hand:
+        material: OAK_LOG
+    tags:
+    - CUSTOMIZABLE:COLOR:MAINHAND
+  TOP_PART_2_2_2_2:
+    offset:
+      x: -0.19
+      y: -1.314
+      z: -1.1
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 90.0
+        y: -45.0
+        z: -90.0
+    equipment:
+      helmet:
+        material: STICK
+  TOP_PART_7_2_2_2:
+    offset:
+      x: 0.75
+      y: -1.314
+      z: -1.1
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 90.0
+        y: -45.0
+        z: -90.0
+    equipment:
+      helmet:
+        material: STICK
+  vadd_2_2_2_2:
+    offset:
+      x: 0.11
+      y: -1.564
+      z: 0.366
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      arms: true
+    pose:
+      right-arm:
+        x: 75.0
+        y: 0.0
+        z: 135.0
+    equipment:
+      main-hand:
+        material: OAK_LOG
+    tags:
+    - CUSTOMIZABLE:COLOR:MAINHAND
+  vadd_2_2_2_2_2_2_2_2_2_2:
+    offset:
+      x: 1.05
+      y: -1.564
+      z: 0.366
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      arms: true
+    pose:
+      right-arm:
+        x: 75.0
+        y: 0.0
+        z: 135.0
+    equipment:
+      main-hand:
+        material: OAK_LOG
+    tags:
+    - CUSTOMIZABLE:COLOR:MAINHAND
+  TOP_PART_11_2:
+    offset:
+      x: -0.737
+      y: -0.367
+      z: -0.811
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: -90.0
+        y: 135.0
+        z: -90.0
+    equipment:
+      helmet:
+        material: STICK
+  TOP_PART_10_2:
+    offset:
+      x: 0.2
+      y: -0.367
+      z: -0.811
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: -90.0
+        y: 135.0
+        z: -90.0
+    equipment:
+      helmet:
+        material: STICK
+  zxc_2:
+    offset:
+      x: 0.005
+      y: -1.2708
+      z: -0.29
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    equipment:
+      helmet:
+        material: SPRUCE_TRAPDOOR
+    tags:
+    - CUSTOMIZABLE:SECONDARY_COLOR:HEAD
+  TOP_PART_9_2:
+    offset:
+      x: 0.28
+      y: 0.104
+      z: -0.285
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 0.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: LANTERN
+    tags:
+    - CUSTOMIZABLE:LANTERN:HEAD
+  TOP_PART_9_2_2:
+    offset:
+      x: -0.65
+      y: 0.104
+      z: -0.285
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 0.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: LANTERN
+    tags:
+    - CUSTOMIZABLE:LANTERN:HEAD
+  TOP_PART_9_2_2_2:
+    offset:
+      x: -0.65
+      y: 0.104
+      z: 0.345
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 0.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: LANTERN
+    tags:
+    - CUSTOMIZABLE:LANTERN:HEAD
+  asdasdasd:
+    offset:
+      x: 0.0
+      y: 0.05
+      z: 0.425
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 45.0
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: BIG_DRIPLEAF
+  asdasdasd_2:
+    offset:
+      x: 0.0
+      y: 0.05
+      z: -0.355
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 45.0
+        y: 180.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: BIG_DRIPLEAF
+  asdasdasd_2_2:
+    offset:
+      x: 0.0
+      y: 0.1
+      z: -0.275
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: 180.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: BIG_DRIPLEAF
+  asdasdasd_2_2_2:
+    offset:
+      x: 0.0
+      y: 0.1
+      z: 0.35
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    equipment:
+      helmet:
+        material: BIG_DRIPLEAF
+  asdasdasd_2_2_2_2:
+    offset:
+      x: 0.0
+      y: 0.05
+      z: -0.355
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 45.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: BIG_DRIPLEAF
+  asdasdasd_2_2_2_2_2:
+    offset:
+      x: 0.0
+      y: 0.05
+      z: -0.355
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 45.0
+        y: 270.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: BIG_DRIPLEAF
+  asdasdasd_2_2_2_2_2_2:
+    offset:
+      x: 0.0
+      y: 0.05
+      z: 0.425
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 45.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: BIG_DRIPLEAF
+  asdasdasd_2_2_2_2_2_2_2:
+    offset:
+      x: 0.0
+      y: 0.05
+      z: 0.425
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 45.0
+        y: -90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: BIG_DRIPLEAF
