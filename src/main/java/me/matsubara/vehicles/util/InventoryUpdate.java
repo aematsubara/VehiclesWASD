@@ -133,7 +133,7 @@ public final class InventoryUpdate {
             Object craftPlayer = CRAFT_PLAYER.cast(player);
             Object entityPlayer = getHandle.invoke(craftPlayer);
 
-            // Create new title.
+            // Create title.
             Object title;
             if (ReflectionUtils.supports(19)) {
                 title = literal.invoke(newTitle);
@@ -154,7 +154,7 @@ public final class InventoryUpdate {
             // Avoiding pattern variable, since some people may be using an older version of java.
             InventoryType type = view.getTopInventory().getType();
 
-            // Workbenchs and anvils can change their title since 1.14.
+            // Workbenchs and anvils can change their title from 1.14.
             if ((type == InventoryType.WORKBENCH || type == InventoryType.ANVIL) && !useContainers()) return;
 
             // You can't reopen crafting, creative and player inventory.
@@ -259,7 +259,7 @@ public final class InventoryUpdate {
     }
 
     /**
-     * Containers were added in 1.14, a String were used in previous versions.
+     * Containers were added in 1.14, a String was used in previous versions.
      *
      * @return whether to use containers.
      */
@@ -268,7 +268,7 @@ public final class InventoryUpdate {
     }
 
     /**
-     * An enum class for the necessaries containers.
+     * An enum class for the necessary containers.
      */
     private enum Containers {
         GENERIC_9X1(14, "minecraft:chest", "CHEST"),
@@ -285,7 +285,6 @@ public final class InventoryUpdate {
         FURNACE(14, "minecraft:furnace", "FURNACE"),
         HOPPER(14, "minecraft:hopper", "HOPPER"),
         MERCHANT(14, "minecraft:villager", "MERCHANT"),
-        // For an unknown reason, when updating a shulker box, the size of the inventory get a little bigger.
         SHULKER_BOX(14, "minecraft:blue_shulker_box", "SHULKER_BOX"),
 
         // Added in 1.14, so only works with containers.

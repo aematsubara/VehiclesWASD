@@ -86,7 +86,7 @@ public final class Model {
         Location finalLocation = copyLocation != null ? copyLocation : location;
         if (yaw != null) finalLocation.setYaw(finalLocation.getYaw() + yaw);
 
-        // Save name of the current part.
+        // Save the name of the current part.
         settings.setPartName(name);
 
         // Spawn model but don't show it to anyone, we want to apply customizations first.
@@ -113,7 +113,7 @@ public final class Model {
 
             Vector offset = new Vector(xOffset, yOffset, zOffset);
 
-            // Pitch not needed.
+            // Pitch isn't needed.
             float yaw = (float) configuration.getDouble(defaultPath + "offset.yaw");
 
             Location location = this.location.clone().add(PluginUtils.offsetVector(offset, this.location.getYaw(), this.location.getPitch()));

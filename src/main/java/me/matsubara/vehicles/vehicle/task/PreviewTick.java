@@ -65,7 +65,7 @@ public class PreviewTick extends BukkitRunnable {
         VehicleManager manager = plugin.getVehicleManager();
         manager.initCustomizations(model, customizations, type);
 
-        Map<String, Material> changes = data.customizationsChanges();
+        Map<String, Material> changes = data.customizationChanges();
         if (changes != null) {
             for (Map.Entry<String, Material> entry : changes.entrySet()) {
                 manager.applyCustomization(model, customizations, entry.getKey(), entry.getValue());

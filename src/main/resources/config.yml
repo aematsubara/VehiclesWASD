@@ -123,14 +123,17 @@ extra-tags:
 # To specify a tag, simply use the format: ${TAG_NAME} (in uppercase and using "_" instead of "-").
 # For example: $WOOL_CARPETS - the tag that contains all the wool carpets.
 #
+# NOTE: $CARPETS and $WOOL_CARPETS are the same tag but the first was renamed to the second since 1.19.
+#
 # You can specify the amount of fuel a material gives per unit.
 # For example:
 # * COAL(3) - will give 3 fuel for each coal; if you put 10 coals, it will add = (10 * 3 = 30) fuel.
 # * $LOGS - will give 1 fuel for each log; If you put 10 logs, it will add = (10 * 1 = 10) fuel.
 #
-# You can also specify if a material is only a valid fuel for a certain vehicle, indicating it with a "?" at the beginning next to the type of vehicle, ending with ":".
+# You can also specify if a material is only valid fuel for a certain vehicle,
+# indicating it with a "?" at the beginning next to the type of vehicle, ending with ":".
 # For example:
-# * ?TANK:NETHERITE_INGOT(30) - Each netherite ingot will add 30 fuel ONLY to the tanks.
+# * ?TANK:NETHERITE_INGOT(30) - Each netherite ingot will add 30 of fuel ONLY to the tanks.
 #
 # Types of vehicles: BIKE, BOAT, CYBERCAR, HELICOPTER, KART, QUAD, TANK.
 fuel-items:
@@ -161,6 +164,7 @@ translations:
     lava-bucket: "Lava Bucket"
     netherite-ingot: "Netherite Ingot"
   tag:
+    carpets: "Wool Carpet*"
     wool-carpets: "Wool Carpet*"
     terracotta: "Terracotta*"
     fences: "Fence*"
@@ -176,7 +180,7 @@ translations:
 shop:
   # If you must confirm the purchase instead of buying instantly with a single click.
   confirm-shop: true
-  # You can start a preview of the vehicle by right clicking on one.
+  # You can start a preview of the vehicle by right-clicking on one.
   preview:
     enabled: true
     # The seconds that the preview will last.
@@ -198,7 +202,7 @@ shop:
     - "&6Left click to buy!"
     - "&6Right click to preview!"
   vehicles:
-    # Here you can add the amount of vehicles you want in the shop.
+    # Here you can add the number of vehicles you want in the shop.
     #
     # Store vehicles (unlike those given with the {/vwasd give} command) can have customizations already applied.
     # You simply must specify the name of the customization (you can find the names of the customizations for each vehicle below in @{customizations})
@@ -350,19 +354,22 @@ shop:
           - COLOR:GREEN_TERRACOTTA
         price: 8000
 
-# Here you can specify the valid materials for each vehicle customization (which can be applied in the customizations menu).
+# Here you can specify the valid materials for each vehicle customization
+# (which can be applied in the customization menu).
 #
 # You can add materials and tags, those already existing in minecraft and those you created above in @{extra-tags}.
 # To specify a tag, simply use the format: ${TAG_NAME} (in uppercase and using "_" instead of "-").
 # For example: $WOOL_CARPETS - the tag that contains all the wool carpets.
 #
-# NOTE: Priority is only used to sort them in the GUI, you can ignore them.
+# NOTE: $CARPETS and $WOOL_CARPETS are the same tag but the first was renamed to the second since 1.19.
+# NOTE 2: Priority is only used to sort them in the GUI, you can ignore them.
 customizations:
   bike:
     chair:
       priority: 1
       name: "Chair"
       items:
+        - $CARPETS
         - $WOOL_CARPETS
   boat:
     color:
@@ -401,6 +408,7 @@ customizations:
       priority: 3
       name: "Chair color"
       items:
+        - $CARPETS
         - $WOOL_CARPETS
     back-chair:
       priority: 4
@@ -429,6 +437,7 @@ customizations:
       priority: 3
       name: "Chair color"
       items:
+        - $CARPETS
         - $WOOL_CARPETS
     back-chair:
       priority: 4
@@ -455,6 +464,7 @@ customizations:
       priority: 3
       name: "Chair color"
       items:
+        - $CARPETS
         - $WOOL_CARPETS
     spoiler:
       priority: 4
@@ -508,14 +518,14 @@ customizations:
 #
 # All vehicles can have engine sounds, refueling sounds, and starting and stopping sounds.
 # You can specify the sound, volume and pitch (separated by "," or " ").
-# NOTE: 2: The engine sound for the boats will only sound when the boat is moving.
+# NOTE: 2: The engine sounds for the boats will only sound when the boat is moving.
 #
-# NOTE 3: Once the vehicle is generated (whether obtained by the {/vw give} command or from the store) the maximum fuel won't be modified for them
+# NOTE 3: Once the vehicle is generated (whether obtained by the {/vw give} command or from the store), the maximum fuel won't be modified for them
 # until the server is restarted (the same for storage).
 #
 # The storage can have between 1 and 6 rows. If left at 0, the vehicle storage will be disabled.
 # NOTE 4: If you reduce the number of rows, any items left outside will be lost. It is RECOMMENDED that you adjust this before giving players access.
-# For example: If the bikes had a @{storage-rows} of 3 rows and you change it to 2, the items in the deleted third row will be lost (the same if you set it to 0).
+# For example, If the bikes had a @{storage-rows} of 3 rows, and you change it to 2, the items in the deleted third row will be lost (the same if you set it to 0).
 vehicles:
   bike:
     item:
@@ -737,7 +747,7 @@ gui:
         material: SADDLE
         # %chair% - the seat number
         display-name: "&e&lChair %chair% (OCCUPIED)"
-        # %player% - the player who is occupying the seat.
+        # %player% - the player occupying the seat.
         lore:
           - "&7This chair is occupied by %player%."
         enchantments:

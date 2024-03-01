@@ -22,8 +22,8 @@ import me.matsubara.vehicles.listener.protocol.UseEntity;
 import me.matsubara.vehicles.manager.InputManager;
 import me.matsubara.vehicles.manager.StandManager;
 import me.matsubara.vehicles.manager.VehicleManager;
-import me.matsubara.vehicles.manager.target.TypeTarget;
-import me.matsubara.vehicles.manager.target.TypeTargetManager;
+import me.matsubara.vehicles.manager.targets.TypeTarget;
+import me.matsubara.vehicles.manager.targets.TypeTargetManager;
 import me.matsubara.vehicles.util.ItemBuilder;
 import me.matsubara.vehicles.util.PluginUtils;
 import me.matsubara.vehicles.util.Shape;
@@ -82,6 +82,7 @@ public final class VehiclesPlugin extends JavaPlugin {
 
     EssentialsExtension essentialsExtension;
     VaultExtension vaultExtension;
+    boolean patheticEnabled;
 
     private static final List<String> GUI_TYPES = List.of("vehicle", "shop", "shop-confirm", "customizations");
     private static final Set<String> SPECIAL_SECTIONS = Sets.newHashSet("extra-tags");
@@ -98,7 +99,7 @@ public final class VehiclesPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        // Disable plugin if server version is older than 1.17.
+        // Disable the plugin if the server version is older than 1.17.
         PluginManager pluginManager = getServer().getPluginManager();
         if (ReflectionUtils.MINOR_NUMBER < 17) {
             getLogger().info("This plugin only works from 1.17 and up, disabling...");
@@ -106,7 +107,7 @@ public final class VehiclesPlugin extends JavaPlugin {
             return;
         }
 
-        // Disable plugin if ProtocolLib isn't installed.
+        // Disable the plugin if ProtocolLib isn't installed.
         if (!pluginManager.isPluginEnabled("ProtocolLib")) {
             getLogger().info("This plugin depends on ProtocolLib, disabling...");
             pluginManager.disablePlugin(this);

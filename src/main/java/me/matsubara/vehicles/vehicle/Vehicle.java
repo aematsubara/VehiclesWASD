@@ -156,10 +156,10 @@ public abstract class Vehicle implements InventoryHolder {
 
         resetVelocityStand(world);
 
-        // Init customizations BEFORE spawning llama chair with inventory.
+        // Init customizations BEFORE spawning a llama chair with inventory.
         plugin.getVehicleManager().initCustomizations(model, customizations, type);
 
-        Map<String, Material> changes = data.customizationsChanges();
+        Map<String, Material> changes = data.customizationChanges();
         if (changes != null) {
             for (Map.Entry<String, Material> entry : changes.entrySet()) {
                 plugin.getVehicleManager().applyCustomization(model, customizations, entry.getKey(), entry.getValue());
@@ -786,11 +786,11 @@ public abstract class Vehicle implements InventoryHolder {
     }
 
     public VehicleData createSaveData() {
-        Map<String, Material> customizationsChanges = new HashMap<>();
+        Map<String, Material> customizationChanges = new HashMap<>();
         for (Customization customization : customizations) {
             Material newType = customization.getNewType();
             if (newType != null && newType != customization.getDefaultType()) {
-                customizationsChanges.put(customization.getCustomizationName(), newType);
+                customizationChanges.put(customization.getCustomizationName(), newType);
             }
         }
 
@@ -803,7 +803,7 @@ public abstract class Vehicle implements InventoryHolder {
                 type,
                 base64Storage,
                 shopDisplayName,
-                customizationsChanges);
+                customizationChanges);
     }
 
     @Override

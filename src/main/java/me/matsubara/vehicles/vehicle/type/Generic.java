@@ -92,7 +92,8 @@ public class Generic extends Vehicle {
 
         moveUpOrDownIfNeeded(backwards);
 
-        // We could make this easier using the direction of the stand like we do in GPSTick but this implementation works fine with the GPS.
+        // We could make this easier using the direction of the stand like we do in GPSTick,
+        // but this implementation works fine with the GPS.
         Location standLocation = velocityStand.getLocation();
 
         Vector offset;
@@ -102,7 +103,7 @@ public class Generic extends Vehicle {
             offset = PluginUtils.offsetVector(new Vector(0.0f, 0.0f, zVel), standLocation.getYaw(), 0.0f);
             multiplier = (currentSpeed < 0.0f || backwards ? -currentSpeed : currentSpeed) / 100.0f / (backwards ? 2.0f : 1.0f);
         } else {
-            // Go down until the vehicle is on ground.
+            // Go down until the vehicle is on the ground.
             offset = PluginUtils.offsetVector(new Vector(0.0f, 0.5f, 0.0f), standLocation.getYaw(), 0.0f);
             multiplier = .75f;
         }
@@ -143,7 +144,7 @@ public class Generic extends Vehicle {
             if (currentY % 1 == 0) return;
             if (BlockUtils.getMaterialHeight(top) != Double.MIN_VALUE) return;
 
-            // At this point we know both, BOTTOM and TOP are solid 1x1 blocks.
+            // At this point, we know both, BOTTOM and TOP are solid 1x1 blocks.
             // The situation here is almost the same as Bottom#DENY and Top#UP but in this case, we also need to consider the top block of the CURRENT top.
 
             Block kingTop = top.getRelative(BlockFace.UP);
@@ -168,7 +169,7 @@ public class Generic extends Vehicle {
             }
         }
 
-        // The front block is obstructed, but it's a block that can be climbed up; top block is passable.
+        // The front block is obstructed, but it's a block that can be climbed up; the top block is passable.
         if (blockResult.up() && topResult.allow()) {
             // Work with block (bottom) here, not top.
             Double extra = BlockUtils.getMaterialHeight(block);
@@ -199,7 +200,7 @@ public class Generic extends Vehicle {
             }
         }
 
-        // Front is obstructed and can't be climbed up; top is empty.
+        // The front is obstructed and can't be climbed up; the top is empty.
         if (blockResult.deny() && topResult.allow()) {
             // At this point, the trapdoor is open.
             if (BlockUtils.BUGGY_HEIGHTS.contains(blockType) || Tag.TRAPDOORS.isTagged(blockType)) return;
@@ -208,7 +209,9 @@ public class Generic extends Vehicle {
             upY = top.getY();
         }
 
-        // There are other cases that we should handle, for example, if bottom is empty (allow) but top can be climbed up (up). This is good for now.
+        // There are other cases that we should handle, for example,
+        // if the bottom is empty (allow) but the top can be climbed up (up).
+        // This is good for now.
         if (upY == Double.MIN_VALUE) return;
 
         Vector slightOffset = new Vector(0.0d, 0.0d, backwards ? 0.475d : -0.475d);

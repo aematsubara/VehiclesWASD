@@ -37,7 +37,7 @@ public final class PacketStand {
 
     // Entity yaw and pitch, ready to use in packets.
     private byte previousYaw, yaw;
-    private byte previousPitch, pitch;
+    private byte pitch;
 
     // Set with the unique id of the players who aren't seeing the entity due to the distance.
     private final Set<UUID> ignored = new HashSet<>();
@@ -74,7 +74,6 @@ public final class PacketStand {
     private static final Class<?> PACKET_SPAWN_ENTITY_LIVING;
     private static final Class<?> PACKET_ENTITY_HEAD_ROTATION;
     private static final Class<?> PACKET_ENTITY_TELEPORT;
-    private static final Class<?> PACKET_ENTITY_LOOK;
     private static final Class<?> PACKET_ENTITY_METADATA;
     private static final Class<?> PACKET_ENTITY_EQUIPMENT;
     private static final Class<?> ENUM_ITEM_SLOT;
@@ -109,7 +108,6 @@ public final class PacketStand {
     private static final MethodHandle getIndex;
     private static final MethodHandle getTypeId;
     private static final MethodHandle serialize;
-    private static final MethodHandle read;
     private static final MethodHandle byString;
 
     // Constructors.
@@ -136,6 +134,7 @@ public final class PacketStand {
     private static final Object DWO_RIGHT_LEG_POSE;
     private static final Object ZERO;
     private static final Object ARMOR_STAND;
+    private static final int ENTITY_TYPE_ID;
     private static final AtomicInteger ENTITY_COUNTER;
 
     static {
@@ -149,7 +148,6 @@ public final class PacketStand {
                 VERSION > 18 ? "PacketPlayOutSpawnEntity" : "PacketPlayOutSpawnEntityLiving"); // SpawnEntityLiving is removed since 1.19.
         PACKET_ENTITY_HEAD_ROTATION = ReflectionUtils.getNMSClass("network.protocol.game", "PacketPlayOutEntityHeadRotation");
         PACKET_ENTITY_TELEPORT = ReflectionUtils.getNMSClass("network.protocol.game", "PacketPlayOutEntityTeleport");
-        PACKET_ENTITY_LOOK = ReflectionUtils.getNMSClass("network.protocol.game", "PacketPlayOutEntity$PacketPlayOutEntityLook");
         PACKET_ENTITY_METADATA = ReflectionUtils.getNMSClass("network.protocol.game", "PacketPlayOutEntityMetadata");
         PACKET_ENTITY_EQUIPMENT = ReflectionUtils.getNMSClass("network.protocol.game", "PacketPlayOutEntityEquipment");
         ENUM_ITEM_SLOT = ReflectionUtils.getNMSClass("world.entity", "EnumItemSlot");
@@ -189,7 +187,6 @@ public final class PacketStand {
         getIndex = Reflection.getMethod(DATA_WATCHER_OBJECT, "a");
         getTypeId = Reflection.getMethod(DATA_WATCHER_REGISTRY, "b", MethodType.methodType(int.class, DATA_WATCHER_SERIALIZER), true, true);
         serialize = Reflection.getMethod(DATA_WATCHER_SERIALIZER, "a", PACKET_DATA_SERIALIZER, Object.class);
-        read = Reflection.getMethod(PACKET_ENTITY_LOOK, "b", MethodType.methodType(PACKET_ENTITY_LOOK, PACKET_DATA_SERIALIZER), true, true);
         byString = Reflection.getMethod(ENTITY_TYPES, "a", MethodType.methodType(Optional.class, String.class), true, true);
 
         // Initialize constructors.
@@ -222,7 +219,7 @@ public final class PacketStand {
         dataWatcherItem = Reflection.getConstructor(DATA_WATCHER_ITEM, DATA_WATCHER_OBJECT, Object.class);
 
         try {
-            // Get protocol version, only needed for 1.17.
+            // Get the protocol version, only needed for 1.17.
             if (VERSION == 17) {
                 MethodHandle getVersion = Reflection.getMethod(SHARED_CONSTANTS, "getGameVersion", MethodType.methodType(GAME_VERSION), true, true);
                 MethodHandle getProtocol = Reflection.getMethod(GAME_VERSION, "getProtocolVersion", MethodType.methodType(int.class));
@@ -237,89 +234,90 @@ public final class PacketStand {
         // Initialize fields.
         if (ReflectionUtils.supports(18)) {
             if (ReflectionUtils.supports(20, 2)) {
-                DWO_ENTITY_DATA = getFieldValue(Reflection.getFieldGetter(ENTITY, "ao"));
-                DWO_CUSTOM_NAME = getFieldValue(Reflection.getFieldGetter(ENTITY, "aU"));
-                DWO_CUSTOM_NAME_VISIBLE = getFieldValue(Reflection.getFieldGetter(ENTITY, "aV"));
-                DWO_ARMOR_STAND_DATA = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bC"));
+                DWO_ENTITY_DATA = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY, "ao"));
+                DWO_CUSTOM_NAME = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY, "aU"));
+                DWO_CUSTOM_NAME_VISIBLE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY, "aV"));
+                DWO_ARMOR_STAND_DATA = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bC"));
 
-                DWO_HEAD_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bD"));
-                DWO_BODY_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bE"));
-                DWO_LEFT_ARM_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bF"));
-                DWO_RIGHT_ARM_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bG"));
-                DWO_LEFT_LEG_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bH"));
-                DWO_RIGHT_LEG_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bI"));
+                DWO_HEAD_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bD"));
+                DWO_BODY_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bE"));
+                DWO_LEFT_ARM_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bF"));
+                DWO_RIGHT_ARM_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bG"));
+                DWO_LEFT_LEG_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bH"));
+                DWO_RIGHT_LEG_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bI"));
             } else if (ReflectionUtils.supports(20)) {
-                DWO_ENTITY_DATA = getFieldValue(Reflection.getFieldGetter(ENTITY, "an"));
-                DWO_CUSTOM_NAME = getFieldValue(Reflection.getFieldGetter(ENTITY, "aU"));
-                DWO_CUSTOM_NAME_VISIBLE = getFieldValue(Reflection.getFieldGetter(ENTITY, "aV"));
-                DWO_ARMOR_STAND_DATA = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bC"));
+                DWO_ENTITY_DATA = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY, "an"));
+                DWO_CUSTOM_NAME = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY, "aU"));
+                DWO_CUSTOM_NAME_VISIBLE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY, "aV"));
+                DWO_ARMOR_STAND_DATA = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bC"));
 
-                DWO_HEAD_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bD"));
-                DWO_BODY_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bE"));
-                DWO_LEFT_ARM_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bF"));
-                DWO_RIGHT_ARM_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bG"));
-                DWO_LEFT_LEG_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bH"));
-                DWO_RIGHT_LEG_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bI"));
+                DWO_HEAD_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bD"));
+                DWO_BODY_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bE"));
+                DWO_LEFT_ARM_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bF"));
+                DWO_RIGHT_ARM_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bG"));
+                DWO_LEFT_LEG_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bH"));
+                DWO_RIGHT_LEG_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bI"));
             } else if (ReflectionUtils.supports(19, 4)) {
-                DWO_ENTITY_DATA = getFieldValue(Reflection.getFieldGetter(ENTITY, "an"));
-                DWO_CUSTOM_NAME = getFieldValue(Reflection.getFieldGetter(ENTITY, "aR"));
-                DWO_CUSTOM_NAME_VISIBLE = getFieldValue(Reflection.getFieldGetter(ENTITY, "aS"));
-                DWO_ARMOR_STAND_DATA = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bB"));
+                DWO_ENTITY_DATA = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY, "an"));
+                DWO_CUSTOM_NAME = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY, "aR"));
+                DWO_CUSTOM_NAME_VISIBLE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY, "aS"));
+                DWO_ARMOR_STAND_DATA = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bB"));
 
-                DWO_HEAD_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bC"));
-                DWO_BODY_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bD"));
-                DWO_LEFT_ARM_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bE"));
-                DWO_RIGHT_ARM_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bF"));
-                DWO_LEFT_LEG_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bG"));
-                DWO_RIGHT_LEG_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bH"));
+                DWO_HEAD_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bC"));
+                DWO_BODY_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bD"));
+                DWO_LEFT_ARM_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bE"));
+                DWO_RIGHT_ARM_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bF"));
+                DWO_LEFT_LEG_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bG"));
+                DWO_RIGHT_LEG_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bH"));
             } else if (ReflectionUtils.supports(18, 2)) {
-                DWO_ENTITY_DATA = getFieldValue(Reflection.getFieldGetter(ENTITY, "Z"));
-                DWO_CUSTOM_NAME = getFieldValue(Reflection.getFieldGetter(ENTITY, "aM"));
-                DWO_CUSTOM_NAME_VISIBLE = getFieldValue(Reflection.getFieldGetter(ENTITY, "aN"));
-                DWO_ARMOR_STAND_DATA = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bG"));
+                DWO_ENTITY_DATA = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY, "Z"));
+                DWO_CUSTOM_NAME = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY, "aM"));
+                DWO_CUSTOM_NAME_VISIBLE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY, "aN"));
+                DWO_ARMOR_STAND_DATA = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bG"));
 
-                DWO_HEAD_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bH"));
-                DWO_BODY_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bI"));
-                DWO_LEFT_ARM_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bJ"));
-                DWO_RIGHT_ARM_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bK"));
-                DWO_LEFT_LEG_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bL"));
-                DWO_RIGHT_LEG_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bM"));
+                DWO_HEAD_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bH"));
+                DWO_BODY_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bI"));
+                DWO_LEFT_ARM_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bJ"));
+                DWO_RIGHT_ARM_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bK"));
+                DWO_LEFT_LEG_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bL"));
+                DWO_RIGHT_LEG_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bM"));
             } else {
-                DWO_ENTITY_DATA = getFieldValue(Reflection.getFieldGetter(ENTITY, "aa"));
-                DWO_CUSTOM_NAME = getFieldValue(Reflection.getFieldGetter(ENTITY, "aL"));
-                DWO_CUSTOM_NAME_VISIBLE = getFieldValue(Reflection.getFieldGetter(ENTITY, "aM"));
-                DWO_ARMOR_STAND_DATA = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bH"));
+                DWO_ENTITY_DATA = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY, "aa"));
+                DWO_CUSTOM_NAME = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY, "aL"));
+                DWO_CUSTOM_NAME_VISIBLE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY, "aM"));
+                DWO_ARMOR_STAND_DATA = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bH"));
 
-                DWO_HEAD_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bI"));
-                DWO_BODY_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bJ"));
-                DWO_LEFT_ARM_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bK"));
-                DWO_RIGHT_ARM_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bL"));
-                DWO_LEFT_LEG_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bM"));
-                DWO_RIGHT_LEG_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bN"));
+                DWO_HEAD_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bI"));
+                DWO_BODY_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bJ"));
+                DWO_LEFT_ARM_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bK"));
+                DWO_RIGHT_ARM_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bL"));
+                DWO_LEFT_LEG_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bM"));
+                DWO_RIGHT_LEG_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bN"));
             }
         } else {
-            DWO_ENTITY_DATA = getFieldValue(Reflection.getFieldGetter(ENTITY, "Z"));
-            DWO_CUSTOM_NAME = getFieldValue(Reflection.getFieldGetter(ENTITY, "aJ"));
-            DWO_CUSTOM_NAME_VISIBLE = getFieldValue(Reflection.getFieldGetter(ENTITY, "aK"));
-            DWO_ARMOR_STAND_DATA = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bG"));
+            DWO_ENTITY_DATA = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY, "Z"));
+            DWO_CUSTOM_NAME = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY, "aJ"));
+            DWO_CUSTOM_NAME_VISIBLE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY, "aK"));
+            DWO_ARMOR_STAND_DATA = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bG"));
 
-            DWO_HEAD_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bH"));
-            DWO_BODY_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bI"));
-            DWO_LEFT_ARM_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bJ"));
-            DWO_RIGHT_ARM_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bK"));
-            DWO_LEFT_LEG_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bL"));
-            DWO_RIGHT_LEG_POSE = getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bM"));
+            DWO_HEAD_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bH"));
+            DWO_BODY_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bI"));
+            DWO_LEFT_ARM_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bJ"));
+            DWO_RIGHT_ARM_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bK"));
+            DWO_LEFT_LEG_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bL"));
+            DWO_RIGHT_LEG_POSE = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY_ARMOR_STAND, "bM"));
         }
 
-        ZERO = getFieldValue(Reflection.getFieldGetter(VEC_3D, VERSION > 18 ? "b" : "a"));
+        ZERO = Reflection.getFieldValue(Reflection.getFieldGetter(VEC_3D, VERSION > 18 ? "b" : "a"));
         ARMOR_STAND = getArmorStandType();
+        ENTITY_TYPE_ID = getEntityTypeId();
 
         if (ReflectionUtils.supports(19, 4)) {
-            ENTITY_COUNTER = (AtomicInteger) getFieldValue(Reflection.getFieldGetter(ENTITY, "d"));
+            ENTITY_COUNTER = (AtomicInteger) Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY, "d"));
         } else if (ReflectionUtils.supports(18, 2)) {
-            ENTITY_COUNTER = (AtomicInteger) getFieldValue(Reflection.getFieldGetter(ENTITY, "c"));
+            ENTITY_COUNTER = (AtomicInteger) Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY, "c"));
         } else {
-            ENTITY_COUNTER = (AtomicInteger) getFieldValue(Reflection.getFieldGetter(ENTITY, "b"));
+            ENTITY_COUNTER = (AtomicInteger) Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY, "b"));
         }
     }
 
@@ -365,7 +363,6 @@ public final class PacketStand {
     public void setLocation(@NotNull Location location) {
         this.location = location;
         this.previousYaw = yaw;
-        this.previousPitch = pitch;
         this.yaw = (byte) ((int) (location.getYaw() * 256.0f / 360.0f));
         this.pitch = (byte) ((int) (location.getPitch() * 256.0f / 360.0f));
     }
@@ -410,7 +407,7 @@ public final class PacketStand {
             Object packetDataSerializer = PacketStand.packetDataSerializer.invoke(Unpooled.buffer());
             writeInt.invoke(packetDataSerializer, entityId);
             writeUUID.invoke(packetDataSerializer, entityUniqueId);
-            writeInt.invoke(packetDataSerializer, ARMOR_STAND);
+            writeInt.invoke(packetDataSerializer, ENTITY_TYPE_ID);
             writeDouble.invoke(packetDataSerializer, location.getX());
             writeDouble.invoke(packetDataSerializer, location.getY());
             writeDouble.invoke(packetDataSerializer, location.getZ());
@@ -456,9 +453,6 @@ public final class PacketStand {
     private void sendRotation() {
         Object headRotation = createEntityHeadRotation();
         if (headRotation != null) sendPacket(headRotation);
-
-        Object look = createEntityLook();
-        if (look != null) sendPacket(look);
     }
 
     private @Nullable Object createEntityHeadRotation() {
@@ -468,21 +462,6 @@ public final class PacketStand {
             writeInt.invoke(packetDataSerializer, entityId);
             writeByte.invoke(packetDataSerializer, yaw);
             return packetEntityHeadRotation.invoke(packetDataSerializer);
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
-            return null;
-        }
-    }
-
-    private @Nullable Object createEntityLook() {
-        if (previousYaw == yaw && previousPitch == pitch) return null;
-        try {
-            Object packetDataSerializer = PacketStand.packetDataSerializer.invoke(Unpooled.buffer());
-            writeInt.invoke(packetDataSerializer, entityId);
-            writeByte.invoke(packetDataSerializer, yaw);
-            writeByte.invoke(packetDataSerializer, pitch);
-            writeBoolean.invoke(packetDataSerializer, true);
-            return read.invoke(packetDataSerializer);
         } catch (Throwable throwable) {
             throwable.printStackTrace();
             return null;
@@ -627,14 +606,6 @@ public final class PacketStand {
         }
     }
 
-    private static @Nullable Object getFieldValue(MethodHandle handle) {
-        try {
-            return handle.invoke();
-        } catch (Throwable throwable) {
-            return null;
-        }
-    }
-
     private static @Nullable Object getArmorStandType() {
         try {
             @SuppressWarnings("deprecation") Optional<?> optional = (Optional<?>) byString.invoke(EntityType.ARMOR_STAND.getName());
@@ -642,6 +613,45 @@ public final class PacketStand {
         } catch (Throwable throwable) {
             throwable.printStackTrace();
             return null;
+        }
+    }
+
+    private static int getEntityTypeId() {
+        Object ENTITY_TYPE;
+        if (ReflectionUtils.supports(18)) {
+            if (ReflectionUtils.supports(20, 3)) {
+                Class<?> REGISTRIES = ReflectionUtils.getNMSClass("core.registries", "BuiltInRegistries");
+                ENTITY_TYPE = Reflection.getFieldValue(Reflection.getFieldGetter(REGISTRIES, "g"));
+            } else if (ReflectionUtils.supports(19, 3)) {
+                Class<?> REGISTRIES = ReflectionUtils.getNMSClass("core.registries", "BuiltInRegistries");
+                ENTITY_TYPE = Reflection.getFieldValue(Reflection.getFieldGetter(REGISTRIES, "h"));
+            } else if (ReflectionUtils.supports(19)) {
+                Class<?> REGISTRY = ReflectionUtils.getNMSClass("core", "IRegistry");
+                ENTITY_TYPE = Reflection.getFieldValue(Reflection.getFieldGetter(REGISTRY, "X"));
+            } else if (ReflectionUtils.MINOR_NUMBER == 18 && ReflectionUtils.PATCH_NUMBER == 2) {
+                Class<?> REGISTRY = ReflectionUtils.getNMSClass("core", "IRegistry");
+                ENTITY_TYPE = Reflection.getFieldValue(Reflection.getFieldGetter(REGISTRY, "W"));
+            } else {
+                Class<?> REGISTRY = ReflectionUtils.getNMSClass("core", "IRegistry");
+                ENTITY_TYPE = Reflection.getFieldValue(Reflection.getFieldGetter(REGISTRY, "Z"));
+            }
+        } else {
+            Class<?> REGISTRY = ReflectionUtils.getNMSClass("core", "IRegistry");
+            ENTITY_TYPE = Reflection.getFieldValue(Reflection.getFieldGetter(REGISTRY, "Y"));
+        }
+
+        MethodHandle getId;
+        Class<?> REGISTRY = ReflectionUtils.getNMSClass("core", "Registry");
+        if (ReflectionUtils.supports(18)) {
+            getId = Reflection.getMethod(REGISTRY, "a", Object.class);
+        } else {
+            getId = Reflection.getMethod(REGISTRY, "getId", Object.class);
+        }
+
+        try {
+            return (int) getId.invoke(ENTITY_TYPE, ARMOR_STAND);
+        } catch (Throwable throwable) {
+            return -1;
         }
     }
 

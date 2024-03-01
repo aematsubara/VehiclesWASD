@@ -37,6 +37,14 @@ public final class Reflection {
         }
     }
 
+    public static @Nullable Object getFieldValue(MethodHandle handle) {
+        try {
+            return handle.invoke();
+        } catch (Throwable throwable) {
+            return null;
+        }
+    }
+
     public static MethodHandle getConstructor(Class<?> refc, Class<?>... types) {
         return getConstructor(refc, true, types);
     }
@@ -53,7 +61,6 @@ public final class Reflection {
     }
 
     public static @Nullable MethodHandle getMethod(@NotNull Class<?> refc, String name, Class<?>... parameterTypes) {
-        MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
         try {
             Method method = refc.getDeclaredMethod(name, parameterTypes);
             method.setAccessible(true);
@@ -66,6 +73,10 @@ public final class Reflection {
 
     public static MethodHandle getMethod(Class<?> refc, String name, MethodType type) {
         return getMethod(refc, name, type, false, true);
+    }
+
+    public static @Nullable MethodHandle getMethod(Class<?> refc, String name, MethodType type, String... extraNames) {
+        return getMethod(refc, name, type, false, true, extraNames);
     }
 
     public static @Nullable MethodHandle getMethod(Class<?> refc, String name, MethodType type, boolean isStatic, boolean printStackTrace, String... extraNames) {

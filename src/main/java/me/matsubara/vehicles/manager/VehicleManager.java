@@ -5,7 +5,7 @@ import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.event.VehicleSpawnEvent;
 import me.matsubara.vehicles.files.Config;
 import me.matsubara.vehicles.files.Messages;
-import me.matsubara.vehicles.manager.target.TypeTarget;
+import me.matsubara.vehicles.manager.targets.TypeTarget;
 import me.matsubara.vehicles.model.Model;
 import me.matsubara.vehicles.model.stand.PacketStand;
 import me.matsubara.vehicles.model.stand.StandSettings;
@@ -194,7 +194,7 @@ public class VehicleManager implements Listener {
     public void createVehicle(@Nullable Player player, @NotNull VehicleData data) {
         Location location = data.location();
 
-        // This will only happen when a player spawn the vehicle with vehicle item that contains data.
+        // This will only happen when a player spawns the vehicle with vehicle item that contains data.
         if (location.getYaw() == Float.MIN_VALUE && player != null) {
             BlockFace face = PluginUtils.getFace(player.getLocation().getYaw(), false);
             location.setDirection(PluginUtils.getDirection(Config.OPPOSITE_FACE_SPAWN.asBool() ? face.getOppositeFace() : face));
@@ -221,7 +221,7 @@ public class VehicleManager implements Listener {
             vehicle = new Generic(plugin, data, model);
         }
 
-        // Start after 10 ticks to add small velocity to helicopter ONLY if the chunk is loaded.
+        // Start after 10 ticks to add small velocity to the helicopter ONLY if the chunk is loaded.
         VehicleTick tick = new VehicleTick(vehicle);
         tick.runTaskTimer(plugin, 10L, 1L);
         vehicle.setVehicleTick(tick);
@@ -380,7 +380,7 @@ public class VehicleManager implements Listener {
 
         Location clickLocation = location.clone();
         if (blockType != Material.WATER) {
-            Vector position = event.getClickedPosition();
+            Vector position = BlockUtils.getClickedPosition(event);
             if (position != null) {
                 clickLocation.setX(block.getX() + position.getX());
                 clickLocation.setZ(block.getZ() + position.getZ());
@@ -420,7 +420,7 @@ public class VehicleManager implements Listener {
                     temp.type(),
                     temp.base64Storage(),
                     temp.shopDisplayName(),
-                    temp.customizationsChanges());
+                    temp.customizationChanges());
         } else {
             data = VehicleData.createDefault(player.getUniqueId(), null, location, vehicleType);
         }
@@ -437,7 +437,7 @@ public class VehicleManager implements Listener {
         if (fromMap != null && fromMap != Double.MIN_VALUE) {
             return fromMap;
         } else if (Tag.TRAPDOORS.isTagged(blockType)) {
-            // At this point, trapdoor is open.
+            // At this point, the trapdoor is open.
             return 0.0d;
         } else if (block.isPassable()) {
             return 0.0d;

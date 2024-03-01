@@ -2,7 +2,7 @@ package me.matsubara.vehicles.vehicle;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.matsubara.vehicles.manager.target.TypeTarget;
+import me.matsubara.vehicles.manager.targets.TypeTarget;
 import me.matsubara.vehicles.model.stand.PacketStand;
 import org.bukkit.Material;
 

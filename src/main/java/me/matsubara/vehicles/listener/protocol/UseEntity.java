@@ -117,7 +117,7 @@ public final class UseEntity extends PacketAdapter {
         if (previews.isEmpty()) return false;
 
         Iterator<PreviewTick> iterator = previews.iterator();
-        while (iterator.hasNext()) { // We use an iterator because when doing PreviewTick#cancel we're removing the preview from the map.
+        while (iterator.hasNext()) { // We use an iterator because, when doing PreviewTick#cancel, we're removing the preview from the map.
             PreviewTick preview = iterator.next();
 
             PacketStand stand = preview.getModel().getById(entityId);
@@ -168,7 +168,7 @@ public final class UseEntity extends PacketAdapter {
 
         boolean firstChair = vehicle.getDriver() == null && (!(vehicle instanceof Helicopter helicopter) || helicopter.getOutsideDriver() == null);
         if (!firstChair && vehicle.getChairs().size() == 1) {
-            // The driver slot is already occupied and there isn't any more chairs.
+            // The driver slot is already occupied and there aren't any more chairs.
             handleOwnerLeftOut(player, vehicle, true);
             return;
         }

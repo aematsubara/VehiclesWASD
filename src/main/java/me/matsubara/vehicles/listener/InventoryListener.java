@@ -7,7 +7,7 @@ import me.matsubara.vehicles.gui.ConfirmShopGUI;
 import me.matsubara.vehicles.gui.CustomizationGUI;
 import me.matsubara.vehicles.gui.ShopGUI;
 import me.matsubara.vehicles.hook.VaultExtension;
-import me.matsubara.vehicles.manager.target.TypeTarget;
+import me.matsubara.vehicles.manager.targets.TypeTarget;
 import me.matsubara.vehicles.model.stand.StandSettings;
 import me.matsubara.vehicles.util.PluginUtils;
 import me.matsubara.vehicles.vehicle.Customization;
@@ -402,7 +402,7 @@ public final class InventoryListener implements Listener {
                 data.type(),
                 data.base64Storage(),
                 shopDisplayName,
-                data.customizationsChanges());
+                data.customizationChanges());
 
         player.getInventory().addItem(plugin.createVehicleItem(temp.type().toFilePath(), temp));
 
@@ -580,7 +580,7 @@ public final class InventoryListener implements Listener {
 
         UUID playerUUID = player.getUniqueId();
 
-        // Driver is moving to outside (or was outside and it's moving to another outside chair).
+        // The driver is moving to outside (or was outside, and it's moving to another outside chair).
         if (helicopter.isDriver(playerUUID)) {
             helicopter.setOutsideDriver(playerUUID);
             helicopter.setDriverRaw(null);

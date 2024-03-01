@@ -1,5 +1,6 @@
 package me.matsubara.vehicles.util;
 
+import com.cryptomorin.xseries.ReflectionUtils;
 import me.matsubara.vehicles.model.stand.StandSettings;
 import me.matsubara.vehicles.vehicle.VehicleType;
 import org.apache.commons.lang3.ArrayUtils;
@@ -9,14 +10,19 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.*;
 import org.bukkit.block.data.type.*;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodType;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
+@SuppressWarnings("DataFlowIssue")
 public class BlockUtils {
 
     private static final Map<Material, Function<BlockData, Double>> HEIGHTS = new HashMap<>();
@@ -39,9 +45,44 @@ public class BlockUtils {
                     Material.PLAYER_HEAD,
                     Material.ZOMBIE_HEAD,
                     Material.CREEPER_HEAD,
-                    Material.DRAGON_HEAD,
-                    Material.PIGLIN_HEAD)
+                    Material.DRAGON_HEAD)
+            .addString("PIGLIN_HEAD")
             .get();
+
+    // Classes.
+    private static final Class<?> BLOCK_ACCESS = ReflectionUtils.getNMSClass("world.level", "IBlockAccess");
+    private static final Class<?> RAY_TRACE = ReflectionUtils.getNMSClass("world.level", "RayTrace");
+    private static final Class<?> VEC_3D = ReflectionUtils.getNMSClass("world.phys", "Vec3D");
+    private static final Class<?> BLOCK_CONTEXT = ReflectionUtils.getNMSClass("world.level", "RayTrace$BlockCollisionOption");
+    private static final Class<?> FLUID_CONTEXT = ReflectionUtils.getNMSClass("world.level", "RayTrace$FluidCollisionOption");
+    private static final Class<?> ENTITY = ReflectionUtils.getNMSClass("world.entity", "Entity");
+    private static final Class<?> CRAFT_WORLD = ReflectionUtils.getCraftClass("CraftWorld");
+    private static final Class<?> CRAFT_PLAYER = ReflectionUtils.getCraftClass("entity.CraftPlayer");
+    private static final Class<?> MOVING_OBJECT_POSITION = ReflectionUtils.getNMSClass("world.phys", "MovingObjectPosition");
+    private static final Class<?> MOVING_OBJECT_POSITION_BLOCK = ReflectionUtils.getNMSClass("world.phys", "MovingObjectPositionBlock");
+    private static final Class<?> BLOCK_POSITION = ReflectionUtils.getNMSClass("core", "BlockPosition");
+    private static final Class<?> BASE_BLOCK_POSITION = ReflectionUtils.getNMSClass("core", "BaseBlockPosition");
+
+    // Methods.
+    private static final MethodHandle getVec3X = Reflection.getMethod(VEC_3D, "a", MethodType.methodType(double.class), "getX");
+    private static final MethodHandle getVec3Y = Reflection.getMethod(VEC_3D, "b", MethodType.methodType(double.class), "getY");
+    private static final MethodHandle getVec3Z = Reflection.getMethod(VEC_3D, "c", MethodType.methodType(double.class), "getZ");
+    private static final MethodHandle clip = Reflection.getMethod(BLOCK_ACCESS, "a", MethodType.methodType(MOVING_OBJECT_POSITION_BLOCK, RAY_TRACE), "rayTrace");
+    private static final MethodHandle getWorldHandle = Reflection.getMethod(CRAFT_WORLD, "getHandle");
+    private static final MethodHandle getPlayerHandle = Reflection.getMethod(CRAFT_PLAYER, "getHandle");
+    private static final MethodHandle getLocation = Reflection.getMethod(MOVING_OBJECT_POSITION, "e", MethodType.methodType(VEC_3D), "getPos");
+    private static final MethodHandle getBlockPos = Reflection.getMethod(MOVING_OBJECT_POSITION_BLOCK, "a", MethodType.methodType(BLOCK_POSITION), "getBlockPosition");
+    private static final MethodHandle getPosX = Reflection.getMethod(BASE_BLOCK_POSITION, "u", MethodType.methodType(int.class), "getX");
+    private static final MethodHandle getPosY = Reflection.getMethod(BASE_BLOCK_POSITION, "v", MethodType.methodType(int.class), "getY");
+    private static final MethodHandle getPosZ = Reflection.getMethod(BASE_BLOCK_POSITION, "w", MethodType.methodType(int.class), "getZ");
+
+    // Constructors.
+    private static final MethodHandle clipConstructor = Reflection.getConstructor(RAY_TRACE, VEC_3D, VEC_3D, BLOCK_CONTEXT, FLUID_CONTEXT, ENTITY);
+    private static final MethodHandle vec3dConstructor = Reflection.getConstructor(VEC_3D, double.class, double.class, double.class);
+
+    // Fields.
+    private static final Object OUTLINE = Reflection.getFieldValue(Reflection.getFieldGetter(BLOCK_CONTEXT, "b"));
+    private static final Object NONE = Reflection.getFieldValue(Reflection.getFieldGetter(FLUID_CONTEXT, "a"));
 
     static {
         // https://minecraft.fandom.com/wiki/Solid_block
@@ -70,9 +111,8 @@ public class BlockUtils {
                 data -> data instanceof Slab slabData ? (slabData.getType() == Slab.Type.BOTTOM ? 0.5d : 1.0d) : 0.5d,
                 builder().add(
                                 Material.SCULK_SENSOR,
-                                Material.CALIBRATED_SCULK_SENSOR,
-                                Material.SCULK_SHRIEKER,
                                 Material.CAKE)
+                        .addString("SCULK_SHRIEKER", "CALIBRATED_SCULK_SENSOR")
                         .add(HEADS)
                         .add(Tag.SLABS));
 
@@ -95,7 +135,8 @@ public class BlockUtils {
         fillHeights(data -> 0.09375d, Material.LILY_PAD);
 
         // 0.0625
-        fillHeights(data -> 0.0625d, builder().add(Material.MOSS_CARPET).add(Tag.WOOL_CARPETS));
+        // noinspection deprecation, "carpets" is "wool_carpets" since 1.19.
+        fillHeights(data -> 0.0625d, builder().add(Material.MOSS_CARPET).add(Tag.CARPETS));
 
         // All mixed below.
 
@@ -269,6 +310,90 @@ public class BlockUtils {
         }
     }
 
+    public static @Nullable Vector getClickedPosition(@NotNull PlayerInteractEvent event) {
+        if (ReflectionUtils.supports(20, 1)) {
+            return event.getClickedPosition();
+        }
+
+        Player player = event.getPlayer();
+        Location location = player.getLocation();
+
+        Vector locationVector = new Vector(
+                location.getX(),
+                location.getY() + player.getEyeHeight(),
+                location.getZ());
+
+        float yaw = location.getYaw();
+        float pitch = location.getPitch();
+
+        float yawCos = cos(-yaw * 0.017453292f - 3.1415927f);
+        float yawSin = sin(-yaw * 0.017453292f - 3.1415927f);
+
+        float pitchCos = -cos(-pitch * 0.017453292f);
+        float pitchSin = sin(-pitch * 0.017453292f);
+
+        float combinedCos = yawSin * pitchCos;
+        float combinedSinCos = yawCos * pitchCos;
+
+        double maxDistance = player.getGameMode() == GameMode.CREATIVE ? 5.0d : 4.5d;
+
+        Vector direction = locationVector.clone().add(new Vector(
+                (double) combinedCos * maxDistance,
+                (double) pitchSin * maxDistance,
+                (double) combinedSinCos * maxDistance));
+
+        World world = player.getWorld();
+
+        try {
+            Object craftWorld = CRAFT_WORLD.cast(world);
+            Object nmsWorld = getWorldHandle.invoke(craftWorld);
+
+            Object result = clip.invoke(nmsWorld, clipConstructor.invoke(
+                    vec3dConstructor.invoke(locationVector.getX(), locationVector.getY(), locationVector.getZ()),
+                    vec3dConstructor.invoke(direction.getX(), direction.getY(), direction.getZ()),
+                    OUTLINE,
+                    NONE,
+                    getPlayerHandle.invoke(CRAFT_PLAYER.cast(player))));
+
+            Object blockPos = getBlockPos.invoke(result);
+            int blockPosX = (int) getPosX.invoke(blockPos);
+            int blockPosY = (int) getPosY.invoke(blockPos);
+            int blockPosZ = (int) getPosZ.invoke(blockPos);
+
+            Object position = getLocation.invoke(result);
+            return new Vector(
+                    (double) getVec3X.invoke(position),
+                    (double) getVec3Y.invoke(position),
+                    (double) getVec3Z.invoke(position))
+                    .subtract(new Vector(
+                            blockPosX,
+                            blockPosY,
+                            blockPosZ));
+        } catch (Throwable throwable) {
+            return null;
+        }
+    }
+
+    private static final float[] SIN = make(new float[65536], (floats) -> {
+        for (int i = 0; i < floats.length; i++) {
+            floats[i] = (float) Math.sin((double) i * Math.PI * 2.0d / 65536.0d);
+        }
+    });
+
+    @Contract("_, _ -> param1")
+    private static <T> T make(T object, @NotNull Consumer<T> action) {
+        action.accept(object);
+        return object;
+    }
+
+    private static float sin(float value) {
+        return SIN[(int) (value * 10430.378f) & '\uffff'];
+    }
+
+    private static float cos(float value) {
+        return SIN[(int) (value * 10430.378f + 16384.0f) & '\uffff'];
+    }
+
     public static float yaw(float yaw) {
         float temp = yaw % 360.0f;
         return yaw < 0.0f ? temp + 360.0f : temp;
@@ -286,8 +411,7 @@ public class BlockUtils {
         }
 
         public MaterialBuilder add(Material... materials) {
-            Collections.addAll(this.materials, materials);
-            return this;
+            return add(Arrays.asList(materials));
         }
 
         public MaterialBuilder add(@NotNull Tag<Material> tag) {
@@ -296,6 +420,18 @@ public class BlockUtils {
 
         public MaterialBuilder add(Collection<Material> materials) {
             this.materials.addAll(materials);
+            return this;
+        }
+
+        public MaterialBuilder addString(String... materials) {
+            return addString(Arrays.asList(materials));
+        }
+
+        public MaterialBuilder addString(@NotNull Collection<String> materials) {
+            this.materials.addAll(materials.stream()
+                    .map(string -> PluginUtils.getOrNull(Material.class, string))
+                    .filter(Objects::nonNull)
+                    .toList());
             return this;
         }
 

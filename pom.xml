@@ -214,6 +214,13 @@
             <version>3.13.0</version>
             <scope>provided</scope>
         </dependency>
+        <!--  commons-io  -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.13.0</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- AuthLib -->
         <dependency>
             <groupId>com.mojang</groupId>
@@ -258,9 +265,9 @@
         </dependency>
         <!-- pathetic -->
         <dependency>
-            <groupId>com.github.patheloper.pathetic</groupId>
-            <artifactId>pathetic-mapping</artifactId>
-            <version>2.3</version>
+            <groupId>com.github.aematsubara</groupId>
+            <artifactId>pathetic</artifactId>
+            <version>production-SNAPSHOT</version>
         </dependency>
         <!--  EssentialsX  -->
         <dependency>

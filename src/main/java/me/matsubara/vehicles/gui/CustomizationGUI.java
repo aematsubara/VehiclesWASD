@@ -128,13 +128,13 @@ public final class CustomizationGUI implements InventoryHolder {
     }
 
     public void previousPage(boolean isShiftClick) {
-        // If shift click, go to the first page; otherwise, go to the previous page.
+        // If shift clicking, go to the first page; otherwise, go to the previous page.
         current = isShiftClick ? 0 : current - 1;
         updateInventory();
     }
 
     public void nextPage(boolean isShiftClick) {
-        // If shift click, go to the last page; otherwise, go to the next page.
+        // If shift clicking, go to the last page; otherwise, go to the next page.
         current = isShiftClick ? pages - 1 : current + 1;
         updateInventory();
     }

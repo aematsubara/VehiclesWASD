@@ -294,7 +294,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
         }
 
         if (args.length == 3 && args[0].equalsIgnoreCase("give") && plugin.getModelList().contains(args[1])) {
-            return null; // Return players list.
+            return null; // Return player list.
         }
 
         if (args.length == 2

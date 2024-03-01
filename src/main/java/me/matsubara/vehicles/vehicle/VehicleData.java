@@ -18,7 +18,7 @@ public record VehicleData(
         VehicleType type,
         String base64Storage,
         String shopDisplayName,
-        Map<String, Material> customizationsChanges) implements ConfigurationSerializable {
+        Map<String, Material> customizationChanges) implements ConfigurationSerializable {
 
     public static @NotNull VehicleData createDefault(UUID owner, @Nullable UUID modelUniqueId, Location location, VehicleType type) {
         return new VehicleData(owner, null, true, modelUniqueId, location, type, null, null, null);
@@ -39,7 +39,7 @@ public record VehicleData(
         result.put("type", type.name());
         if (base64Storage != null) result.put("storage", base64Storage);
         if (shopDisplayName != null) result.put("shop-display-name", shopDisplayName);
-        result.put("customizations", customizationsChanges.entrySet().stream()
+        result.put("customizations", customizationChanges.entrySet().stream()
                 .map(entry -> entry.getKey() + ":" + entry.getValue().name())
                 .toList());
 
@@ -61,12 +61,12 @@ public record VehicleData(
         String base64Storage = args.get("storage") instanceof String storageString ? storageString : null;
         String shopDisplayName = args.get("shop-display-name") instanceof String shopDisplayNameString ? shopDisplayNameString : null;
 
-        Map<String, Material> customizationsChanges = new HashMap<>();
+        Map<String, Material> customizationChanges = new HashMap<>();
         if (args.get("customizations") instanceof List<?> list) {
-            fillCustomizations(list, customizationsChanges);
+            fillCustomizations(list, customizationChanges);
         }
 
-        return new VehicleData(owner, fuel, locked, modelUniqueId, Location.deserialize(args), type, base64Storage, shopDisplayName, customizationsChanges);
+        return new VehicleData(owner, fuel, locked, modelUniqueId, Location.deserialize(args), type, base64Storage, shopDisplayName, customizationChanges);
     }
 
     private static void fillCustomizations(@NotNull List<?> changes, Map<String, Material> saveTo) {
