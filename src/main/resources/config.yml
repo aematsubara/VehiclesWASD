@@ -520,11 +520,8 @@ customizations:
 # You can specify the sound, volume and pitch (separated by "," or " ").
 # NOTE: 2: The engine sounds for the boats will only sound when the boat is moving.
 #
-# NOTE 3: Once the vehicle is generated (whether obtained by the {/vw give} command or from the store), the maximum fuel won't be modified for them
-# until the server is restarted (the same for storage).
-#
 # The storage can have between 1 and 6 rows. If left at 0, the vehicle storage will be disabled.
-# NOTE 4: If you reduce the number of rows, any items left outside will be lost. It is RECOMMENDED that you adjust this before giving players access.
+# NOTE 3: If you reduce the number of rows, any items left outside will be lost. It is RECOMMENDED that you adjust this before giving players access.
 # For example, If the bikes had a @{storage-rows} of 3 rows, and you change it to 2, the items in the deleted third row will be lost (the same if you set it to 0).
 vehicles:
   bike:

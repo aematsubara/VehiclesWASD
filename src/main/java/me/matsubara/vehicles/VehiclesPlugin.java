@@ -363,7 +363,7 @@ public final class VehiclesPlugin extends JavaPlugin {
                 double price = getConfig().getDouble("shop.vehicles." + type.toConfigPath() + "." + key + ".price");
 
                 List<String> finalCustomizations;
-                Map<String, Material> customizationsChanges = new HashMap<>();
+                Map<String, Material> customizationChanges = new HashMap<>();
                 if (!customizations.isEmpty()) {
                     finalCustomizations = new ArrayList<>();
                     for (String customization : customizations) {
@@ -378,11 +378,11 @@ public final class VehiclesPlugin extends JavaPlugin {
                         String nameFromConfig = getConfig().getString("customizations." + type.toConfigPath() + "." + customizationName.toLowerCase() + ".name");
                         finalCustomizations.add(nameFromConfig);
 
-                        customizationsChanges.put(customizationName, material);
+                        customizationChanges.put(customizationName, material);
                     }
                 } else finalCustomizations = Collections.emptyList();
 
-                VehicleData data = new VehicleData(null, null, true, null, null, type, null, null, customizationsChanges);
+                VehicleData data = new VehicleData(null, null, true, null, null, type, null, null, customizationChanges);
 
                 ItemBuilder builder = new ItemBuilder(vehicleItem);
                 if (displayName != null) builder.setDisplayName(displayName);
