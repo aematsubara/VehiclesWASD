@@ -35,14 +35,6 @@ public class ShopGUI implements InventoryHolder {
     private static final int[] SLOTS = {28, 29, 30, 31, 32, 33, 34};
     private static final int[] HOTBAR = {37, 38, 39, 40, 41, 42, 43};
 
-    private final ItemStack previousType;
-    private final ItemStack nextType;
-    private final ItemStack previous;
-    private final ItemStack next;
-    private final ItemStack close;
-    private final ItemStack background;
-    private final ItemStack selected;
-
     public ShopGUI(@NotNull VehiclesPlugin plugin, @NotNull Player player, VehicleType currentType) {
         this(plugin, player, currentType, 0);
     }
@@ -53,15 +45,6 @@ public class ShopGUI implements InventoryHolder {
         this.inventory = Bukkit.createInventory(this, 54, getTitle());
         this.player = player;
         this.currentPage = currentPage;
-
-        String path = "gui.shop.items.";
-        previousType = plugin.getItem(path + "previous-type").build();
-        nextType = plugin.getItem(path + "next-type").build();
-        previous = plugin.getItem(path + "previous-page").build();
-        next = plugin.getItem(path + "next-page").build();
-        close = plugin.getItem(path + "close").build();
-        background = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).setDisplayName("&7").build();
-        selected = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE).setDisplayName("&7").build();
 
         player.openInventory(inventory);
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, this::updateInventory);
@@ -74,6 +57,10 @@ public class ShopGUI implements InventoryHolder {
 
         pages = (int) (Math.ceil((double) items.size() / SLOTS.length));
 
+        ItemStack background = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
+                .setDisplayName("&7")
+                .build();
+
         for (int i = 0; i < 53; i++) {
             if (ArrayUtils.contains(TOP_SLOTS, i)
                     || ArrayUtils.contains(SLOTS, i)
@@ -81,16 +68,22 @@ public class ShopGUI implements InventoryHolder {
             inventory.setItem(i, background);
         }
 
+        ItemStack selected = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE)
+                .setDisplayName("&7")
+                .build();
+
+        String path = "gui.shop.items.";
+
         inventory.setItem(4, selected);
         inventory.setItem(22, selected);
 
-        inventory.setItem(10, previousType);
-        inventory.setItem(16, nextType);
+        inventory.setItem(10, plugin.getItem(path + "previous-type").build());
+        inventory.setItem(16, plugin.getItem(path + "next-type").build());
 
-        if (currentPage > 0) inventory.setItem(37, previous);
-        if (currentPage < pages - 1) inventory.setItem(43, next);
+        if (currentPage > 0) inventory.setItem(37, plugin.getItem(path + "previous-page").build());
+        if (currentPage < pages - 1) inventory.setItem(43, plugin.getItem(path + "next-page").build());
 
-        inventory.setItem(53, close);
+        inventory.setItem(53, plugin.getItem(path + "close").build());
 
         int currentOrdinal = currentType.ordinal();
         VehicleType[] types = VehicleType.values();

@@ -1,18 +1,18 @@
 package me.matsubara.vehicles.listener.protocol;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.comphenix.protocol.wrappers.WrappedEnumEntityUseAction;
+import com.github.retrooper.packetevents.event.PacketListenerPriority;
+import com.github.retrooper.packetevents.event.SimplePacketListenerAbstract;
+import com.github.retrooper.packetevents.event.simple.PacketPlayReceiveEvent;
+import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import com.github.retrooper.packetevents.protocol.player.InteractionHand;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity;
 import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.files.Messages;
+import me.matsubara.vehicles.gui.VehicleGUI;
 import me.matsubara.vehicles.manager.VehicleManager;
 import me.matsubara.vehicles.model.Model;
 import me.matsubara.vehicles.model.stand.PacketStand;
 import me.matsubara.vehicles.model.stand.StandSettings;
-import me.matsubara.vehicles.util.PluginUtils;
 import me.matsubara.vehicles.vehicle.Vehicle;
 import me.matsubara.vehicles.vehicle.VehicleType;
 import me.matsubara.vehicles.vehicle.task.PreviewTick;
@@ -21,7 +21,10 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.entity.*;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Fireball;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,32 +33,33 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
-public final class UseEntity extends PacketAdapter {
+public final class UseEntity extends SimplePacketListenerAbstract {
 
     private final VehiclesPlugin plugin;
 
     public UseEntity(VehiclesPlugin plugin) {
-        super(plugin, ListenerPriority.HIGHEST, PacketType.Play.Client.USE_ENTITY);
+        super(PacketListenerPriority.HIGHEST);
         this.plugin = plugin;
     }
 
     @Override
-    public void onPacketReceiving(@NotNull PacketEvent event) {
-        int entityId = event.getPacket().getIntegers().readSafely(0);
+    public void onPacketPlayReceive(@NotNull PacketPlayReceiveEvent event) {
+        if (event.getPacketType() != PacketType.Play.Client.INTERACT_ENTITY) return;
 
-        WrappedEnumEntityUseAction useAction = event.getPacket().getEnumEntityUseActions().readSafely(0);
+        WrapperPlayClientInteractEntity wrapper = new WrapperPlayClientInteractEntity(event);
 
-        EnumWrappers.EntityUseAction action = useAction.getAction();
-        boolean left = action == EnumWrappers.EntityUseAction.ATTACK;
+        int entityId = wrapper.getEntityId();
 
-        EnumWrappers.Hand hand = left ? null : useAction.getHand();
+        WrapperPlayClientInteractEntity.InteractAction action = wrapper.getAction();
+        boolean left = action == WrapperPlayClientInteractEntity.InteractAction.ATTACK;
+
+        InteractionHand hand = left ? null : wrapper.getHand();
 
         // We only need to listen to ATTACK (left) or INTERACT_AT (right).
-        // For armor stands, only INTERACT_AT is called; for llamas, INTERACT and INTERACT_AT are called.
-        if (action == EnumWrappers.EntityUseAction.INTERACT) return;
-        if (hand == EnumWrappers.Hand.OFF_HAND) return;
+        if (action == WrapperPlayClientInteractEntity.InteractAction.INTERACT) return;
+        if (hand == InteractionHand.OFF_HAND) return;
+        if (!(event.getPlayer() instanceof Player player)) return;
 
-        Player player = event.getPlayer();
         VehicleManager vehicleManager = plugin.getVehicleManager();
 
         // The player is already inside a vehicle.
@@ -151,12 +155,10 @@ public final class UseEntity extends PacketAdapter {
         if (player.isSneaking()) {
             if (!playerUUID.equals(vehicle.getOwner())) return;
 
-            Pair<LivingEntity, StandSettings> primaryChair = vehicle.getChair(0);
+            Pair<ArmorStand, StandSettings> primaryChair = vehicle.getChair(0);
             if (primaryChair != null) {
                 if (kickDriverIfPossible(player, vehicle)) return;
-                if (primaryChair.getKey() instanceof Llama llama) {
-                    PluginUtils.openLlamaInventory(player, llama);
-                }
+                plugin.getServer().getScheduler().runTask(plugin, () -> new VehicleGUI(plugin, player, vehicle));
             }
             return;
         }
@@ -178,7 +180,7 @@ public final class UseEntity extends PacketAdapter {
             firstChair = false;
         }
 
-        Pair<LivingEntity, StandSettings> chair = null;
+        Pair<ArmorStand, StandSettings> chair = null;
         if (firstChair) {
             chair = vehicle.getChair(0);
         } else {
@@ -187,7 +189,7 @@ public final class UseEntity extends PacketAdapter {
                 return;
             }
 
-            for (Pair<LivingEntity, StandSettings> pair : vehicle.getChairs()) {
+            for (Pair<ArmorStand, StandSettings> pair : vehicle.getChairs()) {
                 String partName = pair.getValue().getPartName();
                 if (partName.equals("CHAIR_1")) continue;
                 if (vehicle.getPassengers().containsValue(partName)) continue;
@@ -248,14 +250,14 @@ public final class UseEntity extends PacketAdapter {
         messages.send(player, Messages.Message.VEHICLE_OCCUPIED_BY_UNKNOWN);
     }
 
-    private boolean notChair(int entityId, @NotNull List<Pair<LivingEntity, StandSettings>> chairs) {
-        for (Pair<LivingEntity, StandSettings> chair : chairs) {
+    private boolean notChair(int entityId, @NotNull List<Pair<ArmorStand, StandSettings>> chairs) {
+        for (Pair<ArmorStand, StandSettings> chair : chairs) {
             if (!notChair(chair, entityId)) return false;
         }
         return true;
     }
 
-    private boolean notChair(Pair<LivingEntity, StandSettings> pair, int entityId) {
+    private boolean notChair(Pair<ArmorStand, StandSettings> pair, int entityId) {
         return pair == null || pair.getKey().getEntityId() != entityId;
     }
 }

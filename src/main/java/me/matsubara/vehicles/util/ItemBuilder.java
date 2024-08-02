@@ -1,5 +1,6 @@
 package me.matsubara.vehicles.util;
 
+import com.cryptomorin.xseries.reflection.XReflection;
 import org.bukkit.*;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
@@ -9,10 +10,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.invoke.MethodHandle;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
@@ -22,6 +23,14 @@ import java.util.function.UnaryOperator;
 public final class ItemBuilder {
 
     private final ItemStack item;
+
+    private static final MethodHandle SET_BASE_POTION_TYPE;
+
+    static {
+        SET_BASE_POTION_TYPE = XReflection.supports(20, 6) ?
+                Reflection.getMethod(PotionMeta.class, "setBasePotionType", PotionType.class) :
+                null;
+    }
 
     public ItemBuilder(@NotNull ItemStack item) {
         this.item = item.clone();
@@ -156,7 +165,11 @@ public final class ItemBuilder {
     }
 
     public ItemBuilder addEnchantment(Enchantment enchantment, int level) {
-        item.addUnsafeEnchantment(enchantment, level);
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return this;
+
+        meta.addEnchant(enchantment, level, true);
+        item.setItemMeta(meta);
         return this;
     }
 
@@ -183,14 +196,25 @@ public final class ItemBuilder {
         return this;
     }
 
+    @SuppressWarnings("deprecation")
     public ItemBuilder setBasePotionData(PotionType type) {
         if (!(item.getItemMeta() instanceof PotionMeta meta)) return this;
 
-        meta.setBasePotionData(new PotionData(type));
+        if (SET_BASE_POTION_TYPE != null) {
+            try {
+                SET_BASE_POTION_TYPE.invoke(meta, type);
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
+            }
+        } else {
+            meta.setBasePotionData(new org.bukkit.potion.PotionData(type));
+        }
+
         item.setItemMeta(meta);
         return this;
     }
 
+    @SuppressWarnings("deprecation")
     public ItemBuilder addPattern(int colorId, String patternCode) {
         return addPattern(DyeColor.values()[colorId], PatternType.getByIdentifier(patternCode));
     }
@@ -291,13 +315,6 @@ public final class ItemBuilder {
 
         item.setItemMeta(meta);
         return this;
-    }
-
-    public ItemBuilder glow() {
-        item.addUnsafeEnchantment(item.getType() == Material.BOW ?
-                Enchantment.DURABILITY :
-                Enchantment.ARROW_DAMAGE, 1);
-        return addItemFlags(ItemFlag.HIDE_ENCHANTS);
     }
 
     public ItemBuilder applyMultiLineLore(

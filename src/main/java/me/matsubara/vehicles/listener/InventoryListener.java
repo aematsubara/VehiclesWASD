@@ -6,6 +6,7 @@ import me.matsubara.vehicles.files.Messages;
 import me.matsubara.vehicles.gui.ConfirmShopGUI;
 import me.matsubara.vehicles.gui.CustomizationGUI;
 import me.matsubara.vehicles.gui.ShopGUI;
+import me.matsubara.vehicles.gui.VehicleGUI;
 import me.matsubara.vehicles.hook.VaultExtension;
 import me.matsubara.vehicles.manager.targets.TypeTarget;
 import me.matsubara.vehicles.model.stand.StandSettings;
@@ -21,18 +22,19 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Particle;
-import org.bukkit.entity.*;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.LlamaInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -47,7 +49,6 @@ public final class InventoryListener implements Listener {
     private final VehiclesPlugin plugin;
 
     private static final List<AnvilGUI.ResponseAction> CLOSE_RESPONSE = Collections.singletonList(AnvilGUI.ResponseAction.close());
-    private static final List<Integer> HELICOPTER_CHAIR_SLOTS = List.of(5, 10, 15, 6, 11, 16);
 
     public InventoryListener(VehiclesPlugin plugin) {
         this.plugin = plugin;
@@ -77,48 +78,42 @@ public final class InventoryListener implements Listener {
     }
 
     @EventHandler
-    public void onInventoryOpen(@NotNull InventoryOpenEvent event) {
-        if (!((event.getPlayer()) instanceof Player player)) return;
-        if (!(event.getInventory().getHolder() instanceof Llama llama)) return;
-
-        Vehicle vehicle = plugin.getVehicleManager().getVehicleFromLlama(llama);
-        if (vehicle == null) return;
-
-        vehicle.updateLlamaInventory(player, llama.getInventory());
-    }
-
-    @EventHandler
     public void onInventoryDrag(@NotNull InventoryDragEvent event) {
         if (!(event.getWhoClicked() instanceof Player player)) return;
 
-        InventoryHolder holder = event.getInventory().getHolder();
+        Inventory inventory = event.getInventory();
+        InventoryHolder holder = inventory.getHolder();
+
         if (holder instanceof CustomizationGUI || holder instanceof ShopGUI) {
-            if (event.getRawSlots().stream().anyMatch(integer -> integer < 36)) {
+            if (event.getRawSlots().stream().anyMatch(integer -> integer < inventory.getSize())) {
                 event.setCancelled(true);
             }
             return;
         }
 
-        if (!(holder instanceof Llama llama)) return;
+        if (!(holder instanceof VehicleGUI gui)) return;
 
-        Vehicle vehicle = plugin.getVehicleManager().getVehicleFromLlama(llama);
+        Vehicle vehicle = gui.getVehicle();
         if (vehicle == null || !vehicle.fuelEnabled()) return;
 
-        Set<Integer> rawSlots = event.getRawSlots();
-        for (Integer rawSlot : new HashSet<>(rawSlots)) {
-            if (rawSlot >= 2 + 3 * llama.getStrength()) continue;
+        ItemStack item;
+        int slot, removed;
+        boolean ignoreSaddle = inventory.getSize() == 7;
 
-            int removed;
-            ItemStack item;
-            if (rawSlots.size() == 1
-                    && rawSlot == vehicle.getFuelDepositSlot()
-                    && (removed = handleFuel(vehicle, item = event.getNewItems().get(rawSlot))) != -1) {
-                runTask(() -> handleRemainingItemAmount(item, player::setItemOnCursor, removed));
-            }
-
+        Set<Integer> slots = event.getRawSlots();
+        if (slots.size() != 1
+                || (slot = slots.iterator().next()) != vehicle.getFuelDepositSlot()
+                || (removed = handleFuel(vehicle, item = event.getNewItems().get(slot))) == -1) {
             event.setCancelled(true);
-            break;
+            return;
         }
+
+        runTask(() -> handleRemainingItemAmount(item, player::setItemOnCursor, removed));
+    }
+
+    public boolean isCustomItem(@NotNull ItemStack item, String name) {
+        ItemMeta meta = item.getItemMeta();
+        return meta != null && Objects.equals(meta.getPersistentDataContainer().get(plugin.getItemIdKey(), PersistentDataType.STRING), name);
     }
 
     private void handleRemainingItemAmount(
@@ -175,33 +170,29 @@ public final class InventoryListener implements Listener {
 
         ItemStack current = event.getCurrentItem();
 
-        if (inventory instanceof LlamaInventory llamaInventory) {
-            if (llamaInventory.getHolder() instanceof Llama llama) {
-                handleVehicleGUI(player, llama, current, event);
-            }
+        InventoryHolder holder = inventory.getHolder();
+
+        if (holder instanceof VehicleGUI gui) {
+            handleVehicleGUI(player, gui, current, event);
         }
 
         // Prevent moving items from player inventory to custom inventories by shift-clicking (except for storage GUI).
-        Inventory topInventory;
-        if (event.getClick().isShiftClick() && ((topInventory = event.getView().getTopInventory()).getHolder() instanceof CustomizationGUI
-                || (topInventory instanceof LlamaInventory llamaInventory
-                && llamaInventory.getHolder() instanceof Llama llama
-                && plugin.getVehicleManager().getVehicleFromLlama(llama) != null))) {
+        InventoryHolder topHolder;
+        if (event.getClick().isShiftClick() && ((topHolder = event.getView().getTopInventory().getHolder()) instanceof CustomizationGUI
+                || (topHolder instanceof VehicleGUI gui && gui.getVehicle() != null))) {
             event.setCancelled(true);
             return;
         }
-
-        InventoryHolder holder = inventory.getHolder();
 
         if (holder instanceof ConfirmShopGUI confirm) {
             event.setCancelled(true);
 
             if (current == null) return;
 
-            if (current.isSimilar(confirm.getConfirm())) {
+            if (isCustomItem(current, "confirm")) {
                 confirm.setOpenBack(false);
                 completePurchase(player, confirm.getMoney(), confirm.getData(), confirm.getShopDisplayName());
-            } else if (current.isSimilar(confirm.getCancel())) {
+            } else if (isCustomItem(current, "cancel")) {
                 closeInventory(player);
             }
 
@@ -215,20 +206,20 @@ public final class InventoryListener implements Listener {
 
             if (current == null) return;
 
-            if (current.isSimilar(shop.getClose())) {
+            if (isCustomItem(current, "close")) {
                 closeInventory(player);
-            } else if (current.isSimilar(shop.getPrevious())) {
+            } else if (isCustomItem(current, "previous-page")) {
                 shop.previousPage(event.isShiftClick());
-            } else if (current.isSimilar(shop.getNext())) {
+            } else if (isCustomItem(current, "next-page")) {
                 shop.nextPage(event.isShiftClick());
-            } else if (current.isSimilar(shop.getPreviousType())) {
+            } else if (isCustomItem(current, "previous-type")) {
                 int currentOrdinal = shop.getCurrentType().ordinal();
 
                 VehicleType[] values = VehicleType.values();
                 VehicleType newType = values[currentOrdinal - 1 < 0 ? values.length - 1 : currentOrdinal - 1];
 
                 shop.setCurrentType(newType);
-            } else if (current.isSimilar(shop.getNextType())) {
+            } else if (isCustomItem(current, "next-type")) {
                 int currentOrdinal = shop.getCurrentType().ordinal();
 
                 VehicleType[] values = VehicleType.values();
@@ -295,13 +286,13 @@ public final class InventoryListener implements Listener {
 
         boolean isShiftClick = event.isShiftClick();
 
-        if (current.isSimilar(customization.getClose())) {
+        if (isCustomItem(current, "close")) {
             closeInventory(player);
-        } else if (current.isSimilar(customization.getPrevious())) {
+        } else if (isCustomItem(current, "previous-page")) {
             customization.previousPage(isShiftClick);
-        } else if (current.isSimilar(customization.getNext())) {
+        } else if (isCustomItem(current, "next-page")) {
             customization.nextPage(isShiftClick);
-        } else if (current.isSimilar(customization.getSearch())) {
+        } else if (isCustomItem(current, "search")) {
             new AnvilGUI.Builder()
                     .onClick((slot, snapshot) -> {
                         if (slot != AnvilGUI.Slot.OUTPUT) return Collections.emptyList();
@@ -313,7 +304,7 @@ public final class InventoryListener implements Listener {
                     .itemLeft(new ItemStack(Material.PAPER))
                     .plugin(plugin)
                     .open(player);
-        } else if (current.isSimilar(customization.getClearSearch())) {
+        } else if (isCustomItem(current, "clear-search")) {
             runTask(() -> new CustomizationGUI(plugin, customization.getVehicle(), player, null));
         }
 
@@ -410,7 +401,7 @@ public final class InventoryListener implements Listener {
     }
 
     private void startPreview(@NotNull Player player, VehicleData data) {
-        PreviewTick currentPreview = plugin.getVehicleManager().getPreviews().get(player.getUniqueId());
+        PreviewTick currentPreview = plugin.getVehicleManager().getPreviews().remove(player.getUniqueId());
         if (currentPreview != null && !currentPreview.isCancelled()) {
             currentPreview.cancel();
         }
@@ -419,14 +410,15 @@ public final class InventoryListener implements Listener {
     }
 
     @SuppressWarnings("deprecation")
-    private void handleVehicleGUI(Player player, @NotNull Llama llama, ItemStack current, InventoryClickEvent event) {
-        Vehicle vehicle = plugin.getVehicleManager().getVehicleFromLlama(llama);
+    private void handleVehicleGUI(Player player, @NotNull VehicleGUI gui, ItemStack current, InventoryClickEvent event) {
+        Vehicle vehicle = gui.getVehicle();
         if (vehicle == null) return;
 
         event.setCancelled(true);
 
         int slot = event.getRawSlot();
         if (slot == vehicle.getFuelDepositSlot() && vehicle.fuelEnabled()) {
+
             int hotbarButton = event.getHotbarButton();
             ItemStack cursor = hotbarButton != -1 ? player.getInventory().getItem(hotbarButton) : event.getCursor();
 
@@ -444,40 +436,39 @@ public final class InventoryListener implements Listener {
 
         if (current == null) return;
 
-        LlamaInventory inventory = llama.getInventory();
+        Inventory inventory = gui.getInventory();
         UUID playerUUID = player.getUniqueId();
         boolean isOwner = playerUUID.equals(vehicle.getOwner());
 
-        int index = index(slot, vehicle.is(VehicleType.HELICOPTER));
-        if (index == 2) { // Lock / unlock
+        if (isCustomItem(current, "lock") || isCustomItem(current, "unlock")) {
             if (!isOwner) return;
 
             if (vehicle.isLocked()) {
                 vehicle.setLocked(false);
-                inventory.setItem(index, plugin.getItem("gui.vehicle.items.lock").build());
+                inventory.setItem(slot, plugin.getItem("gui.vehicle.items.lock").build());
             } else {
                 vehicle.setLocked(true);
-                inventory.setItem(2, plugin.getItem("gui.vehicle.items.unlock").build());
+                inventory.setItem(slot, plugin.getItem("gui.vehicle.items.unlock").build());
 
                 UUID driver = vehicle.getDriver();
                 if (driver != null && !driver.equals(vehicle.getOwner())) {
-                    Pair<LivingEntity, StandSettings> primaryChair = vehicle.getChair(0);
+                    Pair<ArmorStand, StandSettings> primaryChair = vehicle.getChair(0);
                     if (primaryChair != null) primaryChair.getKey().eject();
                 }
             }
-        } else if (index == 1) { // Storage
+        } else if (isCustomItem(current, "storage")) {
             if (!isOwner) return;
 
             if (vehicle.getStorageRows() > 0) {
                 runTask(() -> player.openInventory(vehicle.getInventory()));
             }
-        } else if (index == 4) { // Customizations
+        } else if (isCustomItem(current, "customization")) {
             if (!isOwner) return;
 
             if (!vehicle.getCustomizations().isEmpty()) {
                 runTask(() -> new CustomizationGUI(plugin, vehicle, player, null));
             }
-        } else if (index == 6) { // Transfer ownership
+        } else if (isCustomItem(current, "transfer-ownership")) {
             if (!isOwner) return;
 
             new AnvilGUI.Builder()
@@ -502,7 +493,7 @@ public final class InventoryListener implements Listener {
                                 UUID ownerUUID = newOwner.getUniqueId();
 
                                 // Eject every passenger (except new owner).
-                                for (Pair<LivingEntity, StandSettings> chair : vehicle.getChairs()) {
+                                for (Pair<ArmorStand, StandSettings> chair : vehicle.getChairs()) {
                                     String partName = chair.getValue().getPartName();
 
                                     String newOwnerChair = vehicle.getPassengers().get(ownerUUID);
@@ -532,11 +523,14 @@ public final class InventoryListener implements Listener {
         }
 
         if (!(vehicle instanceof Helicopter helicopter)) return;
-        if (!HELICOPTER_CHAIR_SLOTS.contains(slot)) return;
 
-        int chair = HELICOPTER_CHAIR_SLOTS.indexOf(slot) + 1;
+        ItemMeta meta = current.getItemMeta();
+        if (meta == null) return;
 
-        Pair<LivingEntity, StandSettings> chairPair = vehicle.getChair(chair);
+        int chair = meta.getPersistentDataContainer().getOrDefault(plugin.getChairNumbeKey(), PersistentDataType.INTEGER, -1);
+        if (chair == -1) return;
+
+        Pair<ArmorStand, StandSettings> chairPair = vehicle.getChair(chair);
         if (chairPair == null) return;
 
         List<Entity> passengers = chairPair.getKey().getPassengers();
@@ -552,7 +546,7 @@ public final class InventoryListener implements Listener {
             helicopter.getTransfers().add(playerUUID);
 
             // Sit player on the driver sit.
-            Pair<LivingEntity, StandSettings> driverPair = vehicle.getChair(0);
+            Pair<ArmorStand, StandSettings> driverPair = vehicle.getChair(0);
             if (driverPair != null) driverPair.getKey().addPassenger(player);
 
             vehicle.getPassengers().remove(playerUUID);
@@ -562,22 +556,7 @@ public final class InventoryListener implements Listener {
         closeInventory(player);
     }
 
-    private int index(int index, boolean isHelicopter) {
-        if (!isHelicopter) return index;
-
-        if (PluginUtils.is(index, 1, 2, 3)) return index;
-        if (PluginUtils.is(index, 7, 8)) return index - 3;
-        if (PluginUtils.is(index, 12, 13)) return index - 6;
-
-        return Integer.MIN_VALUE;
-    }
-
     private void sitOnChair(@NotNull Helicopter helicopter, @NotNull Player player, int chair) {
-        if (!player.isInsideVehicle()) {
-            closeInventory(player);
-            return;
-        }
-
         UUID playerUUID = player.getUniqueId();
 
         // The driver is moving to outside (or was outside, and it's moving to another outside chair).
@@ -589,7 +568,7 @@ public final class InventoryListener implements Listener {
         // Mark as transfer.
         helicopter.getTransfers().add(playerUUID);
 
-        Pair<LivingEntity, StandSettings> pair = helicopter.getChairs().get(chair);
+        Pair<ArmorStand, StandSettings> pair = helicopter.getChairs().get(chair);
         if (pair != null) {
             pair.getKey().addPassenger(player);
             helicopter.getPassengers().put(playerUUID, pair.getValue().getPartName());

@@ -1,11 +1,11 @@
 package me.matsubara.vehicles.manager;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.reflect.StructureModifier;
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.event.PacketListenerPriority;
+import com.github.retrooper.packetevents.event.SimplePacketListenerAbstract;
+import com.github.retrooper.packetevents.event.simple.PacketPlayReceiveEvent;
+import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientSteerVehicle;
 import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.data.PlayerInput;
 import org.bukkit.entity.Player;
@@ -18,14 +18,14 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class InputManager extends PacketAdapter implements Listener {
+public class InputManager extends SimplePacketListenerAbstract implements Listener {
 
     private final Map<UUID, PlayerInput> inputs = new ConcurrentHashMap<>();
 
-    public InputManager(VehiclesPlugin plugin) {
-        super(plugin, ListenerPriority.HIGHEST, PacketType.Play.Client.STEER_VEHICLE);
+    public InputManager(@NotNull VehiclesPlugin plugin) {
+        super(PacketListenerPriority.HIGHEST);
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        ProtocolLibrary.getProtocolManager().addPacketListener(this);
+        PacketEvents.getAPI().getEventManager().registerListener(this);
     }
 
     public PlayerInput getInput(UUID uuid) {
@@ -33,23 +33,25 @@ public class InputManager extends PacketAdapter implements Listener {
     }
 
     @Override
-    public void onPacketReceiving(@NotNull PacketEvent event) {
-        Player player = event.getPlayer();
+    public void onPacketPlayReceive(@NotNull PacketPlayReceiveEvent event) {
+        if (event.getPacketType() != PacketType.Play.Client.STEER_VEHICLE) return;
+        if (!(event.getPlayer() instanceof Player player)) return;
 
-        StructureModifier<Float> floats = event.getPacket().getFloat();
-        float sideways = floats.readSafely(0);
-        float forward = floats.readSafely(1);
+        WrapperPlayClientSteerVehicle wrapper = new WrapperPlayClientSteerVehicle(event);
 
-        StructureModifier<Boolean> booleans = event.getPacket().getBooleans();
-        boolean jump = booleans.readSafely(0);
-        boolean dismount = booleans.readSafely(1);
+        float sideways = wrapper.getSideways();
+        float forward = wrapper.getForward();
+
+        boolean jump = wrapper.isJump();
+        boolean dismount = wrapper.isUnmount();
 
         PlayerInput input = new PlayerInput(sideways, forward, jump, dismount);
         inputs.put(player.getUniqueId(), input);
     }
 
+    @SuppressWarnings("UnstableApiUsage")  // We can keep using this event if we stay in 1.20.4.
     @EventHandler
-    public void onEntityDismount(@NotNull EntityDismountEvent event) {
+    public void onEntityDismount(@SuppressWarnings("deprecation") @NotNull EntityDismountEvent event) {
         if (event.getEntity() instanceof Player player) inputs.remove(player.getUniqueId());
     }
 }

@@ -6,6 +6,7 @@ import me.matsubara.vehicles.files.Messages;
 import me.matsubara.vehicles.gui.ConfirmShopGUI;
 import me.matsubara.vehicles.gui.CustomizationGUI;
 import me.matsubara.vehicles.gui.ShopGUI;
+import me.matsubara.vehicles.gui.VehicleGUI;
 import me.matsubara.vehicles.hook.EssentialsExtension;
 import me.matsubara.vehicles.hook.VaultExtension;
 import me.matsubara.vehicles.manager.VehicleManager;
@@ -22,7 +23,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-import org.bukkit.entity.Llama;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -30,8 +30,8 @@ import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.patheloper.api.pathing.Pathfinder;
+import org.patheloper.api.pathing.configuration.PathingRuleSet;
 import org.patheloper.api.pathing.result.PathfinderResult;
-import org.patheloper.api.pathing.rules.PathingRuleSet;
 import org.patheloper.api.pathing.strategy.strategies.WalkablePathfinderStrategy;
 import org.patheloper.mapping.PatheticMapper;
 import org.patheloper.mapping.bukkit.BukkitMapper;
@@ -98,14 +98,10 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
                 Inventory top = online.getOpenInventory().getTopInventory();
                 InventoryHolder holder = top.getHolder();
 
-                if (holder instanceof Llama llama
-                        && vehicleManager.getVehicleFromLlama(llama) == null) {
-                    continue;
-                }
-
                 if (!(holder instanceof ConfirmShopGUI)
                         && !(holder instanceof CustomizationGUI)
                         && !(holder instanceof ShopGUI)
+                        && !(holder instanceof VehicleGUI)
                         && !(holder instanceof Vehicle)) {
                     continue;
                 }

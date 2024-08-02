@@ -18,8 +18,6 @@ import org.jetbrains.annotations.NotNull;
 public class ConfirmShopGUI implements InventoryHolder {
 
     private final Inventory inventory;
-    private final ItemStack confirm;
-    private final ItemStack cancel;
     private final VehicleData data;
     private final String shopDisplayName;
     private final double money;
@@ -38,15 +36,14 @@ public class ConfirmShopGUI implements InventoryHolder {
         this.inventory = Bukkit.createInventory(this, 9, title != null && shopDisplayName != null ?
                 PluginUtils.translate(title.replace("%name%", shopDisplayName)) : "");
 
-        this.confirm = plugin.getItem("gui.shop-confirm.items.confirm").replace("%money%", money).build();
-        this.cancel = plugin.getItem("gui.shop-confirm.items.cancel").build();
-
         this.data = data;
         this.money = money;
         this.previousPage = previousPage;
 
         for (int i = 0; i < 4; i++) {
-            inventory.setItem(i, confirm);
+            inventory.setItem(i, plugin.getItem("gui.shop-confirm.items.confirm")
+                    .replace("%money%", money)
+                    .build());
         }
 
         inventory.setItem(4, new ItemBuilder(shopItem)
@@ -54,7 +51,7 @@ public class ConfirmShopGUI implements InventoryHolder {
                 .build());
 
         for (int i = 5; i < 9; i++) {
-            inventory.setItem(i, cancel);
+            inventory.setItem(i, plugin.getItem("gui.shop-confirm.items.cancel").build());
         }
 
         player.openInventory(inventory);

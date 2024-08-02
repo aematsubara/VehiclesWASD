@@ -6,8 +6,14 @@ author: Matsubara
 description: '${project.description}'
 load: STARTUP
 depend:
-  - ProtocolLib
+  - packetevents
 softdepend:
+  - ProtocolLib
+  - ProtocolSupport
+  - ViaVersion
+  - ViaBackwards
+  - ViaRewind
+  - Geyser-Spigot
   - WorldGuard
   - Vault
   - Essentials

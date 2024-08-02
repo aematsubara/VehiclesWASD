@@ -1,6 +1,6 @@
 package me.matsubara.vehicles.util;
 
-import com.cryptomorin.xseries.ReflectionUtils;
+import com.cryptomorin.xseries.reflection.XReflection;
 import me.matsubara.vehicles.model.stand.StandSettings;
 import me.matsubara.vehicles.vehicle.VehicleType;
 import org.apache.commons.lang3.ArrayUtils;
@@ -50,18 +50,18 @@ public class BlockUtils {
             .get();
 
     // Classes.
-    private static final Class<?> BLOCK_ACCESS = ReflectionUtils.getNMSClass("world.level", "IBlockAccess");
-    private static final Class<?> RAY_TRACE = ReflectionUtils.getNMSClass("world.level", "RayTrace");
-    private static final Class<?> VEC_3D = ReflectionUtils.getNMSClass("world.phys", "Vec3D");
-    private static final Class<?> BLOCK_CONTEXT = ReflectionUtils.getNMSClass("world.level", "RayTrace$BlockCollisionOption");
-    private static final Class<?> FLUID_CONTEXT = ReflectionUtils.getNMSClass("world.level", "RayTrace$FluidCollisionOption");
-    private static final Class<?> ENTITY = ReflectionUtils.getNMSClass("world.entity", "Entity");
-    private static final Class<?> CRAFT_WORLD = ReflectionUtils.getCraftClass("CraftWorld");
-    private static final Class<?> CRAFT_PLAYER = ReflectionUtils.getCraftClass("entity.CraftPlayer");
-    private static final Class<?> MOVING_OBJECT_POSITION = ReflectionUtils.getNMSClass("world.phys", "MovingObjectPosition");
-    private static final Class<?> MOVING_OBJECT_POSITION_BLOCK = ReflectionUtils.getNMSClass("world.phys", "MovingObjectPositionBlock");
-    private static final Class<?> BLOCK_POSITION = ReflectionUtils.getNMSClass("core", "BlockPosition");
-    private static final Class<?> BASE_BLOCK_POSITION = ReflectionUtils.getNMSClass("core", "BaseBlockPosition");
+    private static final Class<?> BLOCK_ACCESS = Reflection.getNMSClass("world.level", "BlockGetter", "IBlockAccess");
+    private static final Class<?> RAY_TRACE = Reflection.getNMSClass("world.level", "ClipContext", "RayTrace");
+    private static final Class<?> VEC_3D = Reflection.getNMSClass("world.phys", "Vec3", "Vec3D");
+    private static final Class<?> BLOCK_CONTEXT = Reflection.getNMSClass("world.level", "ClipContext$Block", "RayTrace$BlockCollisionOption");
+    private static final Class<?> FLUID_CONTEXT = Reflection.getNMSClass("world.level", "ClipContext$Fluid", "RayTrace$FluidCollisionOption");
+    private static final Class<?> ENTITY = XReflection.getNMSClass("world.entity", "Entity");
+    private static final Class<?> CRAFT_WORLD = XReflection.getCraftClass("CraftWorld");
+    private static final Class<?> CRAFT_PLAYER = XReflection.getCraftClass("entity.CraftPlayer");
+    private static final Class<?> MOVING_OBJECT_POSITION = Reflection.getNMSClass("world.phys", "HitResult", "MovingObjectPosition");
+    private static final Class<?> MOVING_OBJECT_POSITION_BLOCK = Reflection.getNMSClass("world.phys", "BlockHitResult", "MovingObjectPositionBlock");
+    private static final Class<?> BLOCK_POSITION = Reflection.getNMSClass("core", "BlockPos", "BlockPosition");
+    private static final Class<?> BASE_BLOCK_POSITION = Reflection.getNMSClass("core", "Vec3i", "BaseBlockPosition");
 
     // Methods.
     private static final MethodHandle getVec3X = Reflection.getMethod(VEC_3D, "a", MethodType.methodType(double.class), "getX");
@@ -270,13 +270,8 @@ public class BlockUtils {
         float extraYaw = settings.getExtraYaw();
         if (extraYaw != 0.0f) location.setYaw(yaw(location.getYaw() + extraYaw));
 
-        // Llama height is different from armor stand ones.
         if (settings.getPartName().startsWith("CHAIR")) {
-            location.subtract(0.0d, 0.45d, 0.0d)
-                    .add(PluginUtils.offsetVector(
-                            new Vector(0.0d, 0.0d, 0.3125d),
-                            location.getYaw(),
-                            location.getPitch()));
+            location.subtract(0.0d, 0.9d, 0.0d);
         }
 
         return location;
@@ -311,7 +306,7 @@ public class BlockUtils {
     }
 
     public static @Nullable Vector getClickedPosition(@NotNull PlayerInteractEvent event) {
-        if (ReflectionUtils.supports(20, 1)) {
+        if (XReflection.supports(20, 1)) {
             return event.getClickedPosition();
         }
 

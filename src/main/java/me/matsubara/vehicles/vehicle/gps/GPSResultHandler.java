@@ -48,7 +48,7 @@ public class GPSResultHandler implements Consumer<PathfinderResult> {
         // The driver left.
         if (generic.getDriver() == null) return;
 
-        Iterable<PathPosition> positions = result.getPath().getPositions();
+        Iterable<PathPosition> positions = result.getPath();
 
         BoundingBox box = generic.getBox();
         Location firstTarget = null;

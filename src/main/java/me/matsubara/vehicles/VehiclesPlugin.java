@@ -1,13 +1,14 @@
 package me.matsubara.vehicles;
 
-import com.comphenix.protocol.ProtocolLibrary;
-import com.cryptomorin.xseries.ReflectionUtils;
+import com.cryptomorin.xseries.reflection.XReflection;
+import com.github.retrooper.packetevents.PacketEvents;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import com.google.common.collect.Sets;
 import com.tchristofferson.configupdater.ConfigUpdater;
+import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import lombok.Getter;
 import me.matsubara.vehicles.command.VehiclesCommands;
 import me.matsubara.vehicles.files.Config;
@@ -79,6 +80,8 @@ public final class VehiclesPlugin extends JavaPlugin {
     private final NamespacedKey customizationKey = new NamespacedKey(this, "customization");
     private final NamespacedKey saveDataKey = new NamespacedKey(this, "save_data");
     private final NamespacedKey moneyKey = new NamespacedKey(this, "money");
+    private final NamespacedKey itemIdKey = new NamespacedKey(this, "ItemID");
+    private final NamespacedKey chairNumbeKey = new NamespacedKey(this, "ChairNumber");
 
     EssentialsExtension essentialsExtension;
     VaultExtension vaultExtension;
@@ -93,6 +96,12 @@ public final class VehiclesPlugin extends JavaPlugin {
 
     @Override
     public void onLoad() {
+        PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this));
+        PacketEvents.getAPI().getSettings()
+                .reEncodeByDefault(true)
+                .checkForUpdates(false);
+        PacketEvents.getAPI().load();
+
         // WG needs to be registered onLoad to be able to register the flags.
         registerExtension(WGExtension.class, "WorldGuard");
     }
@@ -101,15 +110,15 @@ public final class VehiclesPlugin extends JavaPlugin {
     public void onEnable() {
         // Disable the plugin if the server version is older than 1.17.
         PluginManager pluginManager = getServer().getPluginManager();
-        if (ReflectionUtils.MINOR_NUMBER < 17) {
-            getLogger().info("This plugin only works from 1.17 and up, disabling...");
+        if (XReflection.MINOR_NUMBER < 17) {
+            getLogger().severe("This plugin only works from 1.17 and up, disabling...");
             pluginManager.disablePlugin(this);
             return;
         }
 
         // Disable the plugin if ProtocolLib isn't installed.
-        if (!pluginManager.isPluginEnabled("ProtocolLib")) {
-            getLogger().info("This plugin depends on ProtocolLib, disabling...");
+        if (pluginManager.getPlugin("packetevents") == null) {
+            getLogger().severe("This plugin depends on PacketEvents, disabling...");
             pluginManager.disablePlugin(this);
             return;
         }
@@ -121,7 +130,7 @@ public final class VehiclesPlugin extends JavaPlugin {
         essentialsExtension = registerExtension(EssentialsExtension.class, "Essentials");
 
         // Register protocol events.
-        ProtocolLibrary.getProtocolManager().addPacketListener(new UseEntity(this));
+        PacketEvents.getAPI().getEventManager().registerListener(new UseEntity(this));
 
         // Register bukkit events.
         pluginManager.registerEvents(new InventoryListener(this), this);
@@ -150,6 +159,17 @@ public final class VehiclesPlugin extends JavaPlugin {
 
         command.setExecutor(vehiclesCommands);
         command.setTabCompleter(vehiclesCommands);
+    }
+
+    @Override
+    public void onDisable() {
+        PacketEvents.getAPI().terminate();
+
+        if (vehicleManager == null) return;
+
+        for (Vehicle vehicle : vehicleManager.getVehicles()) {
+            vehicle.saveToChunk();
+        }
     }
 
     public void updateConfigs() {
@@ -260,15 +280,6 @@ public final class VehiclesPlugin extends JavaPlugin {
             public List<ConfigChanges> build() {
                 return ImmutableList.copyOf(changes);
             }
-        }
-    }
-
-    @Override
-    public void onDisable() {
-        if (vehicleManager == null) return;
-
-        for (Vehicle vehicle : vehicleManager.getVehicles()) {
-            vehicle.saveToChunk();
         }
     }
 
@@ -437,7 +448,7 @@ public final class VehiclesPlugin extends JavaPlugin {
         }
     }
 
-    public ItemBuilder getItem(String path) {
+    public ItemBuilder getItem(@NotNull String path) {
         ThreadLocalRandom random = ThreadLocalRandom.current();
 
         FileConfiguration config = getConfig();
@@ -452,7 +463,10 @@ public final class VehiclesPlugin extends JavaPlugin {
         String materialName = config.getString(materialPath, "STONE");
         Material material = PluginUtils.getOrNull(Material.class, materialName);
 
-        ItemBuilder builder = new ItemBuilder(material).setLore(lore);
+        ItemBuilder builder = new ItemBuilder(material)
+                .setData(itemIdKey, PersistentDataType.STRING, path.contains(".") ? path.substring(path.lastIndexOf(".") + 1) : path)
+                .setLore(lore);
+
         if (name != null) builder.setDisplayName(name);
 
         String amountString = config.getString(path + ".amount");
@@ -465,10 +479,6 @@ public final class VehiclesPlugin extends JavaPlugin {
             // Use UUID from path to allow stacking heads.
             UUID itemUUID = UUID.nameUUIDFromBytes(path.getBytes());
             builder.setHead(itemUUID, url, true);
-        }
-
-        for (String flag : config.getStringList(path + ".flags")) {
-            builder.addItemFlags(ItemFlag.valueOf(flag.toUpperCase()));
         }
 
         int modelData = config.getInt(path + ".model-data", Integer.MIN_VALUE);
@@ -488,6 +498,10 @@ public final class VehiclesPlugin extends JavaPlugin {
             }
 
             if (enchantment != null) builder.addEnchantment(enchantment, level);
+        }
+
+        for (String flag : config.getStringList(path + ".flags")) {
+            builder.addItemFlags(ItemFlag.valueOf(flag.toUpperCase()));
         }
 
         String tippedArrow = config.getString(path + ".tipped");

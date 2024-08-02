@@ -46,6 +46,7 @@ public class PreviewTick extends BukkitRunnable {
     private final List<Customization> customizations = new ArrayList<>();
 
     private int tick;
+    private int hue;
     private float yaw;
 
     private static final float ROTATION_SPEED = 5.0f;
@@ -104,8 +105,6 @@ public class PreviewTick extends BukkitRunnable {
         }
     }
 
-    private int hue;
-
     @Override
     public void run() {
         if (tick == seconds * 20 || !player.isValid()) {
@@ -122,7 +121,10 @@ public class PreviewTick extends BukkitRunnable {
         if (rainbow || tick % 20 == 0) {
             String message = Config.SHOP_PREVIEW_MESSAGE.asStringTranslated().replace("%remaining%", String.valueOf(seconds - tick / 20));
 
-            BaseComponent[] components = rainbow ? new BaseComponent[]{new TextComponent(ChatColor.stripColor(message))} : TextComponent.fromLegacyText(message);
+            @SuppressWarnings("deprecation") BaseComponent[] components = rainbow ?
+                    new BaseComponent[]{new TextComponent(ChatColor.stripColor(message))} :
+                    TextComponent.fromLegacyText(message);
+
             if (rainbow) components[0].setColor(ChatColor.of(Color.getHSBColor(hue / 360.0f, 1.0f, 1.0f)));
 
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);

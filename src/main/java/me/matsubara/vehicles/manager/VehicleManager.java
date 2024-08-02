@@ -30,9 +30,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.Gate;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Llama;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
@@ -44,7 +43,6 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
-import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -139,22 +137,6 @@ public class VehicleManager implements Listener {
         }
     }
 
-    public @Nullable Vehicle getVehicleFromLlama(@NotNull Llama llama) {
-        EntityEquipment equipment = llama.getEquipment();
-        if (equipment == null) return null;
-
-        ItemStack shulkerItem = equipment.getHelmet();
-        if (shulkerItem == null || shulkerItem.getType() != Material.STONE) return null;
-
-        ItemMeta meta = shulkerItem.getItemMeta();
-        if (meta == null) return null;
-
-        String uuidString = meta.getPersistentDataContainer().get(plugin.getVehicleModelIdKey(), PersistentDataType.STRING);
-        if (uuidString == null) return null;
-
-        return getVehicleByModelId(UUID.fromString(uuidString));
-    }
-
     public @Nullable Vehicle getVehicleByModelId(UUID modelId) {
         for (Vehicle vehicle : vehicles) {
             if (vehicle.getModel().getModelUniqueId().equals(modelId)) return vehicle;
@@ -177,7 +159,7 @@ public class VehicleManager implements Listener {
 
         Location dropAt = picker != null ? vehicle.getBox().getCenter().toLocation(picker.getWorld()) : null;
 
-        List<Pair<LivingEntity, StandSettings>> chairs = vehicle.getChairs();
+        List<Pair<ArmorStand, StandSettings>> chairs = vehicle.getChairs();
         chairs.stream().map(Pair::getKey).forEach(vehicle::clearChair);
         chairs.clear();
 
@@ -247,10 +229,11 @@ public class VehicleManager implements Listener {
         cancellable.setCancelled(true);
     }
 
+    @SuppressWarnings("UnstableApiUsage") // We can keep using this event if we stay in 1.20.4.
     @EventHandler
-    public void onEntityDismount(@NotNull EntityDismountEvent event) {
+    public void onEntityDismount(@SuppressWarnings("deprecation") @NotNull EntityDismountEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
-        if (!(event.getDismounted() instanceof Llama)) return;
+        if (!(event.getDismounted() instanceof ArmorStand)) return;
 
         for (Vehicle vehicle : plugin.getVehicleManager().getVehicles()) {
             boolean driver;

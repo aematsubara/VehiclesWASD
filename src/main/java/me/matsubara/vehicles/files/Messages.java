@@ -55,6 +55,7 @@ public class Messages {
         return PluginUtils.translate(messages);
     }
 
+    @Getter
     public enum Message {
         AN_ERROR_OCURRED,
         NOT_FROM_CONSOLE("commands.not-from-console"),
@@ -106,7 +107,7 @@ public class Messages {
         CUSTOMIZATION_DIFFERENT_AMOUNT("customization.different-amount"),
         CUSTOMIZATION_SUCCESSFUL_PURCHASE("customization.successful-purchase");
 
-        private final @Getter String path;
+        private final String path;
 
         Message() {
             this.path = name().toLowerCase().replace("_", "-");

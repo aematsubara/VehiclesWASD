@@ -6,7 +6,6 @@ import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.model.stand.PacketStand;
 import me.matsubara.vehicles.model.stand.StandSettings;
 import me.matsubara.vehicles.util.PluginUtils;
-import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -39,11 +38,8 @@ public final class Model {
     // Center point of the model.
     private Location location;
 
-    // Map with all stands associated with a name.
+    // List with all stands associated with a name.
     private final List<PacketStand> stands = new ArrayList<>();
-
-    // The ids of the currents stands.
-    private final List<Integer> currentIds = new ArrayList<>();
 
     // Render distance of this model.
     private int renderDistance;
@@ -81,7 +77,6 @@ public final class Model {
 
     public void addNew(String name, StandSettings settings, @Nullable Location copyLocation, @Nullable Float yaw) {
         if (isInvalidName(name)) return;
-        Validate.notNull(location.getWorld(), "World can't be null.");
 
         Location finalLocation = copyLocation != null ? copyLocation : location;
         if (yaw != null) finalLocation.setYaw(finalLocation.getYaw() + yaw);
@@ -113,7 +108,7 @@ public final class Model {
 
             Vector offset = new Vector(xOffset, yOffset, zOffset);
 
-            // Pitch isn't needed.
+            // Pitch isn't necessary.
             float yaw = (float) configuration.getDouble(defaultPath + "offset.yaw");
 
             Location location = this.location.clone().add(PluginUtils.offsetVector(offset, this.location.getYaw(), this.location.getPitch()));

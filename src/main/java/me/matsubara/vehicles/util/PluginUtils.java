@@ -1,6 +1,6 @@
 package me.matsubara.vehicles.util;
 
-import com.cryptomorin.xseries.ReflectionUtils;
+import com.cryptomorin.xseries.reflection.XReflection;
 import com.google.common.base.Preconditions;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
@@ -8,7 +8,6 @@ import me.matsubara.vehicles.VehiclesPlugin;
 import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -17,8 +16,6 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Llama;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionType;
@@ -48,6 +45,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@SuppressWarnings("deprecation")
 public final class PluginUtils {
 
     private static final Color[] COLORS;
@@ -74,10 +72,8 @@ public final class PluginUtils {
     private static final MethodHandle SET_PROFILE;
     private static final MethodHandle PROFILE;
 
-    private static final Class<?> ENTITY = ReflectionUtils.getNMSClass("world.entity", "Entity");
-    private static final Class<?> CRAFT_ENTITY = ReflectionUtils.getCraftClass("entity.CraftEntity");
-    private static final Class<?> ENTITY_HUMAN = ReflectionUtils.getNMSClass("world.entity.player", "EntityHuman");
-    private static final Class<?> HORSE_ABSTRACT = ReflectionUtils.getNMSClass("world.entity.animal.horse", "EntityHorseAbstract");
+    private static final Class<?> ENTITY = XReflection.getNMSClass("world.entity", "Entity");
+    private static final Class<?> CRAFT_ENTITY = XReflection.getCraftClass("entity.CraftEntity");
 
     private static final MethodHandle getHandle = Reflection.getMethod(Objects.requireNonNull(CRAFT_ENTITY), "getHandle");
     private static final MethodHandle absMoveTo = Reflection.getMethod(
@@ -87,7 +83,6 @@ public final class PluginUtils {
             false,
             false,
             "setLocation");
-    private static final MethodHandle openInventory = Reflection.getMethod(Objects.requireNonNull(HORSE_ABSTRACT), ReflectionUtils.supports(19) ? "b" : ReflectionUtils.supports(16) ? "f" : "e", ENTITY_HUMAN);
 
     static {
         for (Field field : Color.class.getDeclaredFields()) {
@@ -101,7 +96,7 @@ public final class PluginUtils {
 
         COLORS = COLORS_BY_NAME.values().toArray(new Color[0]);
 
-        Class<?> craftMetaSkull = ReflectionUtils.getCraftClass("inventory.CraftMetaSkull");
+        Class<?> craftMetaSkull = XReflection.getCraftClass("inventory.CraftMetaSkull");
         Preconditions.checkNotNull(craftMetaSkull);
 
         SET_PROFILE = Reflection.getMethod(craftMetaSkull, "setProfile", GameProfile.class);
@@ -278,7 +273,7 @@ public final class PluginUtils {
     }
 
     public static void teleportWithPassengers(@NotNull LivingEntity living, Location targetLocation) {
-        if (getHandle == null || CRAFT_ENTITY == null || absMoveTo == null) return;
+        if (getHandle == null || absMoveTo == null) return;
 
         // We can't teleport entities with passengers with the API.
         try {
@@ -290,23 +285,6 @@ public final class PluginUtils {
                     targetLocation.getZ(),
                     targetLocation.getYaw(),
                     targetLocation.getPitch());
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
-        }
-    }
-
-    public static void openLlamaInventory(Player player, Llama llama) {
-        Validate.isTrue(getHandle != null && CRAFT_ENTITY != null && openInventory != null);
-
-        // 1.19 and up = AbstractHorse/HasCustomInventoryScreen#openCustomInventoryScreen(net.minecraft.world.entity.player.Player)
-        // 1.14.4 - 1.18.2 = AbstractHorse#openInventory(net.minecraft.world.entity.player.Player)
-        try {
-            Object craftLlama = CRAFT_ENTITY.cast(llama);
-
-            Object nmsLlama = getHandle.invoke(craftLlama);
-            Object nmsPlayer = ReflectionUtils.getHandle(player);
-
-            openInventory.invoke(nmsLlama, nmsPlayer);
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
@@ -385,7 +363,7 @@ public final class PluginUtils {
                 return null;
             }
 
-            // Only replace file if an exception ocurrs.
+            // Only replace the file if an exception ocurrs.
             FileUtils.deleteQuietly(file);
             error.accept(file);
 

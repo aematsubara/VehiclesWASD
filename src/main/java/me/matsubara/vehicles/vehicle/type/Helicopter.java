@@ -15,8 +15,8 @@ import me.matsubara.vehicles.vehicle.VehicleType;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
@@ -70,7 +70,7 @@ public class Helicopter extends Vehicle {
     }
 
     public void safePassengerTeleport() {
-        for (Pair<LivingEntity, StandSettings> chair : chairs) {
+        for (Pair<ArmorStand, StandSettings> chair : chairs) {
             List<Entity> passengers = new ArrayList<>(chair.getKey().getPassengers());
             if (passengers.isEmpty()) continue;
 

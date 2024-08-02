@@ -6,7 +6,7 @@
 
     <groupId>me.matsubara</groupId>
     <artifactId>VehiclesWASD</artifactId>
-    <version>1.0</version>
+    <version>1.0.1</version>
     <packaging>jar</packaging>
 
     <name>VehiclesWASD</name>
@@ -38,7 +38,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.3.1-SNAPSHOT</version>
+                <version>3.5.4-SNAPSHOT</version>
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
                     <relocations>
@@ -93,7 +93,7 @@
                         <filter>
                             <artifact>com.github.cryptomorin:XSeries</artifact>
                             <includes>
-                                <include>com/cryptomorin/xseries/ReflectionUtils*</include>
+                                <include>com/cryptomorin/xseries/reflection/**</include>
                                 <include>com/cryptomorin/xseries/particles/XParticle*</include>
                                 <include>com/cryptomorin/xseries/particles/ParticleDisplay*</include>
                             </includes>
@@ -134,10 +134,10 @@
             <id>codemc-snapshots</id>
             <url>https://repo.codemc.io/repository/maven-snapshots/</url>
         </repository>
-        <!-- ProtocolLib -->
+        <!-- PacketEvents -->
         <repository>
-            <id>dmulloy2-repo</id>
-            <url>https://repo.dmulloy2.net/repository/public/</url>
+            <id>codemc-releases</id>
+            <url>https://repo.codemc.io/repository/maven-releases/</url>
         </repository>
         <!-- AuthLib -->
         <repository>
@@ -171,40 +171,33 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.20.1-R0.1-SNAPSHOT</version>
+            <version>1.20.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <!-- AnvilGUI -->
         <dependency>
             <groupId>net.wesjd</groupId>
             <artifactId>anvilgui</artifactId>
-            <version>1.9.2-SNAPSHOT</version>
-        </dependency>
-        <!-- ProtocolLib -->
-        <dependency>
-            <groupId>com.comphenix.protocol</groupId>
-            <artifactId>ProtocolLib</artifactId>
-            <version>5.2.0-SNAPSHOT</version>
-            <scope>provided</scope>
+            <version>1.10.0-SNAPSHOT</version>
         </dependency>
         <!-- XSeries -->
         <dependency>
             <groupId>com.github.cryptomorin</groupId>
             <artifactId>XSeries</artifactId>
-            <version>9.8.1</version>
+            <version>11.2.0.1</version>
         </dependency>
         <!-- Annotations -->
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>24.0.1</version>
+            <version>24.1.0</version>
             <scope>provided</scope>
         </dependency>
         <!-- lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.28</version>
+            <version>1.18.30</version>
             <scope>provided</scope>
         </dependency>
         <!-- commons-lang3 -->
@@ -265,9 +258,9 @@
         </dependency>
         <!-- pathetic -->
         <dependency>
-            <groupId>com.github.aematsubara</groupId>
-            <artifactId>pathetic</artifactId>
-            <version>production-SNAPSHOT</version>
+            <groupId>com.github.patheloper.pathetic</groupId>
+            <artifactId>pathetic-mapping</artifactId>
+            <version>2.4.6</version>
         </dependency>
         <!--  EssentialsX  -->
         <dependency>
@@ -287,6 +280,13 @@
             <groupId>com.tchristofferson</groupId>
             <artifactId>ConfigUpdater</artifactId>
             <version>2.0-SNAPSHOT</version>
+        </dependency>
+        <!-- PacketEvents -->
+        <dependency>
+            <groupId>com.github.retrooper</groupId>
+            <artifactId>packetevents-spigot</artifactId>
+            <version>2.4.0</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

@@ -1,7 +1,9 @@
 package me.matsubara.vehicles.vehicle;
 
 import com.cryptomorin.xseries.particles.ParticleDisplay;
+import com.cryptomorin.xseries.particles.Particles;
 import com.cryptomorin.xseries.particles.XParticle;
+import com.cryptomorin.xseries.reflection.XReflection;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Multimap;
@@ -21,7 +23,6 @@ import me.matsubara.vehicles.model.Model;
 import me.matsubara.vehicles.model.stand.PacketStand;
 import me.matsubara.vehicles.model.stand.StandSettings;
 import me.matsubara.vehicles.util.BlockUtils;
-import me.matsubara.vehicles.util.ItemBuilder;
 import me.matsubara.vehicles.util.PluginUtils;
 import me.matsubara.vehicles.vehicle.task.VehicleTick;
 import me.matsubara.vehicles.vehicle.type.Generic;
@@ -36,8 +37,13 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.*;
-import org.bukkit.inventory.*;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.BoundingBox;
@@ -92,7 +98,7 @@ public abstract class Vehicle implements InventoryHolder {
     protected boolean forceActionBarMessage;
 
     protected ArmorStand velocityStand;
-    protected final List<Pair<LivingEntity, StandSettings>> chairs = new ArrayList<>();
+    protected final List<Pair<ArmorStand, StandSettings>> chairs = new ArrayList<>();
     protected float currentSpeed;
 
     protected final List<Customization> customizations = new ArrayList<>();
@@ -156,7 +162,7 @@ public abstract class Vehicle implements InventoryHolder {
 
         resetVelocityStand(world);
 
-        // Init customizations BEFORE spawning a llama chair with inventory.
+        // Init customizations BEFORE spawning a chair with inventory.
         plugin.getVehicleManager().initCustomizations(model, customizations, type);
 
         Map<String, Material> changes = data.customizationChanges();
@@ -180,7 +186,7 @@ public abstract class Vehicle implements InventoryHolder {
             String partName = stand.getSettings().getPartName();
             if (!partName.startsWith("CHAIR_")) continue;
 
-            chairs.add(spawnLlamaChair(world, partName));
+            chairs.add(spawnChair(world, partName));
         }
     }
 
@@ -243,45 +249,30 @@ public abstract class Vehicle implements InventoryHolder {
         this.offSound = new SoundWrapper(config.getString(configPath + ".sounds.turn-off"));
     }
 
-    public @Nullable Pair<LivingEntity, StandSettings> spawnLlamaChair(World world, String chairName) {
+    public @Nullable Pair<ArmorStand, StandSettings> spawnChair(World world, String chairName) {
         PacketStand temp = model.getByName(chairName);
         if (temp == null) return null;
 
+        // Fix visual issue since 1.20.2.
+        Location standLocation = temp.getLocation().clone();
+        if (XReflection.supports(20, 2)) standLocation.subtract(0.0d, 0.3d, 0.0d);
+
         return Pair.of(world.spawn(
-                temp.getLocation(),
-                Llama.class,
-                llama -> {
-                    llama.setInvulnerable(true);
-                    llama.setCollidable(false);
-                    llama.setPersistent(false);
-                    llama.setGravity(false);
-                    llama.setAI(false);
-                    llama.setSilent(true);
-                    llama.setInvisible(true);
-                    llama.setCarryingChest(true);
-                    llama.setTamed(true);
-                    llama.setStrength(is(VehicleType.HELICOPTER) ? 5 : 2);
+                standLocation,
+                ArmorStand.class,
+                stand -> {
+                    stand.setInvulnerable(true);
+                    stand.setCollidable(false);
+                    stand.setPersistent(false);
+                    stand.setGravity(false);
+                    stand.setAI(false);
+                    stand.setSilent(true);
+                    stand.setInvisible(true);
 
-                    String title = plugin.getConfig().getString("gui.vehicle.title");
-                    String typeFormatted = plugin.getVehicleTypeFormatted(type);
+                    stand.getPersistentDataContainer().set(plugin.getVehicleModelIdKey(), PersistentDataType.STRING, model.getModelUniqueId().toString());
 
-                    llama.setCustomName(title != null ? title
-                            .replace("%owner%", Optional.of(Bukkit.getOfflinePlayer(owner)).map(OfflinePlayer::getName).orElse("???"))
-                            .replace("%type%", typeFormatted) : typeFormatted);
-                    llama.setCustomNameVisible(false);
-
-                    llama.getPersistentDataContainer().set(plugin.getVehicleModelIdKey(), PersistentDataType.STRING, model.getModelUniqueId().toString());
-
-                    AttributeInstance attribute = llama.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+                    AttributeInstance attribute = stand.getAttribute(Attribute.GENERIC_MAX_HEALTH);
                     if (attribute != null) attribute.setBaseValue(1);
-
-                    EntityEquipment equipment = llama.getEquipment();
-                    if (equipment == null) return;
-
-                    // Dummy item, used to identify this vehicle.
-                    equipment.setHelmet(new ItemBuilder(Material.STONE)
-                            .setData(plugin.getVehicleModelIdKey(), PersistentDataType.STRING, model.getModelUniqueId().toString())
-                            .build());
                 }
         ), temp.getSettings());
     }
@@ -292,7 +283,7 @@ public abstract class Vehicle implements InventoryHolder {
         }
 
         for (int i = 0; i < chairs.size(); i++) {
-            Pair<LivingEntity, StandSettings> pair = chairs.get(i);
+            Pair<ArmorStand, StandSettings> pair = chairs.get(i);
 
             LivingEntity living = pair.getKey();
             if (living.isValid()) continue;
@@ -300,105 +291,8 @@ public abstract class Vehicle implements InventoryHolder {
             clearChair(living);
 
             String partName = pair.getValue().getPartName();
-            chairs.set(i, spawnLlamaChair(world, partName));
+            chairs.set(i, spawnChair(world, partName));
         }
-    }
-
-    public void updateLlamaInventory(Player player, @NotNull LlamaInventory inventory) {
-        boolean isHelicopter = is(VehicleType.HELICOPTER);
-
-        ItemStack storage = getItem(player, "storage");
-        ItemStack noStorage = getItem(player, "no-storage");
-        ItemStack lock = getItem(player, "lock");
-        ItemStack unlock = getItem(player, "unlock");
-        ItemStack customization = getItem(player, "customization");
-        ItemStack noCustomization = getItem(player, "no-customization");
-        ItemStack transferOwnership = getItem(player, "transfer-ownership");
-        ItemStack fuelDisabled = getItem(player, "fuel-disabled");
-
-        List<String> fuelItems = plugin.typesToString(plugin.getFuelItems(), type, true);
-        ItemStack fuelBelow = createFuelItem("fuel-below", fuelItems);
-        ItemStack fuelAbove = createFuelItem("fuel-above", fuelItems);
-
-        inventory.clear();
-
-        inventory.setItem(index(1, isHelicopter), storageRows == 0 ? noStorage : storage);
-        inventory.setItem(index(2, isHelicopter), locked ? unlock : lock);
-        inventory.setItem(index(4, isHelicopter), customizations.isEmpty() ? noCustomization : customization);
-        inventory.setItem(index(6, isHelicopter), transferOwnership);
-
-        if (isHelicopter) {
-            ItemStack background = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
-                    .setDisplayName("&7")
-                    .build();
-
-            inventory.setItem(4, background);
-            inventory.setItem(9, background);
-            inventory.setItem(14, background);
-
-            Helicopter helicopter = (Helicopter) this;
-            UUID outsideDriver = helicopter.getOutsideDriver();
-
-            inventory.setItem(5, createHelicopterChairItem(player, 1, outsideDriver));
-            inventory.setItem(10, createHelicopterChairItem(player, 2, outsideDriver));
-            inventory.setItem(15, createHelicopterChairItem(player, 3, outsideDriver));
-
-            inventory.setItem(6, createHelicopterChairItem(player, 4, outsideDriver));
-            inventory.setItem(11, createHelicopterChairItem(player, 5, outsideDriver));
-            inventory.setItem(16, createHelicopterChairItem(player, 6, outsideDriver));
-        }
-
-        boolean fuelEnabled = fuelEnabled();
-
-        inventory.setItem(index(3, isHelicopter), fuelEnabled ? fuelBelow : fuelDisabled);
-        if (!fuelEnabled) inventory.setItem(getFuelDepositSlot(), fuelDisabled);
-        inventory.setItem(index(7, isHelicopter), fuelEnabled ? fuelAbove : fuelDisabled);
-    }
-
-    private ItemStack getItem(@NotNull Player player, String itemName) {
-        ItemBuilder builder = plugin.getItem("gui.vehicle.items." + itemName);
-
-        if (!player.getUniqueId().equals(owner)) {
-            builder.addLore(plugin.getConfig().getString("translations.only-owner"));
-        }
-
-        return builder.build();
-    }
-
-    private ItemStack createFuelItem(String itemName, List<String> fuelItems) {
-        return plugin.getItem("gui.vehicle.items." + itemName)
-                .applyMultiLineLore(fuelItems, "%fuel%", PluginUtils.translate(plugin.getConfig().getString("translations.no-fuel")))
-                .build();
-    }
-
-    private @Nullable ItemStack createHelicopterChairItem(Player player, int chair, UUID outsideDriver) {
-        Pair<LivingEntity, StandSettings> firstPair = chairs.get(chair);
-        if (firstPair == null) return null;
-
-        List<Entity> passengers = firstPair.getKey().getPassengers();
-
-        Entity passenger;
-        ItemBuilder builder;
-        if (passengers.isEmpty()) {
-            builder = plugin.getItem("gui.vehicle.items.helicopter-chair-empty");
-        } else if ((passenger = passengers.get(0)).getUniqueId().equals(outsideDriver) && outsideDriver.equals(player.getUniqueId())) {
-            builder = plugin.getItem("gui.vehicle.items.helicopter-chair-sitted");
-        } else {
-            builder = plugin.getItem("gui.vehicle.items.helicopter-chair-occupied")
-                    .replace("%player%", passenger.getName());
-        }
-
-        return builder.replace("%chair%", chair).build();
-    }
-
-    private int index(int index, boolean isHelicopter) {
-        if (!isHelicopter) return index;
-
-        if (PluginUtils.is(index, 1, 2, 3)) return index;
-        if (PluginUtils.is(index, 4, 5)) return index + 3;
-        if (PluginUtils.is(index, 6, 7)) return index + 6;
-
-        return Integer.MIN_VALUE;
     }
 
     private void lockSlots(ArmorStand stand) {
@@ -592,7 +486,7 @@ public abstract class Vehicle implements InventoryHolder {
         @SuppressWarnings("DataFlowIssue") Player driver = Bukkit.getPlayer(this.driver != null ? this.driver : ((Helicopter) this).getOutsideDriver());
         if (driver == null) return;
 
-        BaseComponent[] components = TextComponent.fromLegacyText(PluginUtils.translate(message
+        @SuppressWarnings("deprecation") BaseComponent[] components = TextComponent.fromLegacyText(PluginUtils.translate(message
                 .replace("%bar%", getProgressBar(filled, bars))
                 .replace("%speed%", speed)
                 .replace("%distance%", String.valueOf(distance))
@@ -733,12 +627,12 @@ public abstract class Vehicle implements InventoryHolder {
             stand.teleport(correctLocation);
         }
 
-        for (Pair<LivingEntity, StandSettings> chair : chairs) {
+        for (Pair<ArmorStand, StandSettings> chair : chairs) {
             if (chair != null) teleportChair(location, chair);
         }
     }
 
-    protected void teleportChair(Location location, @NotNull Pair<LivingEntity, StandSettings> pair) {
+    protected void teleportChair(Location location, @NotNull Pair<ArmorStand, StandSettings> pair) {
         LivingEntity entity = pair.getKey();
 
         Location correctLocation = BlockUtils.getCorrectLocation(driver, type, location, pair.getValue());
@@ -751,7 +645,7 @@ public abstract class Vehicle implements InventoryHolder {
         return this.type == type;
     }
 
-    public Pair<LivingEntity, StandSettings> getChair(int chair) {
+    public Pair<ArmorStand, StandSettings> getChair(int chair) {
         if (chairs.isEmpty() || chair < 0 || chair > chairs.size() - 1) return null;
         return chairs.get(chair);
     }
@@ -772,17 +666,17 @@ public abstract class Vehicle implements InventoryHolder {
         BoundingBox box = getBox();
         World world = player.getWorld();
 
-        XParticle.structuredCube(
+        Particles.structuredCube(
                 box.getMin().toLocation(world),
                 box.getMax().toLocation(world),
                 0.5d,
-                ParticleDisplay.of(Particle.REDSTONE)
+                ParticleDisplay.of(XParticle.DUST)
                         .withColor(color, 1.5f)
                         .onlyVisibleTo(player));
     }
 
     public int getFuelDepositSlot() {
-        return is(VehicleType.HELICOPTER) ? 8 : 5;
+        return 13;
     }
 
     public VehicleData createSaveData() {

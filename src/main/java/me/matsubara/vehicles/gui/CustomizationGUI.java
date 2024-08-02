@@ -39,27 +39,12 @@ public final class CustomizationGUI implements InventoryHolder {
     private static final int[] SLOTS = {10, 11, 12, 13, 14, 15, 16};
     private static final int[] HOTBAR = {19, 20, 21, 22, 23, 24, 25};
 
-    private final ItemStack previous;
-    private final ItemStack next;
-    private final ItemStack search;
-    private final ItemStack clearSearch;
-    private final ItemStack close;
-    private final ItemStack background;
-
     public CustomizationGUI(@NotNull VehiclesPlugin plugin, @NotNull Vehicle vehicle, Player player, @Nullable String keyword) {
         this.plugin = plugin;
         this.vehicle = vehicle;
         this.inventory = Bukkit.createInventory(this, 36, getTitle());
 
         this.player = player;
-
-        String path = "gui.customizations.items.";
-        previous = plugin.getItem(path + "previous-page").build();
-        next = plugin.getItem(path + "next-page").build();
-        search = plugin.getItem(path + "search").build();
-        clearSearch = keyword != null ? plugin.getItem(path + "search").replace("%keyword%", keyword).build() : null;
-        close = plugin.getItem(path + "close").build();
-        background = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).setDisplayName("&7").build();
 
         this.customizations = new ArrayList<>(vehicle.getCustomizations());
         this.keyword = keyword;
@@ -77,15 +62,21 @@ public final class CustomizationGUI implements InventoryHolder {
 
         pages = (int) (Math.ceil((double) customizations.size() / SLOTS.length));
 
+        ItemStack background = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
+                .setDisplayName("&7")
+                .build();
+
         for (int i = 0; i < 36; i++) {
             if (ArrayUtils.contains(SLOTS, i) || ArrayUtils.contains(HOTBAR, i)) continue;
             inventory.setItem(i, background);
         }
 
-        if (current > 0) inventory.setItem(19, previous);
-        inventory.setItem(22, keyword != null ? clearSearch : search);
-        inventory.setItem(35, close);
-        if (current < pages - 1) inventory.setItem(25, next);
+        String path = "gui.customizations.items.";
+
+        if (current > 0) inventory.setItem(19, plugin.getItem(path + "previous-page").build());
+        inventory.setItem(22, createSearchItem(path));
+        inventory.setItem(35, plugin.getItem(path + "close").build());
+        if (current < pages - 1) inventory.setItem(25, plugin.getItem(path + "next-page").build());
 
         if (customizations.isEmpty()) return;
 
@@ -116,6 +107,10 @@ public final class CustomizationGUI implements InventoryHolder {
         }
 
         InventoryUpdate.updateInventory(player, getTitle());
+    }
+
+    private ItemStack createSearchItem(String path) {
+        return keyword != null ? plugin.getItem(path + "clear-search").replace("%keyword%", keyword).build() : plugin.getItem(path + "search").build();
     }
 
     private @NotNull String getTitle() {
