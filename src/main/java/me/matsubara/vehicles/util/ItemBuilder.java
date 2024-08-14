@@ -174,7 +174,11 @@ public final class ItemBuilder {
     }
 
     public ItemBuilder removeEnchantment(Enchantment enchantment) {
-        item.removeEnchantment(enchantment);
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return this;
+
+        meta.removeEnchant(enchantment);
+        item.setItemMeta(meta);
         return this;
     }
 

@@ -44,8 +44,11 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.Metadatable;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
@@ -55,6 +58,7 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.Color;
 import java.util.List;
 import java.util.*;
+import java.util.function.BiConsumer;
 
 @Getter
 @Setter
@@ -120,6 +124,9 @@ public abstract class Vehicle implements InventoryHolder {
             VehicleType.TANK, new Vector(2.0d, 1.0d, 2.0d),
             VehicleType.HELICOPTER, new Vector(3.0d, 1.5d, 3.0d),
             VehicleType.BOAT, new Vector(1.5d, 1.0d, 1.5d));
+
+    // We want ListenMode to ignore our entities.
+    private static final BiConsumer<JavaPlugin, Metadatable> LISTEN_MODE_IGNORE = (plugin, living) -> living.setMetadata("RemoveGlow", new FixedMetadataValue(plugin, true));
 
     static {
         ItemStack carLightsOn = new ItemStack(Material.LIGHT_WEIGHTED_PRESSURE_PLATE);
@@ -219,6 +226,7 @@ public abstract class Vehicle implements InventoryHolder {
                     stand.setSilent(true);
                     stand.getPersistentDataContainer().set(plugin.getVehicleModelIdKey(), PersistentDataType.STRING, model.getModelUniqueId().toString());
                     lockSlots(stand);
+                    LISTEN_MODE_IGNORE.accept(plugin, stand);
                 });
     }
 
@@ -273,6 +281,8 @@ public abstract class Vehicle implements InventoryHolder {
 
                     AttributeInstance attribute = stand.getAttribute(Attribute.GENERIC_MAX_HEALTH);
                     if (attribute != null) attribute.setBaseValue(1);
+
+                    LISTEN_MODE_IGNORE.accept(plugin, stand);
                 }
         ), temp.getSettings());
     }

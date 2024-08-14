@@ -25,6 +25,7 @@ import com.cryptomorin.xseries.reflection.XReflection;
 import com.cryptomorin.xseries.reflection.minecraft.MinecraftConnection;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
+import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.InventoryView;
@@ -153,8 +154,7 @@ public final class InventoryUpdate {
             if (!(bukkitView instanceof InventoryView)) return;
 
             // Avoiding pattern variable, since some people may be using an older version of java.
-            //noinspection PatternVariableCanBeUsed
-            InventoryView view = (InventoryView) bukkitView;
+            @SuppressWarnings("PatternVariableCanBeUsed") InventoryView view = (InventoryView) bukkitView;
             InventoryType type = view.getTopInventory().getType();
 
             // Workbenchs and anvils can change their title since 1.14.
@@ -224,6 +224,7 @@ public final class InventoryUpdate {
     /**
      * An enum class for the necessary containers.
      */
+    @Getter
     private enum Containers {
         GENERIC_9X1(14, "minecraft:chest", "CHEST"),
         GENERIC_9X2(14, "minecraft:chest", "CHEST"),
@@ -306,33 +307,6 @@ public final class InventoryUpdate {
                 exception.printStackTrace();
             }
             return null;
-        }
-
-        /**
-         * Get the version in which the inventory container was added.
-         *
-         * @return the version.
-         */
-        public int getContainerVersion() {
-            return containerVersion;
-        }
-
-        /**
-         * Get the name of the inventory from Minecraft for older versions.
-         *
-         * @return name of the inventory.
-         */
-        public String getMinecraftName() {
-            return minecraftName;
-        }
-
-        /**
-         * Get inventory types names of the inventory.
-         *
-         * @return bukkit names.
-         */
-        public String[] getInventoryTypesNames() {
-            return inventoryTypesNames;
         }
     }
 }
