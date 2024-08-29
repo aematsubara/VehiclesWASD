@@ -26,6 +26,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -69,16 +70,18 @@ public final class UseEntity extends SimplePacketListenerAbstract {
 
             event.setCancelled(true);
 
-            ItemStack handItem = player.getInventory().getItemInMainHand();
+            PlayerInventory inventory = player.getInventory();
+            ItemStack handItem = inventory.getItemInMainHand();
+
             if (!left && vehicle.is(VehicleType.TANK) && handItem.getType() == Material.FIRE_CHARGE) {
                 plugin.getServer().getScheduler().runTask(plugin, () -> {
 
                     int newAmount = handItem.getAmount() - 1;
                     if (newAmount == 0) {
-                        player.getInventory().setItemInMainHand(null);
+                        inventory.setItemInMainHand(null);
                     } else {
                         handItem.setAmount(newAmount);
-                        player.getInventory().setItemInMainHand(handItem);
+                        inventory.setItemInMainHand(handItem);
                     }
 
                     Fireball fireball = player.launchProjectile(Fireball.class);
@@ -141,7 +144,7 @@ public final class UseEntity extends SimplePacketListenerAbstract {
         if (left) {
             if (!player.isSneaking()) return;
 
-            if (!playerUUID.equals(vehicle.getOwner())) {
+            if (!playerUUID.equals(vehicle.getOwner()) && !player.hasPermission("vehicleswasd.remove")) {
                 messages.send(player, Messages.Message.NOT_YOUR_VEHICLE);
                 return;
             }

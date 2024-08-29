@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 @Setter
 public class VehicleSpawnEvent extends Event implements Cancellable {
 
-    // The player is null if the vehicle was spawned during a chunk load.
+    // The player is null if the vehicle was spawned during a chunk load or a reload.
     private final @Nullable Player player;
     private final Location location;
     private final VehicleType type;

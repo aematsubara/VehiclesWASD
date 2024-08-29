@@ -118,9 +118,7 @@ public class VehicleManager implements Listener {
         for (VehicleData data : datas) {
             Vehicle vehicle = getVehicleByModelId(data.modelUniqueId());
             if (vehicle == null) {
-                Location location = data.location();
-                location.setWorld(world);
-
+                data.location().setWorld(world);
                 createVehicle(null, data);
                 continue;
             }
@@ -132,8 +130,6 @@ public class VehicleManager implements Listener {
                 newtick.runTaskTimer(plugin, 10L, 1L);
                 vehicle.setVehicleTick(newtick);
             }
-
-            // vehicle.resetRealEntities(world);
         }
     }
 
@@ -173,7 +169,7 @@ public class VehicleManager implements Listener {
         }
     }
 
-    public void createVehicle(@Nullable Player player, @NotNull VehicleData data) {
+    public boolean createVehicle(@Nullable Player player, @NotNull VehicleData data) {
         Location location = data.location();
 
         // This will only happen when a player spawns the vehicle with vehicle item that contains data.
@@ -187,7 +183,7 @@ public class VehicleManager implements Listener {
 
         VehicleSpawnEvent spawnEvent = new VehicleSpawnEvent(player, location, type);
         plugin.getServer().getPluginManager().callEvent(spawnEvent);
-        if (spawnEvent.isCancelled()) return;
+        if (spawnEvent.isCancelled()) return false;
 
         // This may be null if it's a new vehicle.
         UUID modelUniqueId = data.modelUniqueId();
@@ -212,6 +208,7 @@ public class VehicleManager implements Listener {
         if (player != null) vehicle.saveToChunk();
 
         vehicles.add(vehicle);
+        return true;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -235,7 +232,7 @@ public class VehicleManager implements Listener {
         if (!(event.getEntity() instanceof Player player)) return;
         if (!(event.getDismounted() instanceof ArmorStand)) return;
 
-        for (Vehicle vehicle : plugin.getVehicleManager().getVehicles()) {
+        for (Vehicle vehicle : vehicles) {
             boolean driver;
             if ((driver = vehicle.isDriver(player)) || vehicle.getPassengers().containsKey(player.getUniqueId())) {
                 handleDismount(player, vehicle, driver);
@@ -408,9 +405,9 @@ public class VehicleManager implements Listener {
             data = VehicleData.createDefault(player.getUniqueId(), null, location, vehicleType);
         }
 
-        item.setAmount(item.getAmount() - 1);
-
-        plugin.getVehicleManager().createVehicle(player, data);
+        if (createVehicle(player, data)) {
+            item.setAmount(item.getAmount() - 1);
+        }
     }
 
     private @Nullable Double getExtraYFromBlock(Player player, @NotNull Block block) {
@@ -573,7 +570,7 @@ public class VehicleManager implements Listener {
     }
 
     public void applyCustomization(Model model, List<Customization> customizations, String customizationName, Material newType) {
-        Customization customization = plugin.getVehicleManager().getCustomizationByName(customizations, customizationName);
+        Customization customization = getCustomizationByName(customizations, customizationName);
         if (customization != null) applyCustomization(model, customization, newType);
     }
 

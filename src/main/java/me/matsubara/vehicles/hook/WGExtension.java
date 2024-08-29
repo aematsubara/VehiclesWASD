@@ -26,10 +26,13 @@ public class WGExtension implements AVExtension<WGExtension>, Listener {
 
     @Override
     public WGExtension init(@NotNull VehiclesPlugin plugin) {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
-
         placeFlag = registerFlag("av-place", plugin);
         return this;
+    }
+
+    @Override
+    public void onEnable(@NotNull VehiclesPlugin plugin) {
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     private @Nullable StateFlag registerFlag(@SuppressWarnings("SameParameterValue") String flagName, VehiclesPlugin plugin) {
@@ -56,12 +59,10 @@ public class WGExtension implements AVExtension<WGExtension>, Listener {
         if (placeFlag == null) return;
 
         Player player = event.getPlayer();
-        Location location = event.getLocation();
+        if (player == null) return;
 
-        ApplicableRegionSet set = getRegionSet(player, location);
-        if (set == null) return;
-
-        if (!set.testState(wrapPlayer(player), placeFlag)) {
+        ApplicableRegionSet set = getRegionSet(player, event.getLocation());
+        if (set != null && !set.testState(wrapPlayer(player), placeFlag)) {
             event.setCancelled(true);
         }
     }

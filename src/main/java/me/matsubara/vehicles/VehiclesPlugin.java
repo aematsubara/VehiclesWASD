@@ -74,6 +74,7 @@ public final class VehiclesPlugin extends JavaPlugin {
     private final Map<VehicleType, Shape> vehicleCrafting = new EnumMap<>(VehicleType.class);
     private final Set<TypeTarget> fuelItems = new HashSet<>();
     private final Multimap<String, Material> extraTags = MultimapBuilder.hashKeys().hashSetValues().build();
+    private final List<AVExtension<?>> extensions = new ArrayList<>();
 
     private final NamespacedKey vehicleTypeKey = new NamespacedKey(this, "vehicle_type");
     private final NamespacedKey vehicleModelIdKey = new NamespacedKey(this, "vehicle_model_id");
@@ -121,6 +122,11 @@ public final class VehiclesPlugin extends JavaPlugin {
             getLogger().severe("This plugin depends on PacketEvents, disabling...");
             pluginManager.disablePlugin(this);
             return;
+        }
+
+        // Enable extensions.
+        for (AVExtension<?> extension : extensions) {
+            extension.onEnable(this);
         }
 
         // Before using Pathetic, you need to initialize it.
@@ -314,6 +320,8 @@ public final class VehiclesPlugin extends JavaPlugin {
 
         try {
             AVExtension<T> extension = (AVExtension<T>) extensionClazz.getConstructor().newInstance();
+            extensions.add(extension);
+
             return extension.init(this);
         } catch (NoClassDefFoundError | ReflectiveOperationException ignored) {
             return null;
