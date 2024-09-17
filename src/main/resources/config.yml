@@ -23,14 +23,14 @@
 #
 # RANGED AMOUNT (X-Y): A random value between x and y. (@amount / @enchantments (level))
 #
-# PERCENTAGE (only valid for @damage, NOT DECIMAL): X% / %X (% must be included); for example: 50% (same as %50) would be half-damage.
+# PERCENTAGE (only valid for @damage, NOT DECIMAL): X% / %X (% must be included); for example, 50% (same as %50) would be half-damage.
 # NOTE: The percentage is taken from the maximum durability; this means:
-# * WOODEN_SWORD max durability = 60; if @damage is 50% (60 * 0.50) -> 30. if @damage is 25% (60 * 0.25) -> 15.
+# * WOODEN_SWORD max durability = 60; if @damage is 50% (60 * 0.50) → 30. If @damage is 25% (60 * 0.25) → 15.
 # That value will be the damage added to the item; so, if @damage is %25, the new durability of the WOODEN_SWORD will be 60 - 15 = 45.
 #
 # In this example, the required ingredients are 7 of GOLD_INGOT and 1 of DIAMOND.
 # You can use spaces to represent AIR (nothing).
-# ingredients:
+# Ingredients:
 #   - DIAMOND, D
 #   - GOLD_INGOT, G
 # shape:
@@ -99,7 +99,7 @@ action-bar:
 # You can also combine materials with existing tags.
 #
 # If you have knowledge of regular expressions, you can use them to add materials with a certain pattern, using ";" at the beginning.
-# For example: ;.*_STAINED_GLASS$ - this expression will add all materials that end with _STAINED_GLASS.
+# For example, ;.*_STAINED_GLASS$ - this expression will add all materials that end with _STAINED_GLASS.
 # You can try this using the following page: https://regexr.com/
 #
 # NOTE: Do not use tag names that already exist in Minecraft as these have priority.
@@ -120,8 +120,8 @@ extra-tags:
 
 # Here you can choose the materials that can be used as fuel.
 # You can add materials and tags, those already existing in minecraft and those you created above in @{extra-tags}.
-# To specify a tag, simply use the format: ${TAG_NAME} (in uppercase and using "_" instead of "-").
-# For example: $WOOL_CARPETS - the tag that contains all the wool carpets.
+# To specify a tag, use the format: ${TAG_NAME} (in uppercase and using "_" instead of "-").
+# For example, $WOOL_CARPETS - the tag that contains all the wool carpets.
 #
 # NOTE: $CARPETS and $WOOL_CARPETS are the same tag but the first was renamed to the second since 1.19.
 #
@@ -132,7 +132,7 @@ extra-tags:
 #
 # You can also specify if a material is only valid fuel for a certain vehicle,
 # indicating it with a "?" at the beginning next to the type of vehicle, ending with ":".
-# For example:
+# For example,
 # * ?TANK:NETHERITE_INGOT(30) - Each netherite ingot will add 30 of fuel ONLY to the tanks.
 #
 # Types of vehicles: BIKE, BOAT, CYBERCAR, HELICOPTER, KART, QUAD, TANK.
@@ -197,7 +197,7 @@ shop:
     - "&7Contain customizations on:"
     - "&8* &f%customization-on%"
     - "&7"
-    - "&ePrice: &a$%money%"
+    - "&ePrice: &a%money%"
     - "&7"
     - "&6Left click to buy!"
     - "&6Right click to preview!"
@@ -358,8 +358,8 @@ shop:
 # (which can be applied in the customization menu).
 #
 # You can add materials and tags, those already existing in minecraft and those you created above in @{extra-tags}.
-# To specify a tag, simply use the format: ${TAG_NAME} (in uppercase and using "_" instead of "-").
-# For example: $WOOL_CARPETS - the tag that contains all the wool carpets.
+# To specify a tag, use the format: ${TAG_NAME} (in uppercase and using "_" instead of "-").
+# For example, $WOOL_CARPETS - the tag that contains all the wool carpets.
 #
 # NOTE: $CARPETS and $WOOL_CARPETS are the same tag but the first was renamed to the second since 1.19.
 # NOTE 2: Priority is only used to sort them in the GUI, you can ignore them.
@@ -513,7 +513,7 @@ customizations:
 # NOTE: Helicopters cannot move backwards.
 #
 # All vehicles can have fuel, although boats have it disabled by default.
-# To remove fuel from a vehicle, simply set @{max-fuel} = 0.0.
+# To remove fuel from a vehicle, set @{max-fuel} = 0.0.
 # To add or modify a vehicle's fuel, you must add @fuel.max-fuel (maximum fuel capacity) and @fuel.reduction-per-second (reduction amount per second).
 #
 # All vehicles can have engine sounds, refueling sounds, and starting and stopping sounds.
@@ -805,7 +805,7 @@ gui:
         display-name: "&a&lConfirm"
         # %money% - the price of the vehicle.
         lore:
-          - "&a$%money% &7will be taken from your account."
+          - "&a%money% &7will be taken from your account."
       cancel:
         material: RED_STAINED_GLASS_PANE
         display-name: "&c&lCancel"

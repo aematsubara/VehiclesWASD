@@ -251,7 +251,7 @@ public final class InventoryListener implements Listener {
 
                 VaultExtension vaultExtension = plugin.getVaultExtension();
                 if (!vaultExtension.has(player, money)) {
-                    messages.send(player, Messages.Message.SHOP_NOT_ENOUGH_MONEY, string -> string.replace("%money%", String.valueOf(money)));
+                    messages.send(player, Messages.Message.SHOP_NOT_ENOUGH_MONEY, string -> string.replace("%money%", vaultExtension.format(money)));
                     closeInventory(player);
                     return;
                 }
@@ -382,7 +382,7 @@ public final class InventoryListener implements Listener {
             return;
         }
 
-        messages.send(player, Messages.Message.CUSTOMIZATION_SUCCESSFUL_PURCHASE, string -> string.replace("%money%", String.valueOf(money)));
+        messages.send(player, Messages.Message.SHOP_SUCCESSFUL_PURCHASE, string -> string.replace("%money%", vaultExtension.format(money)));
 
         VehicleData temp = new VehicleData(
                 player.getUniqueId(), // We need to assign the owner here, otherwise we won't be able to use the vehicle.

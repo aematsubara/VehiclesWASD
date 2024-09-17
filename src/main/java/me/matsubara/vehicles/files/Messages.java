@@ -102,10 +102,10 @@ public class Messages {
         TRANSFER_NEW_OWNER("vehicle.transfer-ownership.new-owner"),
         TRANSFER_OFFLINE_PLAYER("vehicle.transfer-ownership.offline-player"),
         SHOP_NOT_ENOUGH_MONEY("shop.not-enough-money"),
+        SHOP_SUCCESSFUL_PURCHASE("shop.successful-purchase"),
         CUSTOMIZATION_INVALID_CURSOR("customization.invalid-cursor"),
         CUSTOMIZATION_ALREADY_IN_USE("customization.already-in-use"),
-        CUSTOMIZATION_DIFFERENT_AMOUNT("customization.different-amount"),
-        CUSTOMIZATION_SUCCESSFUL_PURCHASE("customization.successful-purchase");
+        CUSTOMIZATION_DIFFERENT_AMOUNT("customization.different-amount");
 
         private final String path;
 

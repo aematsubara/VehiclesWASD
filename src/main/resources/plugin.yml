@@ -17,6 +17,8 @@ softdepend:
   - WorldGuard
   - Vault
   - Essentials
+  - PlayerPoints
+  - CMI
 libraries:
   - org.apache.commons:commons-lang3:3.13.0
   - commons-io:commons-io:2.13.0

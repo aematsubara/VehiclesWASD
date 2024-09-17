@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -31,18 +32,28 @@ public final class StandManager implements Listener {
         handleStandRender(player, player.getLocation(), true);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler
+    public void onPlayerTeleport(@NotNull PlayerTeleportEvent event) {
+        handleMovement(event, true);
+    }
+
+    @EventHandler
     public void onPlayerMove(@NotNull PlayerMoveEvent event) {
+        handleMovement(event, false);
+    }
+
+    private void handleMovement(@NotNull PlayerMoveEvent event, boolean isSpawn) {
         Location to = event.getTo();
         if (to == null) return;
 
+        // Only handle renders if the player moved at least 1 block.
         Location from = event.getFrom();
         if (to.getBlockX() == from.getBlockX()
                 && to.getBlockY() == from.getBlockY()
                 && to.getBlockZ() == from.getBlockZ()) return;
 
         Player player = event.getPlayer();
-        handleStandRender(player, to, false);
+        handleStandRender(player, to, isSpawn);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -76,7 +87,7 @@ public final class StandManager implements Listener {
 
     private void handleStandRender(Player player, PacketStand stand, boolean shouldShow, boolean isSpawn) {
         if (shouldShow) {
-            if (stand.isIgnored(player) || isSpawn) stand.spawn(player);
+            if (stand.isIgnored(player) || isSpawn) stand.spawn(player, true);
         } else {
             if (!stand.isIgnored(player)) stand.destroy(player);
         }

@@ -151,6 +151,12 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
                 return true;
             }
 
+            // We need to reload this here instead of on VehiclesPlugin#onEnabled()
+            // because the provider may not be enabled yet.
+            if (plugin.getTypeCategoryItem().isEmpty() || plugin.getTypeVehicles().isEmpty()) {
+                plugin.reloadShopItems();
+            }
+
             new ShopGUI(plugin, player, vehicleManager.getSelectedType(player));
         }
 

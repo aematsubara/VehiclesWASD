@@ -18,7 +18,7 @@ commands:
     not-generic: "&cThis vehicle doesn't have an integrated GPS system!"
     specify-home: "&cYou must specify a destination home!"
     home-not-found: "&cThat home couldn't be found!"
-    different-world: "The destination home is in a different world!"
+    different-world: "&cThe destination home is in a different world!"
     too-far: "&cThat home is too far away (>%max-distance%m)!"
     too-close: "&cThat home is too close (<%min-distance%m)!"
     previous-cancelled: "&cThe previous path was cancelled!"
@@ -57,10 +57,10 @@ vehicle:
     offline-player: "&cThe new owner must be online during the transfer!"
 
 shop:
-  not-enough-money: "&cYou need $%money% to purchase this vehicle."
+  not-enough-money: "&cYou need &a%money% &cto purchase this vehicle."
+  successful-purchase: "&6Enjoy your new vehicle! &a%money% &6has been taken from your account."
 
 customization:
   invalid-cursor: "&cYou must click with a valid item in your cursor!"
   already-in-use: "&cThis item is already in use!"
   different-amount: "&cThe amount must be the same as the original!"
-  successful-purchase: "&aEnjoy your new vehicle! $%money% has been taken from your account."

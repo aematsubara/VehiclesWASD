@@ -75,7 +75,7 @@ public class GPSTick extends BukkitRunnable {
                 lookAtTarget(stand, target);
             }
 
-            BoundingBox blockBox = BoundingBox.of(target, 0.5d, 0.5d, 0.5d);
+            BoundingBox blockBox = BoundingBox.of(target, 0.5d, 1.0d, 0.5d);
 
             tick++;
 

@@ -24,6 +24,7 @@ import me.matsubara.vehicles.model.stand.PacketStand;
 import me.matsubara.vehicles.model.stand.StandSettings;
 import me.matsubara.vehicles.util.BlockUtils;
 import me.matsubara.vehicles.util.PluginUtils;
+import me.matsubara.vehicles.util.Reflection;
 import me.matsubara.vehicles.vehicle.task.VehicleTick;
 import me.matsubara.vehicles.vehicle.type.Generic;
 import me.matsubara.vehicles.vehicle.type.Helicopter;
@@ -56,6 +57,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.Color;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodType;
 import java.util.List;
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -110,6 +113,7 @@ public abstract class Vehicle implements InventoryHolder {
     private static final String[] VALID_REGISTRIES = {Tag.REGISTRY_ITEMS, Tag.REGISTRY_BLOCKS};
     private static final double WHEEL_ROTATION_SPEED_MULTIPLIER = 5.0d;
 
+    private static final MethodHandle SET_CAN_TICK = Reflection.getMethod(ArmorStand.class, "setCanTick", MethodType.methodType(void.class, boolean.class), false, false);
     private static final Multimap<String, Triple<String, ItemStack, ItemStack>> LIGHTS = MultimapBuilder.hashKeys().arrayListValues().build();
     private static final Map<String, Float> MODEL_WHEEL_Y = Map.of(
             "cybercar", 90.0f,
@@ -227,6 +231,15 @@ public abstract class Vehicle implements InventoryHolder {
                     stand.getPersistentDataContainer().set(plugin.getVehicleModelIdKey(), PersistentDataType.STRING, model.getModelUniqueId().toString());
                     lockSlots(stand);
                     LISTEN_MODE_IGNORE.accept(plugin, stand);
+
+                    // Fix for paper: config -> paper-world-defaults.yml -> entities.armor-stands.tick = false
+                    if (SET_CAN_TICK != null) {
+                        try {
+                            SET_CAN_TICK.invoke(stand, true);
+                        } catch (Throwable ignored) {
+
+                        }
+                    }
                 });
     }
 
@@ -496,7 +509,7 @@ public abstract class Vehicle implements InventoryHolder {
         @SuppressWarnings("DataFlowIssue") Player driver = Bukkit.getPlayer(this.driver != null ? this.driver : ((Helicopter) this).getOutsideDriver());
         if (driver == null) return;
 
-        @SuppressWarnings("deprecation") BaseComponent[] components = TextComponent.fromLegacyText(PluginUtils.translate(message
+        BaseComponent[] components = TextComponent.fromLegacyText(PluginUtils.translate(message
                 .replace("%bar%", getProgressBar(filled, bars))
                 .replace("%speed%", speed)
                 .replace("%distance%", String.valueOf(distance))

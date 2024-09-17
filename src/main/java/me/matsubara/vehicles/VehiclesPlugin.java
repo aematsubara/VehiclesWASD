@@ -129,11 +129,11 @@ public final class VehiclesPlugin extends JavaPlugin {
             extension.onEnable(this);
         }
 
-        // Before using Pathetic, you need to initialize it.
-        PatheticMapper.initialize(this);
-
         vaultExtension = registerExtension(VaultExtension.class, "Vault");
         essentialsExtension = registerExtension(EssentialsExtension.class, "Essentials");
+
+        // Initialize pathetic after Vault.
+        PatheticMapper.initialize(this);
 
         // Register protocol events.
         PacketEvents.getAPI().getEventManager().registerListener(new UseEntity(this));
@@ -153,7 +153,7 @@ public final class VehiclesPlugin extends JavaPlugin {
         saveFiles("models");
         updateConfigs();
 
-        reloadShopItems();
+        // reloadShopItems();
         reloadFuelItems();
         reloadExtraTags();
         reloadCraftings();
@@ -313,10 +313,7 @@ public final class VehiclesPlugin extends JavaPlugin {
 
     @SuppressWarnings("unchecked")
     public <T> @Nullable T registerExtension(@NotNull Class<T> extensionClazz, String pluginName) {
-        if (getServer().getPluginManager().getPlugin(pluginName) == null) {
-            getLogger().info(pluginName + " not found.");
-            return null;
-        }
+        if (getServer().getPluginManager().getPlugin(pluginName) == null) return null;
 
         try {
             AVExtension<T> extension = (AVExtension<T>) extensionClazz.getConstructor().newInstance();
@@ -410,7 +407,7 @@ public final class VehiclesPlugin extends JavaPlugin {
                         .applyMultiLineLore(finalCustomizations, "%customization-on%", getConfig().getString("translations.no-customization"))
                         .setData(saveDataKey, Vehicle.VEHICLE_DATA, data)
                         .setData(moneyKey, PersistentDataType.DOUBLE, price)
-                        .replace("%money%", price)
+                        .replace("%money%", vaultExtension != null && vaultExtension.isEnabled() ? vaultExtension.format(price) : price)
                         .build());
             }
 

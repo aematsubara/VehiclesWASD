@@ -394,7 +394,11 @@ public final class PacketStand {
     }
 
     public void spawn(@NotNull Player player) {
-        if (!isInRange(player.getLocation())) return;
+        spawn(player, false);
+    }
+
+    public void spawn(@NotNull Player player, boolean ignoreRangeCheck) {
+        if (!ignoreRangeCheck && !isInRange(player.getLocation())) return;
         if (!plugin.isEnabled()) return;
 
         ignored.remove(player.getUniqueId());

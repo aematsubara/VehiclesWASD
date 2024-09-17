@@ -72,12 +72,16 @@ public final class Reflection {
     }
 
     public static @Nullable MethodHandle getMethod(@NotNull Class<?> refc, String name, Class<?>... parameterTypes) {
+        return getMethod(refc, name, true, parameterTypes);
+    }
+
+    public static @Nullable MethodHandle getMethod(@NotNull Class<?> refc, String name, boolean printStackTrace, Class<?>... parameterTypes) {
         try {
             Method method = refc.getDeclaredMethod(name, parameterTypes);
             method.setAccessible(true);
             return LOOKUP.unreflect(method);
         } catch (ReflectiveOperationException exception) {
-            exception.printStackTrace();
+            if (printStackTrace) exception.printStackTrace();
             return null;
         }
     }
@@ -93,14 +97,11 @@ public final class Reflection {
     public static @Nullable MethodHandle getMethod(Class<?> refc, String name, MethodType type, boolean isStatic, boolean printStackTrace, String... extraNames) {
         try {
             if (isStatic) return LOOKUP.findStatic(refc, name, type);
-            if (XReflection.MINOR_NUMBER > 17) {
-                Method method = refc.getMethod(name, type.parameterArray());
-                if (!method.getReturnType().isAssignableFrom(type.returnType())) {
-                    throw new NoSuchMethodException();
-                }
-                return LOOKUP.unreflect(method);
-            }
-            return LOOKUP.findVirtual(refc, name, type);
+
+            Method method = refc.getMethod(name, type.parameterArray());
+            if (!method.getReturnType().isAssignableFrom(type.returnType())) return null;
+
+            return LOOKUP.unreflect(method);
         } catch (ReflectiveOperationException exception) {
             if (extraNames != null && extraNames.length > 0) {
                 if (extraNames.length == 1) {
