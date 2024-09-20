@@ -34,7 +34,7 @@ public class PlayerListener implements Listener {
         if (cause != EntityDamageEvent.DamageCause.SUFFOCATION
                 && cause != EntityDamageEvent.DamageCause.CONTACT) return;
 
-        Vehicle vehicle = plugin.getVehicleManager().getPlayerVehicle(player);
+        Vehicle vehicle = plugin.getVehicleManager().getPlayerVehicle(player, true);
         if (vehicle != null) event.setCancelled(true);
     }
 }

@@ -116,6 +116,9 @@ public class Generic extends Vehicle {
                 .multiply(multiplier)
                 .setY(-0.5d);
 
+        Location temp = velocityStand.getLocation().clone().add(velocity);
+        if (notAllowedHere(temp)) return;
+
         velocityStand.setVelocity(velocity);
     }
 
@@ -217,6 +220,8 @@ public class Generic extends Vehicle {
         Vector slightOffset = new Vector(0.0d, 0.0d, backwards ? 0.475d : -0.475d);
         frontOrBack.add(PluginUtils.offsetVector(slightOffset, frontOrBack.getYaw(), frontOrBack.getPitch()));
         frontOrBack.setY(upY + 0.02d);
+
+        if (notAllowedHere(frontOrBack)) return;
 
         velocityStand.teleport(frontOrBack);
     }

@@ -7,8 +7,8 @@ import me.matsubara.vehicles.gui.ConfirmShopGUI;
 import me.matsubara.vehicles.gui.CustomizationGUI;
 import me.matsubara.vehicles.gui.ShopGUI;
 import me.matsubara.vehicles.gui.VehicleGUI;
+import me.matsubara.vehicles.hook.EconomyExtension;
 import me.matsubara.vehicles.hook.EssentialsExtension;
-import me.matsubara.vehicles.hook.VaultExtension;
 import me.matsubara.vehicles.manager.VehicleManager;
 import me.matsubara.vehicles.util.PluginUtils;
 import me.matsubara.vehicles.vehicle.Vehicle;
@@ -16,7 +16,6 @@ import me.matsubara.vehicles.vehicle.VehicleData;
 import me.matsubara.vehicles.vehicle.gps.GPSResultHandler;
 import me.matsubara.vehicles.vehicle.gps.GPSTick;
 import me.matsubara.vehicles.vehicle.type.Generic;
-import me.matsubara.vehicles.vehicle.type.Helicopter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -110,6 +109,8 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             }
 
             CompletableFuture.runAsync(plugin::updateConfigs).thenRun(() -> plugin.getServer().getScheduler().runTask(plugin, () -> {
+                plugin.resetEconomyProvider();
+
                 plugin.reloadShopItems();
                 plugin.reloadFuelItems();
                 plugin.reloadExtraTags();
@@ -119,12 +120,6 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
                 List<VehicleData> datas = new ArrayList<>();
                 for (Vehicle vehicle : vehicleManager.getVehicles()) {
                     datas.add(vehicle.createSaveData());
-
-                    // If passengers are riding a helicopter, teleport them to the ground.
-                    if (vehicle instanceof Helicopter helicopter) {
-                        helicopter.safePassengerTeleport();
-                    }
-
                     vehicleManager.removeVehicle(vehicle, null);
                 }
                 vehicleManager.getVehicles().clear();
@@ -145,8 +140,8 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
 
             if (notAllowed(player, "vehicleswasd.shop")) return true;
 
-            VaultExtension vaultExtension = plugin.getVaultExtension();
-            if (vaultExtension == null || !vaultExtension.isEnabled()) {
+            EconomyExtension<?> economyExtension = plugin.getEconomyExtension();
+            if (economyExtension == null || !economyExtension.isEnabled()) {
                 messages.send(player, Messages.Message.SHOP_ECONOMY_DISABLED);
                 return true;
             }

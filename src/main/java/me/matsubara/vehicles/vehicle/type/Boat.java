@@ -93,6 +93,10 @@ public class Boat extends Vehicle {
         double finalSpeed = Math.abs(currentSpeed / 100.0d);
 
         Vector offset = new Vector(0.0d, 0.0d, zVel > 0.0f ? finalSpeed : -finalSpeed);
-        velocityStand.teleport(temp.add(PluginUtils.offsetVector(offset, temp.getYaw(), temp.getPitch())));
+
+        Location target = temp.add(PluginUtils.offsetVector(offset, temp.getYaw(), temp.getPitch()));
+        if (notAllowedHere(target)) return;
+
+        velocityStand.teleport(target);
     }
 }

@@ -9,7 +9,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.jetbrains.annotations.NotNull;
 
-public class VaultExtension implements AVExtension<VaultExtension> {
+public class VaultExtension implements EconomyExtension<VaultExtension> {
 
     private Economy economy;
     private VehiclesPlugin plugin;
@@ -26,21 +26,24 @@ public class VaultExtension implements AVExtension<VaultExtension> {
         }
 
         Plugin providerPlugin = provider.getPlugin();
-        plugin.getLogger().info("Using {" + providerPlugin.getDescription().getFullName() + "} as the economy provider (" + provider.getPriority().name() + ").");
+        plugin.getLogger().info("Using {" + providerPlugin.getDescription().getFullName() + "} as the economy provider.");
 
         economy = provider.getProvider();
         enabled = true;
         return this;
     }
 
+    @Override
     public boolean has(Player player, double money) {
         return economy.has(player, money);
     }
 
+    @Override
     public String format(double money) {
         return economy.format(money);
     }
 
+    @Override
     public boolean takeMoney(Player player, double money) {
         EconomyResponse response = economy.withdrawPlayer(player, money);
         if (response.transactionSuccess()) return true;

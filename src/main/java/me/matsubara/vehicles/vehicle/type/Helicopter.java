@@ -7,21 +7,18 @@ import me.matsubara.vehicles.data.PlayerInput;
 import me.matsubara.vehicles.model.Model;
 import me.matsubara.vehicles.model.stand.PacketStand;
 import me.matsubara.vehicles.model.stand.StandSettings;
-import me.matsubara.vehicles.util.BlockUtils;
 import me.matsubara.vehicles.util.PluginUtils;
 import me.matsubara.vehicles.vehicle.Vehicle;
 import me.matsubara.vehicles.vehicle.VehicleData;
 import me.matsubara.vehicles.vehicle.VehicleType;
-import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -69,23 +66,6 @@ public class Helicopter extends Vehicle {
         }
     }
 
-    public void safePassengerTeleport() {
-        for (Pair<ArmorStand, StandSettings> chair : chairs) {
-            List<Entity> passengers = new ArrayList<>(chair.getKey().getPassengers());
-            if (passengers.isEmpty()) continue;
-
-            for (Entity passenger : passengers) {
-                if (!(passenger instanceof Player player)) continue;
-
-                Location highest = BlockUtils.getHighestLocation(player.getLocation());
-                if (highest == null) continue;
-
-                chair.getKey().eject();
-                player.teleport(highest);
-            }
-        }
-    }
-
     @Override
     public void handleVehicleMovement(@NotNull PlayerInput input, boolean onGround) {
         if (!canMove() || (driver == null && outsideDriver == null)) {
@@ -130,18 +110,22 @@ public class Helicopter extends Vehicle {
 
         velocityStand.setGravity(false);
 
-        if (forward > 0.0f && currentSpeed > 0.0f) {
-            Location temp = velocityStand.getLocation();
+        if (forward <= 0.0f || currentSpeed <= 0.0f) return;
 
-            if (!temp.getBlock().isPassable()) {
-                Location frontOrBack = temp.clone().add(temp.getDirection().multiply(0.75d));
+        Location temp = velocityStand.getLocation();
 
-                Block block = frontOrBack.getBlock();
-                if (!block.isPassable()) return;
-            }
+        if (!temp.getBlock().isPassable()) {
+            Location frontOrBack = temp.clone().add(temp.getDirection().multiply(0.75d));
 
-            Vector offset = new Vector(0.0d, 0.0d, currentSpeed / 100.0d);
-            velocityStand.teleport(temp.add(PluginUtils.offsetVector(offset, temp.getYaw(), temp.getPitch())));
+            Block block = frontOrBack.getBlock();
+            if (!block.isPassable()) return;
         }
+
+        Vector offset = new Vector(0.0d, 0.0d, currentSpeed / 100.0d);
+
+        Location target = temp.add(PluginUtils.offsetVector(offset, temp.getYaw(), temp.getPitch()));
+        if (notAllowedHere(target)) return;
+
+        velocityStand.teleport(target);
     }
 }

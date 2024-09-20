@@ -52,6 +52,9 @@ config-version: 1
 # The rendering distance of the vehicles.
 render-distance: 80
 
+# Which economy provider to use (Vault / PlayerPoints).
+economy-provider: Vault
+
 # If true, the vehicle will face the opposite direction to the one the player is facing.
 # If false, the vehicle will face the direction in which the player is facing.
 opposite-face-spawn: false
@@ -75,6 +78,15 @@ gps:
   max-distance: 512
   # The minimum distance required before starting.
   min-distance: 5
+
+# Here you can modify the fireballs that the tanks throw.
+tank-fire:
+  # The speed multiplier.
+  speed-multiplier: 3.0
+  # Whether this explosive's explosion causes fire.
+  incendiary: false
+  # The radius affected by this explosive's explosion.
+  radius: 1.0
 
 # The message that will be shown to both the driver and passengers of a vehicle.
 action-bar:

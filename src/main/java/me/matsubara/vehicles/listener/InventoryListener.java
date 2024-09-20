@@ -7,7 +7,7 @@ import me.matsubara.vehicles.gui.ConfirmShopGUI;
 import me.matsubara.vehicles.gui.CustomizationGUI;
 import me.matsubara.vehicles.gui.ShopGUI;
 import me.matsubara.vehicles.gui.VehicleGUI;
-import me.matsubara.vehicles.hook.VaultExtension;
+import me.matsubara.vehicles.hook.EconomyExtension;
 import me.matsubara.vehicles.manager.targets.TypeTarget;
 import me.matsubara.vehicles.model.stand.StandSettings;
 import me.matsubara.vehicles.util.PluginUtils;
@@ -249,9 +249,9 @@ public final class InventoryListener implements Listener {
                 Double money = container.get(plugin.getMoneyKey(), PersistentDataType.DOUBLE);
                 if (money == null) return;
 
-                VaultExtension vaultExtension = plugin.getVaultExtension();
-                if (!vaultExtension.has(player, money)) {
-                    messages.send(player, Messages.Message.SHOP_NOT_ENOUGH_MONEY, string -> string.replace("%money%", vaultExtension.format(money)));
+                EconomyExtension<?> economyExtension = plugin.getEconomyExtension();
+                if (!economyExtension.has(player, money)) {
+                    messages.send(player, Messages.Message.SHOP_NOT_ENOUGH_MONEY, string -> string.replace("%money%", economyExtension.format(money)));
                     closeInventory(player);
                     return;
                 }
@@ -375,14 +375,14 @@ public final class InventoryListener implements Listener {
     private void completePurchase(Player player, double money, @NotNull VehicleData data, String shopDisplayName) {
         Messages messages = plugin.getMessages();
 
-        VaultExtension vaultExtension = plugin.getVaultExtension();
-        if (!vaultExtension.takeMoney(player, money)) {
+        EconomyExtension<?> economyExtension = plugin.getEconomyExtension();
+        if (!economyExtension.takeMoney(player, money)) {
             messages.send(player, Messages.Message.AN_ERROR_OCURRED);
             closeInventory(player);
             return;
         }
 
-        messages.send(player, Messages.Message.SHOP_SUCCESSFUL_PURCHASE, string -> string.replace("%money%", vaultExtension.format(money)));
+        messages.send(player, Messages.Message.SHOP_SUCCESSFUL_PURCHASE, string -> string.replace("%money%", economyExtension.format(money)));
 
         VehicleData temp = new VehicleData(
                 player.getUniqueId(), // We need to assign the owner here, otherwise we won't be able to use the vehicle.

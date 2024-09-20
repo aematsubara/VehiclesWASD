@@ -18,6 +18,7 @@ import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.data.PlayerInput;
 import me.matsubara.vehicles.data.SoundWrapper;
 import me.matsubara.vehicles.files.Config;
+import me.matsubara.vehicles.hook.WGExtension;
 import me.matsubara.vehicles.manager.StandManager;
 import me.matsubara.vehicles.model.Model;
 import me.matsubara.vehicles.model.stand.PacketStand;
@@ -103,6 +104,7 @@ public abstract class Vehicle implements InventoryHolder {
     private int previousSpeed = Integer.MIN_VALUE;
     private int previousProgressed = Integer.MIN_VALUE;
     protected boolean forceActionBarMessage;
+    protected boolean removed;
 
     protected ArmorStand velocityStand;
     protected final List<Pair<ArmorStand, StandSettings>> chairs = new ArrayList<>();
@@ -331,7 +333,7 @@ public abstract class Vehicle implements InventoryHolder {
     }
 
     public boolean canMove() {
-        return !fuelEnabled() || fuel > 0.0f;
+        return !notAllowedHere(velocityStand.getLocation()) && (!fuelEnabled() || fuel > 0.0f);
     }
 
     public boolean canPlaySound() {
@@ -407,6 +409,14 @@ public abstract class Vehicle implements InventoryHolder {
 
     public boolean isDriver(@NotNull UUID uuid) {
         return uuid.equals(driver);
+    }
+
+    public boolean isPassenger(@NotNull Player player) {
+        return isPassenger(player.getUniqueId());
+    }
+
+    public boolean isPassenger(UUID uuid) {
+        return passengers.containsKey(uuid);
     }
 
     private void renderOtherVehicles(UUID uuid) {
@@ -653,6 +663,25 @@ public abstract class Vehicle implements InventoryHolder {
         for (Pair<ArmorStand, StandSettings> chair : chairs) {
             if (chair != null) teleportChair(location, chair);
         }
+    }
+
+    public boolean notAllowedHere(Location location) {
+        Player driver = this.driver != null ? Bukkit.getPlayer(this.driver) : null;
+        if (XReflection.supports(18, 2)
+                && driver != null
+                && driver.isValid()
+                && driver.isOnline()) {
+            WorldBorder border = driver.getWorldBorder();
+            if (border != null && !border.isInside(location)) return true;
+        }
+
+        WorldBorder border = velocityStand.getWorld().getWorldBorder();
+        if (!border.isInside(location)) return true;
+
+        WGExtension wgExtension = plugin.getWgExtension();
+        if (wgExtension == null) return false;
+
+        return !wgExtension.canMoveHere(driver, location, tick);
     }
 
     protected void teleportChair(Location location, @NotNull Pair<ArmorStand, StandSettings> pair) {

@@ -84,11 +84,8 @@ public class VehicleManager implements Listener {
         selectedShopCategory.remove(playerUUID);
         invalidateGPSResult(playerUUID);
 
-        Vehicle vehicle = getPlayerVehicle(player);
-        if (!(vehicle instanceof Helicopter) || vehicle.getVelocityStand().isOnGround()) return;
-
-        Location highest = BlockUtils.getHighestLocation(player.getLocation());
-        if (highest != null) PluginUtils.teleportWithPassengers(player, highest);
+        Vehicle vehicle = getPlayerVehicle(player, true);
+        if (vehicle != null) handleDismountLocation(player, vehicle, true);
     }
 
     public boolean invalidateGPSResult(UUID uuid) {
@@ -141,13 +138,22 @@ public class VehicleManager implements Listener {
     }
 
     public @Nullable Vehicle getPlayerVehicle(@NotNull Player player) {
+        return getPlayerVehicle(player, false);
+    }
+
+    public Vehicle getPlayerVehicle(Player player, boolean checkPassenger) {
         for (Vehicle vehicle : vehicles) {
-            if (vehicle.isDriver(player)) return vehicle;
+            if (vehicle.isDriver(player) || (checkPassenger && vehicle.isPassenger(player))) {
+                return vehicle;
+            }
         }
         return null;
     }
 
     public void removeVehicle(@NotNull Vehicle vehicle, @Nullable Player picker) {
+        // We need to change the removed state so the passengers are teleported correctly.
+        vehicle.setRemoved(true);
+
         VehicleTick vehicleTick = vehicle.getVehicleTick();
         if (vehicleTick != null && !vehicleTick.isCancelled()) vehicleTick.cancel();
 
@@ -226,22 +232,17 @@ public class VehicleManager implements Listener {
         cancellable.setCancelled(true);
     }
 
-    @SuppressWarnings("UnstableApiUsage") // We can keep using this event if we stay in 1.20.4.
-    @EventHandler
-    public void onEntityDismount(@SuppressWarnings("deprecation") @NotNull EntityDismountEvent event) {
+    @EventHandler // We can keep using this event if we stay in 1.20.1.
+    public void onEntityDismount(@NotNull EntityDismountEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
         if (!(event.getDismounted() instanceof ArmorStand)) return;
 
-        for (Vehicle vehicle : vehicles) {
-            boolean driver;
-            if ((driver = vehicle.isDriver(player)) || vehicle.getPassengers().containsKey(player.getUniqueId())) {
-                handleDismount(player, vehicle, driver);
-                break;
-            }
-        }
+        Vehicle vehicle = getPlayerVehicle(player, true);
+        if (vehicle != null) handleDismount(player, vehicle);
     }
 
-    private void handleDismount(@NotNull Player player, Vehicle vehicle, boolean driver) {
+    private void handleDismount(@NotNull Player player, @NotNull Vehicle vehicle) {
+        boolean driver = vehicle.isDriver(player);
         UUID playerUUID = player.getUniqueId();
 
         if (vehicle instanceof Helicopter helicopter) {
@@ -253,10 +254,7 @@ public class VehicleManager implements Listener {
             }
         }
 
-        player.teleport(vehicle.getVelocityStand()
-                .getLocation()
-                .clone()
-                .setDirection(player.getLocation().getDirection()));
+        handleDismountLocation(player, vehicle, false);
 
         if (driver) {
             vehicle.setDriver(null);
@@ -268,6 +266,17 @@ public class VehicleManager implements Listener {
         if (Config.ACTION_BAR_ENABLED.asBool()) {
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR); // Clear message.
         }
+    }
+
+    private void handleDismountLocation(@NotNull Player player, @NotNull Vehicle vehicle, boolean bypass) {
+        Location playerLocation = player.getLocation();
+        ArmorStand stand = vehicle.getVelocityStand();
+
+        boolean useCurrent = stand.isOnGround() || (!bypass && !vehicle.isRemoved() && !vehicle.is(VehicleType.HELICOPTER));
+        Location highest = useCurrent ? null : BlockUtils.getHighestLocation(playerLocation);
+        Location current = stand.getLocation().clone().setDirection(playerLocation.getDirection());
+
+        player.teleport(Objects.requireNonNullElse(highest, current));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

@@ -15,7 +15,6 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
-import java.util.UUID;
 
 public final class StandManager implements Listener {
 
@@ -63,19 +62,17 @@ public final class StandManager implements Listener {
     }
 
     public void handleStandRender(@NotNull Player player, Location location, boolean isSpawn) {
-        UUID playerUUID = player.getUniqueId();
-
-        for (Vehicle game : plugin.getVehicleManager().getVehicles()) {
-            if (playerUUID.equals(game.getDriver()) || game.getPassengers().containsKey(playerUUID)) continue;
+        for (Vehicle vehicle : plugin.getVehicleManager().getVehicles()) {
+            if (vehicle.isDriver(player) || vehicle.isPassenger(player)) continue;
 
             boolean shouldShow = true;
 
-            for (PacketStand stand : game.getModel().getStands()) {
+            for (PacketStand stand : vehicle.getModel().getStands()) {
                 if (!stand.isInRange(location)) shouldShow = false;
             }
 
             // Show/hide model stands.
-            handleStandRender(player, game.getModel().getStands(), shouldShow, isSpawn);
+            handleStandRender(player, vehicle.getModel().getStands(), shouldShow, isSpawn);
         }
     }
 

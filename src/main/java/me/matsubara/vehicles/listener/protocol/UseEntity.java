@@ -84,8 +84,14 @@ public final class UseEntity extends SimplePacketListenerAbstract {
                         inventory.setItemInMainHand(handItem);
                     }
 
+                    double speedMultiplier = plugin.getConfig().getDouble("tank-fire.speed-multiplier", 3.0d);
+                    boolean incendiary = plugin.getConfig().getBoolean("tank-fire.incendiary", false);
+                    double radius = plugin.getConfig().getDouble("tank-fire.radius", 1.0f);
+
                     Fireball fireball = player.launchProjectile(Fireball.class);
-                    fireball.setDirection(player.getLocation().getDirection().multiply(3));
+                    fireball.setDirection(player.getLocation().getDirection().multiply(speedMultiplier));
+                    fireball.setIsIncendiary(incendiary);
+                    fireball.setYield((float) radius);
                 });
             }
             return;

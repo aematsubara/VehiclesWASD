@@ -13,10 +13,7 @@ import lombok.Getter;
 import me.matsubara.vehicles.command.VehiclesCommands;
 import me.matsubara.vehicles.files.Config;
 import me.matsubara.vehicles.files.Messages;
-import me.matsubara.vehicles.hook.AVExtension;
-import me.matsubara.vehicles.hook.EssentialsExtension;
-import me.matsubara.vehicles.hook.VaultExtension;
-import me.matsubara.vehicles.hook.WGExtension;
+import me.matsubara.vehicles.hook.*;
 import me.matsubara.vehicles.listener.InventoryListener;
 import me.matsubara.vehicles.listener.PlayerListener;
 import me.matsubara.vehicles.listener.protocol.UseEntity;
@@ -74,7 +71,7 @@ public final class VehiclesPlugin extends JavaPlugin {
     private final Map<VehicleType, Shape> vehicleCrafting = new EnumMap<>(VehicleType.class);
     private final Set<TypeTarget> fuelItems = new HashSet<>();
     private final Multimap<String, Material> extraTags = MultimapBuilder.hashKeys().hashSetValues().build();
-    private final List<AVExtension<?>> extensions = new ArrayList<>();
+    private final Map<String, AVExtension<?>> extensions = new HashMap<>();
 
     private final NamespacedKey vehicleTypeKey = new NamespacedKey(this, "vehicle_type");
     private final NamespacedKey vehicleModelIdKey = new NamespacedKey(this, "vehicle_model_id");
@@ -85,11 +82,13 @@ public final class VehiclesPlugin extends JavaPlugin {
     private final NamespacedKey chairNumbeKey = new NamespacedKey(this, "ChairNumber");
 
     EssentialsExtension essentialsExtension;
-    VaultExtension vaultExtension;
+    EconomyExtension<?> economyExtension;
+    WGExtension wgExtension;
     boolean patheticEnabled;
 
     private static final List<String> GUI_TYPES = List.of("vehicle", "shop", "shop-confirm", "customizations");
     private static final Set<String> SPECIAL_SECTIONS = Sets.newHashSet("extra-tags");
+    private static final Set<String> ECONOMY_PROVIDER = Set.of("Vault", "PlayerPoints");
 
     static {
         ConfigurationSerialization.registerClass(VehicleData.class);
@@ -104,7 +103,7 @@ public final class VehiclesPlugin extends JavaPlugin {
         PacketEvents.getAPI().load();
 
         // WG needs to be registered onLoad to be able to register the flags.
-        registerExtension(WGExtension.class, "WorldGuard");
+        wgExtension = registerExtension(WGExtension.class, "WorldGuard");
     }
 
     @Override
@@ -124,17 +123,6 @@ public final class VehiclesPlugin extends JavaPlugin {
             return;
         }
 
-        // Enable extensions.
-        for (AVExtension<?> extension : extensions) {
-            extension.onEnable(this);
-        }
-
-        vaultExtension = registerExtension(VaultExtension.class, "Vault");
-        essentialsExtension = registerExtension(EssentialsExtension.class, "Essentials");
-
-        // Initialize pathetic after Vault.
-        PatheticMapper.initialize(this);
-
         // Register protocol events.
         PacketEvents.getAPI().getEventManager().registerListener(new UseEntity(this));
 
@@ -153,7 +141,12 @@ public final class VehiclesPlugin extends JavaPlugin {
         saveFiles("models");
         updateConfigs();
 
-        // reloadShopItems();
+        resetEconomyProvider();
+        essentialsExtension = registerExtension(EssentialsExtension.class, "Essentials");
+
+        // Initialize pathetic after Vault.
+        PatheticMapper.initialize(this);
+
         reloadFuelItems();
         reloadExtraTags();
         reloadCraftings();
@@ -165,6 +158,11 @@ public final class VehiclesPlugin extends JavaPlugin {
 
         command.setExecutor(vehiclesCommands);
         command.setTabCompleter(vehiclesCommands);
+
+        // Enable extensions.
+        for (AVExtension<?> extension : extensions.values()) {
+            extension.onEnable(this);
+        }
     }
 
     @Override
@@ -175,6 +173,17 @@ public final class VehiclesPlugin extends JavaPlugin {
 
         for (Vehicle vehicle : vehicleManager.getVehicles()) {
             vehicle.saveToChunk();
+        }
+    }
+
+    public void resetEconomyProvider() {
+        String provider = getConfig().getString("economy-provider");
+        if (provider == null || !ECONOMY_PROVIDER.contains(provider)) return;
+
+        if (provider.equals("Vault")) {
+            economyExtension = registerExtension(VaultExtension.class, "Vault");
+        } else {
+            economyExtension = registerExtension(PlayerPointsExtension.class, "PlayerPoints");
         }
     }
 
@@ -317,7 +326,7 @@ public final class VehiclesPlugin extends JavaPlugin {
 
         try {
             AVExtension<T> extension = (AVExtension<T>) extensionClazz.getConstructor().newInstance();
-            extensions.add(extension);
+            extensions.put(pluginName, extension);
 
             return extension.init(this);
         } catch (NoClassDefFoundError | ReflectiveOperationException ignored) {
@@ -407,7 +416,7 @@ public final class VehiclesPlugin extends JavaPlugin {
                         .applyMultiLineLore(finalCustomizations, "%customization-on%", getConfig().getString("translations.no-customization"))
                         .setData(saveDataKey, Vehicle.VEHICLE_DATA, data)
                         .setData(moneyKey, PersistentDataType.DOUBLE, price)
-                        .replace("%money%", vaultExtension != null && vaultExtension.isEnabled() ? vaultExtension.format(price) : price)
+                        .replace("%money%", economyExtension != null && economyExtension.isEnabled() ? economyExtension.format(price) : price)
                         .build());
             }
 

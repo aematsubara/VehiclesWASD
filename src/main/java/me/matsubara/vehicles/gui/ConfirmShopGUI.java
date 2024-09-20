@@ -42,7 +42,7 @@ public class ConfirmShopGUI implements InventoryHolder {
 
         for (int i = 0; i < 4; i++) {
             inventory.setItem(i, plugin.getItem("gui.shop-confirm.items.confirm")
-                    .replace("%money%", plugin.getVaultExtension().format(money))
+                    .replace("%money%", plugin.getEconomyExtension().format(money))
                     .build());
         }
 

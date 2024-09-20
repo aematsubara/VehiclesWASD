@@ -121,7 +121,7 @@ public class PreviewTick extends BukkitRunnable {
         if (rainbow || tick % 20 == 0) {
             String message = Config.SHOP_PREVIEW_MESSAGE.asStringTranslated().replace("%remaining%", String.valueOf(seconds - tick / 20));
 
-            @SuppressWarnings("deprecation") BaseComponent[] components = rainbow ?
+            BaseComponent[] components = rainbow ?
                     new BaseComponent[]{new TextComponent(ChatColor.stripColor(message))} :
                     TextComponent.fromLegacyText(message);
 
