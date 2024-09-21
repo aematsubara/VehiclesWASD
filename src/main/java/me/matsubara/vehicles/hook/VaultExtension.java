@@ -21,7 +21,7 @@ public class VaultExtension implements EconomyExtension<VaultExtension> {
 
         RegisteredServiceProvider<Economy> provider = plugin.getServer().getServicesManager().getRegistration(Economy.class);
         if (provider == null) {
-            plugin.getLogger().severe("Vault found, you need to install an economy provider (EssentialsX, CMI, PlayerPoints, etc...), disabling economy support...");
+            plugin.getLogger().severe("Vault found, you need to install an economy provider (EssentialsX, CMI, etc...), disabling economy support...");
             return null;
         }
 

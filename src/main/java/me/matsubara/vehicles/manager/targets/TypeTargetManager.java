@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 public final class TypeTargetManager {
@@ -50,7 +51,7 @@ public final class TypeTargetManager {
                 return;
             }
 
-            VehicleType temp = PluginUtils.getOrNull(VehicleType.class, data[0].toUpperCase());
+            VehicleType temp = PluginUtils.getOrNull(VehicleType.class, data[0].toUpperCase(Locale.ROOT));
             if (temp != null) {
                 type = temp;
             } else {
@@ -75,11 +76,11 @@ public final class TypeTargetManager {
             if (addMaterialsFromRegistry(
                     tags,
                     type,
-                    tagName.toLowerCase(),
+                    tagName.toLowerCase(Locale.ROOT),
                     amount,
                     Tag.REGISTRY_ITEMS, Tag.REGISTRY_BLOCKS)) return;
 
-            Collection<Material> extra = plugin.getExtraTags().get(tagName.toLowerCase());
+            Collection<Material> extra = plugin.getExtraTags().get(tagName.toLowerCase(Locale.ROOT));
             if (extra.isEmpty()) {
                 log(path, materialOrTag);
                 return;
@@ -105,7 +106,7 @@ public final class TypeTargetManager {
         }
 
         String materialName = materialOrTag.substring(indexOf != -1 ? indexOf + 1 : 0);
-        Material material = PluginUtils.getOrNull(Material.class, materialName.toUpperCase());
+        Material material = PluginUtils.getOrNull(Material.class, materialName.toUpperCase(Locale.ROOT));
         if (material != null) {
             addAndOverride(tags, createTarget(amount, material, null, type));
         } else {

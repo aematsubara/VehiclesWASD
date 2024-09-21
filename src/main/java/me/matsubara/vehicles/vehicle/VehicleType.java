@@ -3,6 +3,8 @@ package me.matsubara.vehicles.vehicle;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Locale;
+
 public enum VehicleType {
     BIKE,
     BOAT,
@@ -13,10 +15,10 @@ public enum VehicleType {
     TANK;
 
     public @NotNull String toConfigPath() {
-        return name().toLowerCase().replace("_", "-");
+        return toFilePath().replace("_", "-");
     }
 
     public @NotNull String toFilePath() {
-        return name().toLowerCase();
+        return name().toLowerCase(Locale.ROOT);
     }
 }

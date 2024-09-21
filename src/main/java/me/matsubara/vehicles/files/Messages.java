@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.UnaryOperator;
 
 @Getter
@@ -110,7 +111,7 @@ public class Messages {
         private final String path;
 
         Message() {
-            this.path = name().toLowerCase().replace("_", "-");
+            this.path = name().toLowerCase(Locale.ROOT).replace("_", "-");
         }
 
         Message(String path) {

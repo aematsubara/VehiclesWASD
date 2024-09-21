@@ -400,7 +400,7 @@ public final class VehiclesPlugin extends JavaPlugin {
                         Material material = PluginUtils.getOrNull(Material.class, data[1]);
                         if (material == null) continue;
 
-                        String nameFromConfig = getConfig().getString("customizations." + type.toConfigPath() + "." + customizationName.toLowerCase() + ".name");
+                        String nameFromConfig = getConfig().getString("customizations." + type.toConfigPath() + "." + customizationName.toLowerCase(Locale.ROOT) + ".name");
                         finalCustomizations.add(nameFromConfig);
 
                         customizationChanges.put(customizationName, material);
@@ -439,7 +439,7 @@ public final class VehiclesPlugin extends JavaPlugin {
 
         for (String key : section.getKeys(false)) {
             for (TypeTarget typeTarget : typeTargetManager.getTargetsFromConfig("extra-tags." + key)) {
-                extraTags.put(key.toLowerCase().replace("-", "_"), typeTarget.getType());
+                extraTags.put(key.toLowerCase(Locale.ROOT).replace("-", "_"), typeTarget.getType());
             }
         }
     }
@@ -502,7 +502,7 @@ public final class VehiclesPlugin extends JavaPlugin {
             if (Strings.isNullOrEmpty(enchantmentString)) continue;
             String[] data = PluginUtils.splitData(enchantmentString);
 
-            Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(data[0].toLowerCase()));
+            Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(data[0].toLowerCase(Locale.ROOT)));
 
             int level;
             try {
@@ -515,7 +515,7 @@ public final class VehiclesPlugin extends JavaPlugin {
         }
 
         for (String flag : config.getStringList(path + ".flags")) {
-            builder.addItemFlags(ItemFlag.valueOf(flag.toUpperCase()));
+            builder.addItemFlags(ItemFlag.valueOf(flag.toUpperCase(Locale.ROOT)));
         }
 
         String tippedArrow = config.getString(path + ".tipped");
@@ -629,9 +629,9 @@ public final class VehiclesPlugin extends JavaPlugin {
 
             String typeName;
             if (fuelItem.getFromTag() != null) {
-                typeName = getMaterialOrTagName(fuelItem.getFromTag().toLowerCase().replace("_", "-"), true);
+                typeName = getMaterialOrTagName(fuelItem.getFromTag().toLowerCase(Locale.ROOT).replace("_", "-"), true);
             } else {
-                typeName = getMaterialOrTagName(fuelItem.getType().name().toLowerCase().replace("_", "-"), false);
+                typeName = getMaterialOrTagName(fuelItem.getType().name().toLowerCase(Locale.ROOT).replace("_", "-"), false);
             }
 
             list.add(typeName + (isFuel ? " +" + fuelItem.getAmount() : ""));

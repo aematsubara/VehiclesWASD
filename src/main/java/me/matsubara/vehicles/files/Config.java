@@ -6,6 +6,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Locale;
 
 @SuppressWarnings("unused")
 public enum Config {
@@ -38,7 +39,7 @@ public enum Config {
     private final VehiclesPlugin plugin = JavaPlugin.getPlugin(VehiclesPlugin.class);
 
     Config() {
-        this.path = name().toLowerCase().replace("_", "-");
+        this.path = name().toLowerCase(Locale.ROOT).replace("_", "-");
     }
 
     Config(String path) {

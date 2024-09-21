@@ -185,7 +185,7 @@ public class VehicleManager implements Listener {
         }
 
         VehicleType type = data.type();
-        String modelName = type.name().toLowerCase();
+        String modelName = type.name().toLowerCase(Locale.ROOT);
 
         VehicleSpawnEvent spawnEvent = new VehicleSpawnEvent(player, location, type);
         plugin.getServer().getPluginManager().callEvent(spawnEvent);
@@ -299,7 +299,7 @@ public class VehicleManager implements Listener {
         String modelName = container.get(plugin.getVehicleTypeKey(), PersistentDataType.STRING);
         if (modelName == null) return;
 
-        VehicleType vehicleType = PluginUtils.getOrNull(VehicleType.class, modelName.toUpperCase());
+        VehicleType vehicleType = PluginUtils.getOrNull(VehicleType.class, modelName.toUpperCase(Locale.ROOT));
         if (vehicleType == null) return;
 
         event.setCancelled(true);
@@ -504,7 +504,7 @@ public class VehicleManager implements Listener {
 
             String customizationName = data[1].replace("_", "-");
 
-            PacketStand.ItemSlot slot = PluginUtils.getOrNull(PacketStand.ItemSlot.class, data[2].toUpperCase());
+            PacketStand.ItemSlot slot = PluginUtils.getOrNull(PacketStand.ItemSlot.class, data[2].toUpperCase(Locale.ROOT));
             if (slot == null) continue;
 
             Set<TypeTarget> typeTargets = new HashSet<>();
@@ -551,7 +551,7 @@ public class VehicleManager implements Listener {
         for (String partName : section.getKeys(false)) {
             if (!partName.equalsIgnoreCase(customizationName)) continue;
 
-            String configPath = customizationName.toLowerCase();
+            String configPath = customizationName.toLowerCase(Locale.ROOT);
             String nameFromConfig = plugin.getConfig().getString("customizations." + type.toConfigPath() + "." + configPath + ".name");
 
             int priority = plugin.getConfig().getInt("customizations." + type.toConfigPath() + "." + configPath + ".priority", Integer.MAX_VALUE);

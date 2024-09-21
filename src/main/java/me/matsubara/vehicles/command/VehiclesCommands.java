@@ -35,10 +35,7 @@ import org.patheloper.api.pathing.strategy.strategies.WalkablePathfinderStrategy
 import org.patheloper.mapping.PatheticMapper;
 import org.patheloper.mapping.bukkit.BukkitMapper;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Stream;
@@ -80,7 +77,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
         String subCommand;
         boolean noArgs = args.length == 0;
 
-        if (noArgs || args.length > 3 || !COMMAND_ARGS.contains((subCommand = args[0]).toLowerCase())) {
+        if (noArgs || args.length > 3 || !COMMAND_ARGS.contains((subCommand = args[0]).toLowerCase(Locale.ROOT))) {
             if (noArgs) HELP.forEach(sender::sendMessage);
             else messages.send(sender, Messages.Message.INVALID_COMMAND);
             return true;

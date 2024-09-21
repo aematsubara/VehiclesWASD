@@ -235,7 +235,7 @@ public final class InventoryListener implements Listener {
 
             String typeCategory = container.get(plugin.getVehicleTypeKey(), PersistentDataType.STRING);
             if (typeCategory != null) {
-                VehicleType type = PluginUtils.getOrNull(VehicleType.class, typeCategory.toUpperCase());
+                VehicleType type = PluginUtils.getOrNull(VehicleType.class, typeCategory.toUpperCase(Locale.ROOT));
                 if (type != null && type != shop.getCurrentType()) {
                     shop.setCurrentType(type);
                 }

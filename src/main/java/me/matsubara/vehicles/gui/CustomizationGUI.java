@@ -18,10 +18,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Getter
 public final class CustomizationGUI implements InventoryHolder {
@@ -50,7 +47,7 @@ public final class CustomizationGUI implements InventoryHolder {
         this.keyword = keyword;
 
         if (keyword != null && !keyword.isEmpty()) {
-            this.customizations.removeIf(customization -> !customization.getCustomizationName().toLowerCase().contains(keyword.toLowerCase()));
+            this.customizations.removeIf(customization -> !customization.getCustomizationName().toLowerCase(Locale.ROOT).contains(keyword.toLowerCase(Locale.ROOT)));
         }
 
         player.openInventory(inventory);
