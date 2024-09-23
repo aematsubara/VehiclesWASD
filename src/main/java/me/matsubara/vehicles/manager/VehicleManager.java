@@ -263,6 +263,16 @@ public class VehicleManager implements Listener {
             vehicle.getPassengers().remove(playerUUID);
         }
 
+        // Remove fireball cooldown.
+        if (Config.TANK_FIRE_ENABLED.asBool()
+                && Config.TANK_FIRE_COOLDOWN.asDouble() > 0.0d) {
+            // Save cooldown for later.
+            int cooldown = player.getCooldown(Material.FIRE_CHARGE);
+            if (cooldown > 0) vehicle.getFireballCooldown().put(playerUUID, cooldown);
+
+            player.setCooldown(Material.FIRE_CHARGE, 0);
+        }
+
         if (Config.ACTION_BAR_ENABLED.asBool()) {
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR); // Clear message.
         }
@@ -306,6 +316,7 @@ public class VehicleManager implements Listener {
 
         Block block = event.getClickedBlock();
 
+        boolean isBoat = vehicleType == VehicleType.BOAT;
         boolean waterReplaced = false;
 
         Messages messages = plugin.getMessages();
@@ -316,7 +327,7 @@ public class VehicleManager implements Listener {
                 messages.send(player, Messages.Message.PLACE_NOT_ON_LAVA);
                 return;
             } else if ((temp = interactedWithFluid(player, Material.WATER)) != null) {
-                if (vehicleType == VehicleType.BOAT) {
+                if (isBoat) {
                     block = temp;
                     waterReplaced = true;
                 } else {
@@ -334,7 +345,7 @@ public class VehicleManager implements Listener {
         if (!waterReplaced) {
             Block temp;
             if ((temp = interactedWithFluid(player, Material.WATER)) != null) {
-                if (vehicleType == VehicleType.BOAT) {
+                if (isBoat) {
                     block = temp;
                 } else {
                     messages.send(player, Messages.Message.PLACE_NOT_ON_WATER);
@@ -349,8 +360,13 @@ public class VehicleManager implements Listener {
             return;
         }
 
-        if (vehicleType == VehicleType.BOAT && blockType != Material.WATER) {
+        if (isBoat && blockType != Material.WATER) {
             messages.send(player, Messages.Message.PLACE_BOAT_ON_WATER);
+            return;
+        }
+
+        if (isBoat && block.getRelative(BlockFace.UP).getType() == Material.WATER) {
+            messages.send(player, Messages.Message.PLACE_BOAT_ON_TOP_SURFACE);
             return;
         }
 
@@ -391,7 +407,6 @@ public class VehicleManager implements Listener {
 
         VehicleData data, temp = container.get(plugin.getSaveDataKey(), Vehicle.VEHICLE_DATA);
         if (temp != null) {
-
             if (temp.modelUniqueId() != null) {
                 Vehicle vehicle = getVehicleByModelId(temp.modelUniqueId());
                 if (vehicle != null) {

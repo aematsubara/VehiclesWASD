@@ -96,6 +96,7 @@ public abstract class Vehicle implements InventoryHolder {
     protected UUID owner;
     protected UUID driver;
     protected Map<UUID, String> passengers = new HashMap<>();
+    protected Map<UUID, Integer> fireballCooldown = new HashMap<>();
     protected float fuel;
     protected int tick;
     protected boolean locked;

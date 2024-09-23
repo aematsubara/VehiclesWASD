@@ -12,6 +12,7 @@ import java.util.Locale;
 public enum Config {
     RENDER_DISTANCE,
     OPPOSITE_FACE_SPAWN,
+    ECONOMY_PROVIDER,
     CLOSE_CUSTOMIZATION_GUI_IF_SUCCESSFUL,
     CONFIRM_SHOP("shop.confirm-shop"),
     SHOP_PREVIEW_ENABLED("shop.preview.enabled"),
@@ -33,7 +34,12 @@ public enum Config {
     ACTION_BAR_GPS("action-bar.message.gps"),
     ACTION_BAR_SYMBOL("action-bar.fuel-bar.symbol"),
     ACTION_BAR_COMPLETED("action-bar.fuel-bar.color.completed"),
-    ACTION_BAR_EMPTY("action-bar.fuel-bar.color.empty");
+    ACTION_BAR_EMPTY("action-bar.fuel-bar.color.empty"),
+    TANK_FIRE_ENABLED("tank-fire.enabled"),
+    TANK_FIRE_SPEED_MULTIPLIER("tank-fire.speed-multiplier"),
+    TANK_FIRE_INCENDIARY("tank-fire.incendiary"),
+    TANK_FIRE_RADIUS("tank-fire.radius"),
+    TANK_FIRE_COOLDOWN("tank-fire.cooldown");
 
     private final String path;
     private final VehiclesPlugin plugin = JavaPlugin.getPlugin(VehiclesPlugin.class);
@@ -48,6 +54,10 @@ public enum Config {
 
     public boolean asBool() {
         return plugin.getConfig().getBoolean(path);
+    }
+
+    public boolean asBool(boolean defaultValue) {
+        return plugin.getConfig().getBoolean(path, defaultValue);
     }
 
     public int asInt() {
@@ -72,6 +82,10 @@ public enum Config {
 
     public double asDouble() {
         return plugin.getConfig().getDouble(path);
+    }
+
+    public double asDouble(double defaultValue) {
+        return plugin.getConfig().getDouble(path, defaultValue);
     }
 
     public long asLong() {

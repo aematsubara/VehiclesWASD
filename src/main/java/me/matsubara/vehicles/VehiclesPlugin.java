@@ -177,7 +177,7 @@ public final class VehiclesPlugin extends JavaPlugin {
     }
 
     public void resetEconomyProvider() {
-        String provider = getConfig().getString("economy-provider");
+        String provider = Config.ECONOMY_PROVIDER.asString();
         if (provider == null || !ECONOMY_PROVIDER.contains(provider)) return;
 
         if (provider.equals("Vault")) {

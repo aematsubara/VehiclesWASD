@@ -81,12 +81,16 @@ gps:
 
 # Here you can modify the fireballs that the tanks throw.
 tank-fire:
+  # Whether players can throw fireballs.
+  enabled: true
   # The speed multiplier.
   speed-multiplier: 3.0
   # Whether this explosive's explosion causes fire.
   incendiary: false
   # The radius affected by this explosive's explosion.
   radius: 1.0
+  # The time you must wait to be able to launch another fireball (in seconds).
+  cooldown: 1.3
 
 # The message that will be shown to both the driver and passengers of a vehicle.
 action-bar:

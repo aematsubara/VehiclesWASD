@@ -7,9 +7,9 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.player.InteractionHand;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity;
 import me.matsubara.vehicles.VehiclesPlugin;
+import me.matsubara.vehicles.files.Config;
 import me.matsubara.vehicles.files.Messages;
 import me.matsubara.vehicles.gui.VehicleGUI;
-import me.matsubara.vehicles.manager.VehicleManager;
 import me.matsubara.vehicles.model.Model;
 import me.matsubara.vehicles.model.stand.PacketStand;
 import me.matsubara.vehicles.model.stand.StandSettings;
@@ -27,6 +27,7 @@ import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -61,47 +62,18 @@ public final class UseEntity extends SimplePacketListenerAbstract {
         if (hand == InteractionHand.OFF_HAND) return;
         if (!(event.getPlayer() instanceof Player player)) return;
 
-        VehicleManager vehicleManager = plugin.getVehicleManager();
-
         // The player is already inside a vehicle.
         if (player.isInsideVehicle()) {
-            Vehicle vehicle = vehicleManager.getPlayerVehicle(player);
-            if (vehicle == null) return;
-
-            event.setCancelled(true);
-
-            PlayerInventory inventory = player.getInventory();
-            ItemStack handItem = inventory.getItemInMainHand();
-
-            if (!left && vehicle.is(VehicleType.TANK) && handItem.getType() == Material.FIRE_CHARGE) {
-                plugin.getServer().getScheduler().runTask(plugin, () -> {
-
-                    int newAmount = handItem.getAmount() - 1;
-                    if (newAmount == 0) {
-                        inventory.setItemInMainHand(null);
-                    } else {
-                        handItem.setAmount(newAmount);
-                        inventory.setItemInMainHand(handItem);
-                    }
-
-                    double speedMultiplier = plugin.getConfig().getDouble("tank-fire.speed-multiplier", 3.0d);
-                    boolean incendiary = plugin.getConfig().getBoolean("tank-fire.incendiary", false);
-                    double radius = plugin.getConfig().getDouble("tank-fire.radius", 1.0f);
-
-                    Fireball fireball = player.launchProjectile(Fireball.class);
-                    fireball.setDirection(player.getLocation().getDirection().multiply(speedMultiplier));
-                    fireball.setIsIncendiary(incendiary);
-                    fireball.setYield((float) radius);
-                });
-            }
+            handleTank(event, player, left);
             return;
         }
 
         if (handlePreviews(player, entityId, left)) return;
 
-        Iterator<Vehicle> iterator = vehicleManager.getVehicles().iterator();
+        Iterator<Vehicle> iterator = plugin.getVehicleManager().getVehicles().iterator();
         while (iterator.hasNext()) {
             Vehicle vehicle = iterator.next();
+            if (vehicle.isRemoved()) continue;
 
             Model model = vehicle.getModel();
             if (notChair(entityId, vehicle.getChairs())
@@ -110,16 +82,57 @@ public final class UseEntity extends SimplePacketListenerAbstract {
                 continue;
             }
 
-            plugin.getServer().getScheduler().runTask(plugin, () -> {
-                World world = player.getWorld();
-                vehicle.resetRealEntities(world);
-
-                handleOutsideVehicleInteract(player, vehicle, iterator, left);
-            });
+            plugin.getServer().getScheduler().runTask(plugin,
+                    () -> handleOutsideVehicleInteract(player, vehicle, iterator, left));
 
             event.setCancelled(true);
             break;
         }
+    }
+
+    private void handleTank(PacketPlayReceiveEvent event, Player player, boolean left) {
+        Vehicle vehicle = plugin.getVehicleManager().getPlayerVehicle(player);
+        if (vehicle == null || !Config.TANK_FIRE_ENABLED.asBool()) return;
+
+        PlayerInventory inventory = player.getInventory();
+        ItemStack item = inventory.getItemInMainHand();
+
+        if (left || !vehicle.is(VehicleType.TANK) || item.getType() != Material.FIRE_CHARGE) return;
+
+        event.setCancelled(true);
+
+        int cooldown = player.getCooldown(Material.FIRE_CHARGE);
+        if (cooldown > 0) {
+            double seconds = cooldown / 20.0d;
+            plugin.getMessages().send(
+                    player,
+                    Messages.Message.TANK_COOLDOWN,
+                    line -> line.replace("%seconds%", String.format("%.2f", seconds)));
+            return;
+        }
+
+        // Update item in the hand.
+        item.setAmount(item.getAmount() - 1);
+        inventory.setItemInMainHand(item.getAmount() == 0 ? null : item);
+
+        // We need to apply the cooldown and spawn the fireball SYNC.
+        plugin.getServer().getScheduler().runTask(plugin, () -> {
+            if (item.getAmount() > 0 || inventory.contains(Material.FIRE_CHARGE)) {
+                int cooldownTicks = (int) (Config.TANK_FIRE_COOLDOWN.asDouble() * 20);
+                player.setCooldown(Material.FIRE_CHARGE, cooldownTicks);
+            }
+
+            double speedMultiplier = Config.TANK_FIRE_SPEED_MULTIPLIER.asDouble(3.0d);
+            boolean incendiary = Config.TANK_FIRE_INCENDIARY.asBool(false);
+            float radius = (float) Config.TANK_FIRE_RADIUS.asDouble(1.0d);
+
+            Fireball fireball = player.launchProjectile(Fireball.class);
+            fireball.setMetadata("VehicleSource", new FixedMetadataValue(plugin, vehicle));
+            fireball.setDirection(player.getLocation().getDirection().multiply(speedMultiplier));
+            fireball.setIsIncendiary(incendiary);
+            fireball.setYield(radius);
+            fireball.setShooter(player);
+        });
     }
 
     @SuppressWarnings("WhileLoopReplaceableByForEach")
@@ -144,6 +157,8 @@ public final class UseEntity extends SimplePacketListenerAbstract {
     }
 
     private void handleOutsideVehicleInteract(@NotNull Player player, @NotNull Vehicle vehicle, Iterator<Vehicle> iterator, boolean left) {
+        if (vehicle.isRemoved()) return;
+
         UUID playerUUID = player.getUniqueId();
         Messages messages = plugin.getMessages();
 
@@ -160,6 +175,10 @@ public final class UseEntity extends SimplePacketListenerAbstract {
             iterator.remove();
             return;
         }
+
+        // Before handling the chairs, we need to make sure they're spawned.
+        World world = player.getWorld();
+        vehicle.resetRealEntities(world);
 
         if (player.isSneaking()) {
             if (!playerUUID.equals(vehicle.getOwner())) return;
@@ -222,6 +241,10 @@ public final class UseEntity extends SimplePacketListenerAbstract {
 
         if (firstChair) {
             vehicle.setDriver(playerUUID);
+
+            // Re-apply cooldown.
+            Integer cooldown = vehicle.getFireballCooldown().get(playerUUID);
+            if (cooldown != null && cooldown > 0) player.setCooldown(Material.FIRE_CHARGE, cooldown);
         } else {
             vehicle.getPassengers().put(playerUUID, chair.getValue().getPartName());
             handleOwnerLeftOut(player, vehicle, false);
