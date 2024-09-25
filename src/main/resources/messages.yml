@@ -7,10 +7,10 @@ commands:
   not-from-console: "&cThis command cannot be used from the console!"
   reloading: "&6The plugin is being reloaded in another thread, wait a few seconds..."
   reload: "&6The plugin has been reloaded!"
-  no-permission: "&cYou don't have permission to execute this command!"
-  invalid-command: "&cThat command doesn't exist or was used incorrectly! Do /vwasd to see all commands."
+  no-permission: "&cYou don't have the required permission (%permission%) to execute this command!"
+  invalid-command: "&cThat command doesn't exist or was used incorrectly! Do /%alias% to see all commands."
   shop:
-    economy-disabled: "&cEconomy is disabled, use /vwasd give <type> to get a vehicle."
+    economy-disabled: "&cEconomy is disabled, use /%alias% give <type> to get a vehicle."
   gps:
     disabled: "&cThis feature is disabled."
     essentials-not-found: "&cEssentialsX is required for the GPS function."

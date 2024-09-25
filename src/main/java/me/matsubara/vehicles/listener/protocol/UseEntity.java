@@ -91,7 +91,7 @@ public final class UseEntity extends SimplePacketListenerAbstract {
     }
 
     private void handleTank(PacketPlayReceiveEvent event, Player player, boolean left) {
-        Vehicle vehicle = plugin.getVehicleManager().getPlayerVehicle(player);
+        Vehicle vehicle = plugin.getVehicleManager().getVehicleByEntity(player);
         if (vehicle == null || !Config.TANK_FIRE_ENABLED.asBool()) return;
 
         PlayerInventory inventory = player.getInventory();
@@ -162,10 +162,12 @@ public final class UseEntity extends SimplePacketListenerAbstract {
         UUID playerUUID = player.getUniqueId();
         Messages messages = plugin.getMessages();
 
+        boolean notOwner = !vehicle.isOwner(playerUUID);
+
         if (left) {
             if (!player.isSneaking()) return;
 
-            if (!playerUUID.equals(vehicle.getOwner()) && !player.hasPermission("vehicleswasd.remove")) {
+            if (notOwner && !player.hasPermission("vehicleswasd.remove")) {
                 messages.send(player, Messages.Message.NOT_YOUR_VEHICLE);
                 return;
             }
@@ -181,7 +183,7 @@ public final class UseEntity extends SimplePacketListenerAbstract {
         vehicle.resetRealEntities(world);
 
         if (player.isSneaking()) {
-            if (!playerUUID.equals(vehicle.getOwner())) return;
+            if (notOwner) return;
 
             Pair<ArmorStand, StandSettings> primaryChair = vehicle.getChair(0);
             if (primaryChair != null) {
@@ -203,12 +205,12 @@ public final class UseEntity extends SimplePacketListenerAbstract {
             return;
         }
 
-        boolean notOwnerLocked = !playerUUID.equals(vehicle.getOwner()) && vehicle.isLocked();
+        boolean notOwnerLocked = notOwner && vehicle.isLocked();
         if (firstChair && notOwnerLocked) {
             firstChair = false;
         }
 
-        Pair<ArmorStand, StandSettings> chair = null;
+        Pair<ArmorStand, StandSettings> chair;
         if (firstChair) {
             chair = vehicle.getChair(0);
         } else {
@@ -217,15 +219,8 @@ public final class UseEntity extends SimplePacketListenerAbstract {
                 return;
             }
 
-            for (Pair<ArmorStand, StandSettings> pair : vehicle.getChairs()) {
-                String partName = pair.getValue().getPartName();
-                if (partName.equals("CHAIR_1")) continue;
-                if (vehicle.getPassengers().containsValue(partName)) continue;
-                chair = pair;
-                break;
-            }
-
             // The driver slot is already occupied and the passenger slots are all occupied.
+            chair = vehicle.getFreePassengerSeat();
             if (chair == null) {
                 handleOwnerLeftOut(player, vehicle, true);
                 return;
@@ -275,7 +270,7 @@ public final class UseEntity extends SimplePacketListenerAbstract {
 
     private void handleOwnerLeftOut(@NotNull Player player, @NotNull Vehicle vehicle, boolean full) {
         Messages messages = plugin.getMessages();
-        if (!player.getUniqueId().equals(vehicle.getOwner())) {
+        if (!vehicle.isOwner(player)) {
             if (full) messages.send(player, Messages.Message.VEHICLE_FULL);
             return;
         }

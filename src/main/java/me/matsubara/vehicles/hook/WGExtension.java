@@ -69,6 +69,7 @@ public class WGExtension implements AVExtension<WGExtension>, Listener {
     public void onVehicleSpawn(@NotNull VehicleSpawnEvent event) {
         if (placeFlag == null) return;
 
+        // If the player is null, then the server placed this vehicle.
         Player player = event.getPlayer();
         if (player == null) return;
 

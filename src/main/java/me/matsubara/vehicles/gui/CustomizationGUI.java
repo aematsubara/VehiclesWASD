@@ -47,11 +47,12 @@ public final class CustomizationGUI implements InventoryHolder {
         this.keyword = keyword;
 
         if (keyword != null && !keyword.isEmpty()) {
-            this.customizations.removeIf(customization -> !customization.getCustomizationName().toLowerCase(Locale.ROOT).contains(keyword.toLowerCase(Locale.ROOT)));
+            this.customizations.removeIf(customization -> !customization.getCustomizationName().toLowerCase(Locale.ROOT)
+                    .contains(keyword.toLowerCase(Locale.ROOT)));
         }
 
+        updateInventory();
         player.openInventory(inventory);
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, this::updateInventory);
     }
 
     public void updateInventory() {

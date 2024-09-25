@@ -308,3 +308,13 @@ parts:
     settings:
       invisible: true
       small: true
+  CHAIR_2:
+    offset:
+      x: 0.0
+      y: 0.37
+      z: -0.65
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true

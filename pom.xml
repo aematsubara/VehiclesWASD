@@ -6,7 +6,7 @@
 
     <groupId>me.matsubara</groupId>
     <artifactId>VehiclesWASD</artifactId>
-    <version>1.0.5.2</version>
+    <version>1.0.6</version>
     <packaging>jar</packaging>
 
     <name>VehiclesWASD</name>
@@ -265,7 +265,7 @@
         <dependency>
             <groupId>com.github.patheloper.pathetic</groupId>
             <artifactId>pathetic-mapping</artifactId>
-            <version>2.4.6</version>
+            <version>3.1</version>
         </dependency>
         <!--  EssentialsX  -->
         <dependency>

@@ -46,8 +46,8 @@ public class ShopGUI implements InventoryHolder {
         this.player = player;
         this.currentPage = currentPage;
 
+        updateInventory();
         player.openInventory(inventory);
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, this::updateInventory);
     }
 
     public void updateInventory() {

@@ -450,17 +450,19 @@ public final class InventoryListener implements Listener {
                 vehicle.setLocked(true);
                 inventory.setItem(slot, plugin.getItem("gui.vehicle.items.unlock").build());
 
-                UUID driver = vehicle.getDriver();
-                if (driver != null && !driver.equals(vehicle.getOwner())) {
-                    Pair<ArmorStand, StandSettings> primaryChair = vehicle.getChair(0);
-                    if (primaryChair != null) primaryChair.getKey().eject();
+                // After locking the vehicle, we want to eject the passengers (except the driver and owner).
+                for (Pair<ArmorStand, StandSettings> pair : vehicle.getChairs()) {
+                    for (Entity entity : pair.getKey().getPassengers()) {
+                        if (vehicle.isOwner(entity)) continue;
+                        entity.leaveVehicle();
+                    }
                 }
             }
         } else if (isCustomItem(current, "storage")) {
             if (!isOwner) return;
 
             if (vehicle.getStorageRows() > 0) {
-                runTask(() -> player.openInventory(vehicle.getInventory()));
+                runTask(() -> vehicle.openInventory(player));
             }
         } else if (isCustomItem(current, "customization")) {
             if (!isOwner) return;
@@ -487,7 +489,7 @@ public final class InventoryListener implements Listener {
 
                         Player newOwner = Bukkit.getPlayer(text);
                         if (newOwner != null && newOwner.isOnline()) {
-                            if (newOwner.getUniqueId().equals(vehicle.getOwner())) {
+                            if (vehicle.isOwner(newOwner)) {
                                 messages.send(clicker, Messages.Message.TRANSFER_SAME_OWNER);
                             } else {
                                 UUID ownerUUID = newOwner.getUniqueId();

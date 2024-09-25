@@ -2,6 +2,7 @@ package me.matsubara.vehicles;
 
 import com.cryptomorin.xseries.reflection.XReflection;
 import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.event.EventManager;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
@@ -14,8 +15,8 @@ import me.matsubara.vehicles.command.VehiclesCommands;
 import me.matsubara.vehicles.files.Config;
 import me.matsubara.vehicles.files.Messages;
 import me.matsubara.vehicles.hook.*;
+import me.matsubara.vehicles.listener.EntityListener;
 import me.matsubara.vehicles.listener.InventoryListener;
-import me.matsubara.vehicles.listener.PlayerListener;
 import me.matsubara.vehicles.listener.protocol.UseEntity;
 import me.matsubara.vehicles.manager.InputManager;
 import me.matsubara.vehicles.manager.StandManager;
@@ -124,11 +125,13 @@ public final class VehiclesPlugin extends JavaPlugin {
         }
 
         // Register protocol events.
-        PacketEvents.getAPI().getEventManager().registerListener(new UseEntity(this));
+        EventManager eventManager = PacketEvents.getAPI().getEventManager();
+        // eventManager.registerListener(new AdvancementTab(this)); Next update.
+        eventManager.registerListener(new UseEntity(this));
 
         // Register bukkit events.
+        pluginManager.registerEvents(new EntityListener(this), this);
         pluginManager.registerEvents(new InventoryListener(this), this);
-        pluginManager.registerEvents(new PlayerListener(this), this);
 
         typeTargetManager = new TypeTargetManager(this);
         inputManager = new InputManager(this);
@@ -138,7 +141,6 @@ public final class VehiclesPlugin extends JavaPlugin {
         messages = new Messages(this);
 
         saveDefaultConfig();
-        saveFiles("models");
         updateConfigs();
 
         resetEconomyProvider();
@@ -168,6 +170,7 @@ public final class VehiclesPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         PacketEvents.getAPI().terminate();
+        PatheticMapper.shutdown();
 
         if (vehicleManager == null) return;
 
@@ -177,8 +180,14 @@ public final class VehiclesPlugin extends JavaPlugin {
     }
 
     public void resetEconomyProvider() {
+        // Invalidate before initializing.
+        economyExtension = null;
+
         String provider = Config.ECONOMY_PROVIDER.asString();
-        if (provider == null || !ECONOMY_PROVIDER.contains(provider)) return;
+        if (provider == null || !ECONOMY_PROVIDER.contains(provider)) {
+            getLogger().info("No economy provider found, disabling economy support...");
+            return;
+        }
 
         if (provider.equals("Vault")) {
             economyExtension = registerExtension(VaultExtension.class, "Vault");
@@ -188,6 +197,9 @@ public final class VehiclesPlugin extends JavaPlugin {
     }
 
     public void updateConfigs() {
+        // Save models first.
+        saveFiles("models");
+
         String pluginFolder = getDataFolder().getPath();
 
         updateConfig(
@@ -336,8 +348,6 @@ public final class VehiclesPlugin extends JavaPlugin {
 
     @SuppressWarnings("SameParameterValue")
     private void saveFiles(String path) {
-        if (new File(getDataFolder(), path).isDirectory()) return;
-
         CodeSource source = getClass().getProtectionDomain().getCodeSource();
         if (source == null) return;
 
@@ -349,9 +359,15 @@ public final class VehiclesPlugin extends JavaPlugin {
             ZipEntry entry;
             while ((entry = zip.getNextEntry()) != null) {
                 String name = entry.getName();
-                if (name.startsWith(folderPath) && !name.equals(folderPath) && !name.endsWith("/")) {
-                    saveResource(name, false);
-                }
+                if (!name.startsWith(folderPath)
+                        || name.equals(folderPath)
+                        || name.endsWith("/")) continue;
+
+                // Ignore existing files.
+                File file = new File(getDataFolder(), name.replace('\\', '/'));
+                if (file.exists()) continue;
+
+                saveResource(name, false);
             }
         } catch (IOException exception) {
             exception.printStackTrace();

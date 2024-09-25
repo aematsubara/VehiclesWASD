@@ -62,6 +62,16 @@ opposite-face-spawn: false
 # Whether to close the customization GUI after a customization has been made.
 close-customization-gui-if-successful: false
 
+# If true, every time a player teleports, the vehicle will also be transported to the player's location.
+follow-player-teleport: false
+
+# If true, nearby entities will be added to the vehicle seats.
+# This function follows the same rules as boats and minecarts.
+# Ignored: non-living entities, water entities, bosses and players.
+# NOTE: The vehicle must not be locked and there must not be a driver.
+# NOTE 2: As with boats and minecarts, to remove nearby entities, you must remove the vehicle.
+pick-up-nearby-entities: false
+
 input-gui:
   customization-search:
     title: "Customization"

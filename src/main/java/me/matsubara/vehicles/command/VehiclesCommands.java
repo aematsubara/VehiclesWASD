@@ -15,9 +15,13 @@ import me.matsubara.vehicles.vehicle.Vehicle;
 import me.matsubara.vehicles.vehicle.VehicleData;
 import me.matsubara.vehicles.vehicle.gps.GPSResultHandler;
 import me.matsubara.vehicles.vehicle.gps.GPSTick;
+import me.matsubara.vehicles.vehicle.gps.filter.DangerousMaterialsFilter;
+import me.matsubara.vehicles.vehicle.gps.filter.WalkableFilter;
+import me.matsubara.vehicles.vehicle.gps.filter.WorldBorderFilter;
 import me.matsubara.vehicles.vehicle.type.Generic;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -29,9 +33,10 @@ import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.patheloper.api.pathing.Pathfinder;
-import org.patheloper.api.pathing.configuration.PathingRuleSet;
+import org.patheloper.api.pathing.configuration.PathfinderConfiguration;
+import org.patheloper.api.pathing.filter.PathFilter;
+import org.patheloper.api.pathing.filter.filters.PassablePathFilter;
 import org.patheloper.api.pathing.result.PathfinderResult;
-import org.patheloper.api.pathing.strategy.strategies.WalkablePathfinderStrategy;
 import org.patheloper.mapping.PatheticMapper;
 import org.patheloper.mapping.bukkit.BukkitMapper;
 
@@ -44,6 +49,10 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
 
     private final VehiclesPlugin plugin;
     private final Pathfinder pathfinder;
+    private final List<PathFilter> defaultFilters = List.of(
+            new WalkableFilter(4),
+            new PassablePathFilter(),
+            new DangerousMaterialsFilter(EnumSet.of(Material.CACTUS, Material.LAVA), 3));
 
     private static final List<String> COMMAND_ARGS = List.of("reload", "shop", "give", "gps");
     private static final List<String> HELP = Stream.of(
@@ -59,7 +68,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
 
     public VehiclesCommands(@NotNull VehiclesPlugin plugin) {
         this.plugin = plugin;
-        this.pathfinder = PatheticMapper.newPathfinder(PathingRuleSet.createAsyncRuleSet()
+        this.pathfinder = PatheticMapper.newPathfinder(PathfinderConfiguration.createAsyncConfiguration()
                 .withAllowingFailFast(true)
                 .withAllowingFallback(true)
                 .withAllowingDiagonal(true)
@@ -79,7 +88,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
 
         if (noArgs || args.length > 3 || !COMMAND_ARGS.contains((subCommand = args[0]).toLowerCase(Locale.ROOT))) {
             if (noArgs) HELP.forEach(sender::sendMessage);
-            else messages.send(sender, Messages.Message.INVALID_COMMAND);
+            else messages.send(sender, Messages.Message.INVALID_COMMAND, line -> line.replace("%alias%", label));
             return true;
         }
 
@@ -113,6 +122,8 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
                 plugin.reloadExtraTags();
                 plugin.reloadCraftings();
 
+                vehicleManager.getModels().clear();
+
                 // Save data and remove vehicle(s) from world.
                 List<VehicleData> datas = new ArrayList<>();
                 for (Vehicle vehicle : vehicleManager.getVehicles()) {
@@ -139,7 +150,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
 
             EconomyExtension<?> economyExtension = plugin.getEconomyExtension();
             if (economyExtension == null || !economyExtension.isEnabled()) {
-                messages.send(player, Messages.Message.SHOP_ECONOMY_DISABLED);
+                messages.send(player, Messages.Message.SHOP_ECONOMY_DISABLED, line -> line.replace("%alias%", label));
                 return true;
             }
 
@@ -169,7 +180,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
                 return true;
             }
 
-            Vehicle vehicle = vehicleManager.getPlayerVehicle(player);
+            Vehicle vehicle = vehicleManager.getVehicleByEntity(player);
             if (vehicle == null) {
                 messages.send(player, Messages.Message.GPS_NOT_DRIVING);
                 return true;
@@ -229,11 +240,14 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
 
             messages.send(player, Messages.Message.GPS_STARTING);
 
-            // We use a higher height since we don't want the vehicle to get stuck.
+            // Create final filters.
+            List<PathFilter> filters = new ArrayList<>(defaultFilters);
+            filters.add(new WorldBorderFilter(vehicle));
+
             CompletionStage<PathfinderResult> stage = pathfinder.findPath(
                     BukkitMapper.toPathPosition(start),
                     BukkitMapper.toPathPosition(home),
-                    new WalkablePathfinderStrategy(4));
+                    filters);
 
             GPSResultHandler result = new GPSResultHandler(player, generic, args[1]);
             stage.thenAccept(result);
@@ -267,7 +281,10 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
 
     private boolean notAllowed(@NotNull CommandSender sender, String permission) {
         if (sender.hasPermission(permission)) return false;
-        plugin.getMessages().send(sender, Messages.Message.NO_PERMISSION);
+        plugin.getMessages().send(
+                sender,
+                Messages.Message.NO_PERMISSION,
+                line -> line.replace("%permission%", permission));
         return true;
     }
 
@@ -294,7 +311,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
         if (args.length == 2
                 && args[0].equalsIgnoreCase("gps")
                 && sender instanceof Player player
-                && plugin.getVehicleManager().getPlayerVehicle(player) != null
+                && plugin.getVehicleManager().getVehicleByEntity(player) != null
                 && Config.GPS_ENABLED.asBool()) {
             EssentialsExtension essentials = plugin.getEssentialsExtension();
 

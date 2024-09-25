@@ -117,7 +117,7 @@ public class VehicleGUI implements InventoryHolder {
     private ItemStack getItem(@NotNull Player player, String itemName) {
         ItemBuilder builder = plugin.getItem("gui.vehicle.items." + itemName);
 
-        if (!player.getUniqueId().equals(vehicle.getOwner())) {
+        if (!vehicle.isOwner(player)) {
             builder.addLore(plugin.getConfig().getString("translations.only-owner"));
         }
 

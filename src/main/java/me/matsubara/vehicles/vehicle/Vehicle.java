@@ -24,6 +24,7 @@ import me.matsubara.vehicles.model.Model;
 import me.matsubara.vehicles.model.stand.PacketStand;
 import me.matsubara.vehicles.model.stand.StandSettings;
 import me.matsubara.vehicles.util.BlockUtils;
+import me.matsubara.vehicles.util.InventoryUpdate;
 import me.matsubara.vehicles.util.PluginUtils;
 import me.matsubara.vehicles.util.Reflection;
 import me.matsubara.vehicles.vehicle.task.VehicleTick;
@@ -39,9 +40,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -163,13 +162,7 @@ public abstract class Vehicle implements InventoryHolder {
         this.fuel = data.fuel() != null ? Math.min(data.fuel(), maxFuel) : maxFuel;
         this.locked = data.locked();
 
-        String storageTitle = plugin.getConfig().getString("gui.vehicle.title");
-        String typeFormatted = plugin.getVehicleTypeFormatted(type);
-
-        this.inventory = storageRows == 0 ? null : Bukkit.createInventory(this, storageRows * 9, storageTitle != null ? PluginUtils.translate(storageTitle
-                .replace("%owner%", Optional.of(Bukkit.getOfflinePlayer(owner)).map(OfflinePlayer::getName).orElse("???"))
-                .replace("%type%", typeFormatted)) : typeFormatted);
-
+        this.inventory = storageRows == 0 ? null : Bukkit.createInventory(this, storageRows * 9, getTitle());
         initStorage(data);
 
         this.shopDisplayName = data.shopDisplayName();
@@ -402,18 +395,82 @@ public abstract class Vehicle implements InventoryHolder {
         }
 
         previousChunk = temp;
+
+        // We want to make nearby entities ride the vehicle while no one is driving and the vehicle has extra seats.
+        if (locked || driver != null || !Config.PICK_UP_NEARBY_ENTITIES.asBool()) return;
+
+        handleNearbyEntitiesRide();
     }
 
-    public boolean isDriver(@NotNull Player player) {
-        return isDriver(player.getUniqueId());
+    private void handleNearbyEntitiesRide() {
+        resetRealEntities(velocityStand.getWorld());
+        if (chairs.size() <= 1) return;
+
+        // Try to find an empty passenger seat.
+        Pair<ArmorStand, StandSettings> chair = getFreePassengerSeat();
+        if (chair == null) return;
+
+        for (Entity near : velocityStand.getWorld().getNearbyEntities(getBox())) {
+            // Ignore non-living entities, water entities, bosses, stands and players.
+            if (!(near instanceof LivingEntity)
+                    || near instanceof WaterMob
+                    || near instanceof Boss
+                    || near instanceof ArmorStand
+                    || near instanceof Player) continue;
+
+            // Ignore wardens.
+            if (XReflection.supports(19)
+                    && near instanceof Warden) continue;
+
+            // Ignore baby sniffers.
+            if (XReflection.supports(20)
+                    && near instanceof Sniffer sniffer
+                    && !sniffer.isAdult()) continue;
+
+            // Ignore big entities.
+            if (!hasEnoughSpaceFor(near)) continue;
+
+            // Ignore entities riding a vehicle or entities with passengers.
+            if (near.isInsideVehicle() || !near.getPassengers().isEmpty()) continue;
+
+            passengers.put(near.getUniqueId(), chair.getValue().getPartName());
+            chair.getKey().addPassenger(near);
+            break;
+        }
+    }
+
+    public @Nullable Pair<ArmorStand, StandSettings> getFreePassengerSeat() {
+        for (Pair<ArmorStand, StandSettings> pair : chairs) {
+            String partName = pair.getValue().getPartName();
+            if (partName.equals("CHAIR_1")) continue;
+            if (passengers.containsValue(partName)) continue;
+            return pair;
+        }
+        return null;
+    }
+
+    private boolean hasEnoughSpaceFor(@NotNull Entity entity) {
+        return entity.getBoundingBox().getVolume() < getBox().getVolume();
+    }
+
+    public boolean isOwner(@NotNull Entity entity) {
+        return isOwner(entity.getUniqueId());
+    }
+
+    public boolean isOwner(@NotNull UUID uuid) {
+        return uuid.equals(owner);
+    }
+
+    public boolean isDriver(@NotNull Entity entity) {
+        return isDriver(entity.getUniqueId());
     }
 
     public boolean isDriver(@NotNull UUID uuid) {
         return uuid.equals(driver);
     }
 
-    public boolean isPassenger(@NotNull Player player) {
-        return isPassenger(player.getUniqueId());
+    public boolean isPassenger(@NotNull Entity entity) {
+        return isPassenger(entity.getUniqueId());
     }
 
     public boolean isPassenger(UUID uuid) {
@@ -733,6 +790,10 @@ public abstract class Vehicle implements InventoryHolder {
     }
 
     public VehicleData createSaveData() {
+        return createSaveData(velocityStand.getLocation().clone());
+    }
+
+    public VehicleData createSaveData(Location location) {
         Map<String, Material> customizationChanges = new HashMap<>();
         for (Customization customization : customizations) {
             Material newType = customization.getNewType();
@@ -746,7 +807,7 @@ public abstract class Vehicle implements InventoryHolder {
                 fuel,
                 locked,
                 model.getModelUniqueId(),
-                velocityStand.getLocation().clone(),
+                location,
                 type,
                 base64Storage,
                 shopDisplayName,
@@ -756,5 +817,20 @@ public abstract class Vehicle implements InventoryHolder {
     @Override
     public @NotNull Inventory getInventory() {
         return inventory;
+    }
+
+    private @NotNull String getTitle() {
+        String typeFormatted = plugin.getVehicleTypeFormatted(type);
+        String storageTitle = plugin.getConfig().getString("gui.vehicle.title", typeFormatted)
+                .replace("%owner%", Optional.of(Bukkit.getOfflinePlayer(owner))
+                        .map(OfflinePlayer::getName)
+                        .orElse("???"))
+                .replace("%type%", typeFormatted);
+        return PluginUtils.translate(storageTitle);
+    }
+
+    public void openInventory(@NotNull Player player) {
+        player.openInventory(inventory);
+        InventoryUpdate.updateInventory(player, getTitle());
     }
 }

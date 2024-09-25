@@ -14,6 +14,8 @@ public enum Config {
     OPPOSITE_FACE_SPAWN,
     ECONOMY_PROVIDER,
     CLOSE_CUSTOMIZATION_GUI_IF_SUCCESSFUL,
+    FOLLOW_PLAYER_TELEPORT,
+    PICK_UP_NEARBY_ENTITIES,
     CONFIRM_SHOP("shop.confirm-shop"),
     SHOP_PREVIEW_ENABLED("shop.preview.enabled"),
     SHOP_PREVIEW_SECONDS("shop.preview.seconds"),

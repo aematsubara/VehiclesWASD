@@ -49,9 +49,8 @@ public class InputManager extends SimplePacketListenerAbstract implements Listen
         inputs.put(player.getUniqueId(), input);
     }
 
-    @SuppressWarnings("UnstableApiUsage")  // We can keep using this event if we stay in 1.20.4.
-    @EventHandler
-    public void onEntityDismount(@SuppressWarnings("deprecation") @NotNull EntityDismountEvent event) {
+    @EventHandler // We can keep using this event if we stay in 1.20.1.
+    public void onEntityDismount(@NotNull EntityDismountEvent event) {
         if (event.getEntity() instanceof Player player) inputs.remove(player.getUniqueId());
     }
 }
