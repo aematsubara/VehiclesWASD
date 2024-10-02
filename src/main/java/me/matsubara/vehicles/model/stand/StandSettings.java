@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.EulerAngle;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -19,9 +20,6 @@ public final class StandSettings implements Cloneable {
     private double zOffset;
     private float extraYaw;
     private final List<String> tags = new ArrayList<>();
-
-    private double externalX;
-    private double externalZ;
 
     // Entity settings.
     private boolean invisible;
@@ -69,6 +67,12 @@ public final class StandSettings implements Cloneable {
 
     public boolean hasEquipment() {
         return equipment.values().stream().anyMatch(Objects::nonNull);
+    }
+
+    public void setOffset(@NotNull Vector vector) {
+        xOffset = vector.getX();
+        yOffset = vector.getY();
+        zOffset = vector.getZ();
     }
 
     @NotNull

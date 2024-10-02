@@ -132,6 +132,14 @@ public final class InventoryListener implements Listener {
     }
 
     private int getFuelByItem(@NotNull Vehicle vehicle, @NotNull ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            PersistentDataContainer container = meta.getPersistentDataContainer();
+            if (container.has(plugin.getFuelItemKey(), PersistentDataType.INTEGER)) {
+                return (int) vehicle.getMaxFuel() + 1;
+            }
+        }
+
         TypeTarget target = plugin.getTypeTargetManager().applies(plugin.getFuelItems(), vehicle.getType(), item.getType());
         return target != null ? target.getAmount() : -1;
     }

@@ -1,0 +1,1113 @@
+parts:
+  MID_PART_1:
+    offset:
+      x: 0.0
+      y: -0.5
+      z: 0.468
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: -11.25
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: QUARTZ_SLAB
+    tags:
+    - CUSTOMIZABLE:SLAB:HEAD
+  MID_PART_2:
+    offset:
+      x: 0.0
+      y: -0.622
+      z: -0.145
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: -11.25
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: QUARTZ_STAIRS
+    tags:
+    - CUSTOMIZABLE:STAIRS:HEAD
+  MID_PART_3:
+    offset:
+      x: -0.625
+      y: -0.194
+      z: 0.407
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: -11.25
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: QUARTZ_SLAB
+    tags:
+    - CUSTOMIZABLE:SLAB:HEAD
+  MID_PART_4:
+    offset:
+      x: -1.25
+      y: -0.194
+      z: 0.407
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: -11.25
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: QUARTZ_SLAB
+    tags:
+    - CUSTOMIZABLE:SLAB:HEAD
+  MID_PART_6:
+    offset:
+      x: 0.625
+      y: -0.194
+      z: 0.407
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: -11.25
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: QUARTZ_SLAB
+    tags:
+    - CUSTOMIZABLE:SLAB:HEAD
+  MID_PART_7:
+    offset:
+      x: 1.25
+      y: -0.194
+      z: 0.407
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: -11.25
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: QUARTZ_SLAB
+    tags:
+    - CUSTOMIZABLE:SLAB:HEAD
+  MID_PART_9:
+    offset:
+      x: -0.625
+      y: -0.1245
+      z: -0.244
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: -11.25
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: IRON_TRAPDOOR
+    tags:
+    - CUSTOMIZABLE:TRAPDOOR:HEAD
+  MID_PART_10:
+    offset:
+      x: -1.25
+      y: -0.1245
+      z: -0.244
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: -11.25
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: IRON_TRAPDOOR
+    tags:
+    - CUSTOMIZABLE:TRAPDOOR:HEAD
+  MID_PART_11:
+    offset:
+      x: -1.875
+      y: -0.1245
+      z: -0.244
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: -11.25
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: IRON_TRAPDOOR
+    tags:
+    - CUSTOMIZABLE:TRAPDOOR:HEAD
+  MID_PART_13:
+    offset:
+      x: 0.625
+      y: -0.1245
+      z: -0.244
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: -11.25
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: IRON_TRAPDOOR
+    tags:
+    - CUSTOMIZABLE:TRAPDOOR:HEAD
+  MID_PART_14:
+    offset:
+      x: 1.25
+      y: -0.1245
+      z: -0.244
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: -11.25
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: IRON_TRAPDOOR
+    tags:
+    - CUSTOMIZABLE:TRAPDOOR:HEAD
+  MID_PART_15:
+    offset:
+      x: 1.875
+      y: -0.1245
+      z: -0.244
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: -11.25
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: IRON_TRAPDOOR
+    tags:
+    - CUSTOMIZABLE:TRAPDOOR:HEAD
+  MID_PART_17:
+    offset:
+      x: 0.0
+      y: -0.437
+      z: -0.819
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: -11.25
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: QUARTZ_SLAB
+    tags:
+    - CUSTOMIZABLE:SLAB:HEAD
+  MID_PART_18:
+    offset:
+      x: 0.269
+      y: 0.593
+      z: -0.022
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 180.0
+        y: 191.25
+        z: 90.0
+    equipment:
+      helmet:
+        material: IRON_TRAPDOOR
+    tags:
+    - CUSTOMIZABLE:TRAPDOOR:HEAD
+  MID_PART_19:
+    offset:
+      x: -0.275
+      y: 0.593
+      z: -0.022
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 180.0
+        y: 191.25
+        z: 90.0
+    equipment:
+      helmet:
+        material: IRON_TRAPDOOR
+    tags:
+    - CUSTOMIZABLE:TRAPDOOR:HEAD
+  MID_PART_20:
+    offset:
+      x: 0.0
+      y: -0.06
+      z: -0.193
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 78.75
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: IRON_TRAPDOOR
+    tags:
+    - CUSTOMIZABLE:TRAPDOOR:HEAD
+  MID_PART_21:
+    offset:
+      x: 0.0
+      y: 0.42
+      z: 0.01
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: -11.25
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: BLACK_CARPET
+    tags:
+    - CUSTOMIZABLE:CHAIR:HEAD
+  MID_PART_22:
+    offset:
+      x: 0.0
+      y: 0.607
+      z: -0.084
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      head:
+        x: 78.75
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: BLACK_CARPET
+    tags:
+    - CUSTOMIZABLE:CHAIR:HEAD
+  FRONT_PART_1:
+    offset:
+      x: 0.0
+      y: 0.0374
+      z: 1.8904
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 101.25
+        y: 180.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: IRON_BLOCK
+    tags:
+    - CUSTOMIZABLE:BLOCKS:HEAD
+  FRONT_PART_2:
+    offset:
+      x: 0.0
+      y: -0.182
+      z: 0.787
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 78.75
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: IRON_BLOCK
+    tags:
+    - CUSTOMIZABLE:BLOCKS:HEAD
+  FRONT_PART_3:
+    offset:
+      x: 0.1
+      y: -0.073
+      z: 1.338
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: -11.25
+        z: -90.0
+    equipment:
+      helmet:
+        material: ANVIL
+  FRONT_PART_4:
+    offset:
+      x: -0.1
+      y: -0.073
+      z: 1.338
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 180.0
+        y: -11.25
+        z: -90.0
+    equipment:
+      helmet:
+        material: ANVIL
+  FRONT_PART_5:
+    offset:
+      x: -0.38
+      y: -0.22
+      z: 1.09
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 18.75
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: END_ROD
+  FRONT_PART_6:
+    offset:
+      x: 0.38
+      y: -0.22
+      z: 1.09
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 18.75
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: END_ROD
+  FRONT_PART_7:
+    offset:
+      x: 0.0
+      y: 0.08
+      z: 1.92
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: -101.25
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: ANVIL
+  STICKS_1:
+    offset:
+      x: 1.1
+      y: -1.16
+      z: 0.7
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: -90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: STICK
+  STICKS_2:
+    offset:
+      x: 1.1
+      y: -1.55
+      z: 1.091
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: -90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: STICK
+  STICKS_3:
+    offset:
+      x: 1.139
+      y: -1.55
+      z: 1.091
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: -90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: STICK
+  STICKS_4:
+    offset:
+      x: 1.139
+      y: -1.16
+      z: 0.7
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: -90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: STICK
+  STICKS_5:
+    offset:
+      x: 1.178
+      y: -1.55
+      z: 1.091
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: -90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: STICK
+  STICKS_6:
+    offset:
+      x: 1.178
+      y: -1.16
+      z: 0.7
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: -90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: STICK
+  STICKS_7:
+    offset:
+      x: -0.62
+      y: -1.16
+      z: 0.7
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: -90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: STICK
+  STICKS_8:
+    offset:
+      x: -0.62
+      y: -1.55
+      z: 1.091
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: -90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: STICK
+  STICKS_9:
+    offset:
+      x: -0.581
+      y: -1.55
+      z: 1.091
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: -90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: STICK
+  STICKS_10:
+    offset:
+      x: -0.581
+      y: -1.16
+      z: 0.7
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: -90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: STICK
+  STICKS_11:
+    offset:
+      x: -0.542
+      y: -1.55
+      z: 1.091
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: -90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: STICK
+  STICKS_12:
+    offset:
+      x: -0.542
+      y: -1.16
+      z: 0.7
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: -90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: STICK
+  STICKS_13:
+    offset:
+      x: 0.097
+      y: -0.69
+      z: -0.54
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 90.0
+        y: -129.375
+        z: -90.0
+    equipment:
+      helmet:
+        material: STICK
+  STICKS_14:
+    offset:
+      x: 0.097
+      y: -0.63
+      z: -1.145
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 90.0
+        y: -129.375
+        z: -90.0
+    equipment:
+      helmet:
+        material: STICK
+  STICKS_15:
+    offset:
+      x: 0.136
+      y: -0.63
+      z: -1.145
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 90.0
+        y: -129.375
+        z: -90.0
+    equipment:
+      helmet:
+        material: STICK
+  STICKS_16:
+    offset:
+      x: 0.136
+      y: -0.69
+      z: -0.54
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 90.0
+        y: -129.375
+        z: -90.0
+    equipment:
+      helmet:
+        material: STICK
+  STICKS_17:
+    offset:
+      x: 0.45
+      y: -0.63
+      z: -1.145
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 90.0
+        y: -129.375
+        z: -90.0
+    equipment:
+      helmet:
+        material: STICK
+  STICKS_18:
+    offset:
+      x: 0.45
+      y: -0.69
+      z: -0.54
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 90.0
+        y: -129.375
+        z: -90.0
+    equipment:
+      helmet:
+        material: STICK
+  STICKS_19:
+    offset:
+      x: 0.411
+      y: -0.63
+      z: -1.145
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 90.0
+        y: -129.375
+        z: -90.0
+    equipment:
+      helmet:
+        material: STICK
+  STICKS_20:
+    offset:
+      x: 0.411
+      y: -0.69
+      z: -0.54
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 90.0
+        y: -129.375
+        z: -90.0
+    equipment:
+      helmet:
+        material: STICK
+  STICKS_21:
+    offset:
+      x: -0.273
+      y: -1.33
+      z: -0.67
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: STICK
+  STICKS_22:
+    offset:
+      x: -0.273
+      y: -1.721
+      z: -1.062
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: STICK
+  STICKS_23:
+    offset:
+      x: -0.234
+      y: -1.721
+      z: -1.062
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: STICK
+  STICKS_24:
+    offset:
+      x: -0.234
+      y: -1.33
+      z: -0.67
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: STICK
+  STICKS_25:
+    offset:
+      x: -0.312
+      y: -1.721
+      z: -1.062
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: STICK
+  STICKS_26:
+    offset:
+      x: -0.312
+      y: -1.33
+      z: -0.67
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 0.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: STICK
+  WHEELS_1:
+    offset:
+      x: 0.865
+      y: -0.71
+      z: 1.269
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      marker: true
+    pose:
+      head:
+        x: 0.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: PLAYER_HEAD
+        url: ddfe5a963869415340d2cec0f82d08df73dcb168428487b514aa8d4ec19fe2c
+  WHEELS_2:
+    offset:
+      x: -0.865
+      y: -0.71
+      z: 1.269
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      marker: true
+    pose:
+      head:
+        x: 0.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: PLAYER_HEAD
+        url: ddfe5a963869415340d2cec0f82d08df73dcb168428487b514aa8d4ec19fe2c
+  WHEELS_3:
+    offset:
+      x: 0.0
+      y: -0.71
+      z: -1.085
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      marker: true
+    pose:
+      head:
+        x: 0.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: PLAYER_HEAD
+        url: ddfe5a963869415340d2cec0f82d08df73dcb168428487b514aa8d4ec19fe2c
+  BACK_PART_1:
+    offset:
+      x: 0.0
+      y: -0.2
+      z: -1.98
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: -11.25
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: QUARTZ_SLAB
+    tags:
+    - CUSTOMIZABLE:SLAB:HEAD
+  BACK_PART_2:
+    offset:
+      x: 0.093
+      y: 0.351
+      z: -2.09
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 180.0
+        y: 191.25
+        z: 90.0
+    equipment:
+      helmet:
+        material: QUARTZ_SLAB
+    tags:
+    - CUSTOMIZABLE:SLAB:HEAD
+  BACK_PART_3:
+    offset:
+      x: -0.005
+      y: 0.155
+      z: -2.21
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: 180.0
+        y: 191.25
+        z: 90.0
+    equipment:
+      helmet:
+        material: IRON_TRAPDOOR
+    tags:
+    - CUSTOMIZABLE:TRAPDOOR:HEAD
+  BACK_PART_4:
+    offset:
+      x: 0.625
+      y: -0.0084
+      z: -2.018
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: -11.25
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: IRON_TRAPDOOR
+    tags:
+    - CUSTOMIZABLE:TRAPDOOR:HEAD
+  BACK_PART_5:
+    offset:
+      x: -0.625
+      y: -0.0084
+      z: -2.018
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: -11.25
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: IRON_TRAPDOOR
+    tags:
+    - CUSTOMIZABLE:TRAPDOOR:HEAD
+  GLASS:
+    offset:
+      x: 0.0
+      y: -0.024
+      z: 1.16
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: -45.0
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GLASS_PANE
+    tags:
+    - CUSTOMIZABLE:GLASS:HEAD
+  CHAIR_1:
+    offset:
+      x: 0.0
+      y: 0.14
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+  SCOPE:
+    offset:
+      x: 0.0
+      y: -0.25
+      z: 1.8
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+    pose:
+      head:
+        x: -11.25
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: TRIPWIRE_HOOK

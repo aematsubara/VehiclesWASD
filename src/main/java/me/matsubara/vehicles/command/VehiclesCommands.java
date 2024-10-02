@@ -13,6 +13,7 @@ import me.matsubara.vehicles.manager.VehicleManager;
 import me.matsubara.vehicles.util.PluginUtils;
 import me.matsubara.vehicles.vehicle.Vehicle;
 import me.matsubara.vehicles.vehicle.VehicleData;
+import me.matsubara.vehicles.vehicle.VehicleType;
 import me.matsubara.vehicles.vehicle.gps.GPSResultHandler;
 import me.matsubara.vehicles.vehicle.gps.GPSTick;
 import me.matsubara.vehicles.vehicle.gps.filter.DangerousMaterialsFilter;
@@ -29,6 +30,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -54,7 +56,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             new PassablePathFilter(),
             new DangerousMaterialsFilter(EnumSet.of(Material.CACTUS, Material.LAVA), 3));
 
-    private static final List<String> COMMAND_ARGS = List.of("reload", "shop", "give", "gps");
+    private static final List<String> COMMAND_ARGS = List.of("reload", "shop", "give", "gps", "fuel");
     private static final List<String> HELP = Stream.of(
             "&8----------------------------------------",
             "&9&lVehiclesWASD &f&oCommands &c<required> | [optional]",
@@ -63,6 +65,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             "&8(requires Vault and an economy provider like EssentialsX, CMI, etc...)",
             "&e/vwasd give <type> [player] &f- &7Gives a vehicle.",
             "&e/vwasd gps <home> &f- &7Automatically drives to a home.",
+            "&e/vwasd fuel &f- &7Gives a fuel can.",
             "&8(requires EssentialsX)",
             "&8----------------------------------------").map(PluginUtils::translate).toList();
 
@@ -118,8 +121,9 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
                 plugin.resetEconomyProvider();
 
                 plugin.reloadShopItems();
-                plugin.reloadFuelItems();
                 plugin.reloadExtraTags();
+                plugin.reloadFuelItems();
+                plugin.reloadBreakBlocks();
                 plugin.reloadCraftings();
 
                 vehicleManager.getModels().clear();
@@ -187,7 +191,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             }
 
             // We could add GPS for helicopters in a future update using DirectPathfinderStrategy.
-            if (!(vehicle instanceof Generic generic)) {
+            if (!(vehicle instanceof Generic generic) || generic.is(VehicleType.PLANE)) {
                 messages.send(player, Messages.Message.GPS_NOT_GENERIC);
                 return true;
             }
@@ -209,13 +213,18 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
                 messages.send(player, Messages.Message.GPS_STOPPED);
             }
 
-            Location start = vehicle.getVelocityStand().getLocation().clone();
+            Location start = generic.getVelocityStand().getLocation().clone();
 
             int maxDistance = Config.GPS_MAX_DISTANCE.asInt();
             int minDistance = Config.GPS_MIN_DISTANCE.asInt();
 
             if (start.getWorld() != null && !start.getWorld().equals(home.getWorld())) {
                 messages.send(player, Messages.Message.GPS_DIFFERENT_WORLD);
+                return true;
+            }
+
+            if (generic.notAllowedHere(home)) {
+                messages.send(player, Messages.Message.GPS_VEHICLES_DENIED);
                 return true;
             }
 
@@ -242,7 +251,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
 
             // Create final filters.
             List<PathFilter> filters = new ArrayList<>(defaultFilters);
-            filters.add(new WorldBorderFilter(vehicle));
+            filters.add(new WorldBorderFilter(generic));
 
             CompletionStage<PathfinderResult> stage = pathfinder.findPath(
                     BukkitMapper.toPathPosition(start),
@@ -253,6 +262,18 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             stage.thenAccept(result);
 
             vehicleManager.getRunningPaths().put(playerUUID, result);
+        }
+
+        if (subCommand.equalsIgnoreCase("fuel")) {
+            Player player = isPlayer(sender);
+            if (player == null) return true;
+
+            if (notAllowed(player, "vehicleswasd.fuel")) return true;
+
+            player.getInventory().addItem(Config.PREMIUM_FUEL.asItemBuilder()
+                    .setData(plugin.getFuelItemKey(), PersistentDataType.INTEGER, 1)
+                    .build());
+            return true;
         }
 
         if (!subCommand.equalsIgnoreCase("give")) return true;

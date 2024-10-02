@@ -57,6 +57,25 @@ public final class Model {
 
         loadFile();
         loadModel();
+
+        // After loading the model, we want to add another stand which will be used for interactions.
+        // The INTERACTIONS armor stand will be on the same location of the main chair.
+        spawnInteractions();
+    }
+
+    private void spawnInteractions() {
+        PacketStand chair = getByName("CHAIR_1");
+        if (chair == null) return;
+
+        StandSettings settings = new StandSettings();
+        settings.setInvisible(true);
+        settings.setExtraYaw(0.0f);
+
+        Vector offset = new Vector(0.0d, chair.getSettings().getYOffset() + 0.49375d, 0.0d);
+        settings.setOffset(offset);
+
+        Location at = location.clone().add(PluginUtils.offsetVector(offset, location.getYaw(), location.getPitch()));
+        addNew("INTERACTIONS", settings, at, null);
     }
 
     private void loadFile() {
@@ -102,11 +121,10 @@ public final class Model {
             String defaultPath = "parts." + path + ".";
 
             // Load offsets.
-            double xOffset = configuration.getDouble(defaultPath + "offset.x");
-            double yOffset = configuration.getDouble(defaultPath + "offset.y");
-            double zOffset = configuration.getDouble(defaultPath + "offset.z");
-
-            Vector offset = new Vector(xOffset, yOffset, zOffset);
+            Vector offset = new Vector(
+                    configuration.getDouble(defaultPath + "offset.x"),
+                    configuration.getDouble(defaultPath + "offset.y"),
+                    configuration.getDouble(defaultPath + "offset.z"));
 
             // Pitch isn't necessary.
             float yaw = (float) configuration.getDouble(defaultPath + "offset.yaw");
@@ -114,9 +132,7 @@ public final class Model {
             Location location = this.location.clone().add(PluginUtils.offsetVector(offset, this.location.getYaw(), this.location.getPitch()));
 
             StandSettings settings = new StandSettings();
-            settings.setXOffset(xOffset);
-            settings.setYOffset(yOffset);
-            settings.setZOffset(zOffset);
+            settings.setOffset(offset);
             settings.setExtraYaw(yaw);
 
             String settingPath = defaultPath + "settings.";

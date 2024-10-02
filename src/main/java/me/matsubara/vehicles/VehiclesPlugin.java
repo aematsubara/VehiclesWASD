@@ -12,6 +12,7 @@ import com.tchristofferson.configupdater.ConfigUpdater;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import lombok.Getter;
 import me.matsubara.vehicles.command.VehiclesCommands;
+import me.matsubara.vehicles.data.ActionKeybind;
 import me.matsubara.vehicles.files.Config;
 import me.matsubara.vehicles.files.Messages;
 import me.matsubara.vehicles.hook.*;
@@ -23,6 +24,7 @@ import me.matsubara.vehicles.manager.StandManager;
 import me.matsubara.vehicles.manager.VehicleManager;
 import me.matsubara.vehicles.manager.targets.TypeTarget;
 import me.matsubara.vehicles.manager.targets.TypeTargetManager;
+import me.matsubara.vehicles.util.GlowingEntities;
 import me.matsubara.vehicles.util.ItemBuilder;
 import me.matsubara.vehicles.util.PluginUtils;
 import me.matsubara.vehicles.util.Shape;
@@ -66,11 +68,13 @@ public final class VehiclesPlugin extends JavaPlugin {
     private VehicleManager vehicleManager;
 
     private Messages messages;
+    private GlowingEntities glowingEntities;
 
     private final Map<VehicleType, ItemStack> typeCategoryItem = new EnumMap<>(VehicleType.class);
     private final Map<VehicleType, List<ItemStack>> typeVehicles = new EnumMap<>(VehicleType.class);
     private final Map<VehicleType, Shape> vehicleCrafting = new EnumMap<>(VehicleType.class);
     private final Set<TypeTarget> fuelItems = new HashSet<>();
+    private final Set<TypeTarget> breakBlocks = new HashSet<>();
     private final Multimap<String, Material> extraTags = MultimapBuilder.hashKeys().hashSetValues().build();
     private final Map<String, AVExtension<?>> extensions = new HashMap<>();
 
@@ -81,6 +85,7 @@ public final class VehiclesPlugin extends JavaPlugin {
     private final NamespacedKey moneyKey = new NamespacedKey(this, "money");
     private final NamespacedKey itemIdKey = new NamespacedKey(this, "ItemID");
     private final NamespacedKey chairNumbeKey = new NamespacedKey(this, "ChairNumber");
+    private final NamespacedKey fuelItemKey = new NamespacedKey(this, "FuelItem");
 
     EssentialsExtension essentialsExtension;
     EconomyExtension<?> economyExtension;
@@ -124,12 +129,15 @@ public final class VehiclesPlugin extends JavaPlugin {
             return;
         }
 
+        // Both listeners.
+        UseEntity useEntity = new UseEntity(this);
+
         // Register protocol events.
         EventManager eventManager = PacketEvents.getAPI().getEventManager();
-        // eventManager.registerListener(new AdvancementTab(this)); Next update.
-        eventManager.registerListener(new UseEntity(this));
+        eventManager.registerListener(useEntity);
 
         // Register bukkit events.
+        pluginManager.registerEvents(useEntity, this);
         pluginManager.registerEvents(new EntityListener(this), this);
         pluginManager.registerEvents(new InventoryListener(this), this);
 
@@ -148,9 +156,11 @@ public final class VehiclesPlugin extends JavaPlugin {
 
         // Initialize pathetic after Vault.
         PatheticMapper.initialize(this);
+        glowingEntities = new GlowingEntities(this);
 
-        reloadFuelItems();
         reloadExtraTags();
+        reloadFuelItems();
+        reloadBreakBlocks();
         reloadCraftings();
 
         VehiclesCommands vehiclesCommands = new VehiclesCommands(this);
@@ -177,6 +187,20 @@ public final class VehiclesPlugin extends JavaPlugin {
         for (Vehicle vehicle : vehicleManager.getVehicles()) {
             vehicle.saveToChunk();
         }
+    }
+
+    public ActionKeybind getOpenMenuKeybind() {
+        return getKeyOrDefault(Config.KEYBINDS_OPEN_MENU, ActionKeybind.LEFT_CLICK);
+    }
+
+    public ActionKeybind getShootWeaponKeybind() {
+        return getKeyOrDefault(Config.KEYBINDS_SHOOT_WEAPON, ActionKeybind.RIGHT_CLICK);
+    }
+
+    private ActionKeybind getKeyOrDefault(@NotNull Config keybindConfig, ActionKeybind defaultKeybind) {
+        return PluginUtils.getOrDefault(ActionKeybind.class,
+                keybindConfig.asString(defaultKeybind.name()),
+                defaultKeybind);
     }
 
     public void resetEconomyProvider() {
@@ -445,6 +469,11 @@ public final class VehiclesPlugin extends JavaPlugin {
     public void reloadFuelItems() {
         fuelItems.clear();
         fuelItems.addAll(typeTargetManager.getTargetsFromConfig("fuel-items"));
+    }
+
+    public void reloadBreakBlocks() {
+        breakBlocks.clear();
+        breakBlocks.addAll(typeTargetManager.getTargetsFromConfig("break-blocks.blocks"));
     }
 
     public void reloadExtraTags() {

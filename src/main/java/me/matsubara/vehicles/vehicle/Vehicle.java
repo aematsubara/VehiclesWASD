@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
+import com.google.common.collect.Multimaps;
 import com.jeff_media.morepersistentdatatypes.DataType;
 import com.jeff_media.morepersistentdatatypes.datatypes.collections.CollectionDataType;
 import com.jeff_media.morepersistentdatatypes.datatypes.serializable.ConfigurationSerializableDataType;
@@ -20,6 +21,7 @@ import me.matsubara.vehicles.data.SoundWrapper;
 import me.matsubara.vehicles.files.Config;
 import me.matsubara.vehicles.hook.WGExtension;
 import me.matsubara.vehicles.manager.StandManager;
+import me.matsubara.vehicles.manager.VehicleManager;
 import me.matsubara.vehicles.model.Model;
 import me.matsubara.vehicles.model.stand.PacketStand;
 import me.matsubara.vehicles.model.stand.StandSettings;
@@ -50,6 +52,7 @@ import org.bukkit.metadata.Metadatable;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
@@ -78,8 +81,9 @@ public abstract class Vehicle implements InventoryHolder {
     protected float minSpeed;
     protected float maxSpeed;
     protected float acceleration;
-    protected float upSpeed;
-    protected float downSpeed;
+    protected float upSpeed; // HELICOPTER
+    protected float downSpeed; // HELICOPTER
+    protected float liftingSpeed; // PLANE
     protected int storageRows;
     protected float maxFuel;
     protected float fuelReduction;
@@ -87,6 +91,12 @@ public abstract class Vehicle implements InventoryHolder {
     protected SoundWrapper refuelSound;
     protected SoundWrapper onSound;
     protected SoundWrapper offSound;
+    protected SoundWrapper planeFirePrimarySound;
+    protected SoundWrapper planeFireSecondarySound;
+    protected SoundWrapper tankFireSound;
+
+    protected LivingEntity currentTarget;
+    private int targetDistance = Integer.MIN_VALUE;
 
     protected @Getter(AccessLevel.NONE) Inventory inventory;
     protected String base64Storage;
@@ -95,7 +105,10 @@ public abstract class Vehicle implements InventoryHolder {
     protected UUID owner;
     protected UUID driver;
     protected Map<UUID, String> passengers = new HashMap<>();
-    protected Map<UUID, Integer> fireballCooldown = new HashMap<>();
+    protected Multimap<UUID, Pair<Material, Integer>> cooldowns = Multimaps.synchronizedMultimap(MultimapBuilder
+            .hashKeys()
+            .hashSetValues()
+            .build());
     protected float fuel;
     protected int tick;
     protected boolean locked;
@@ -105,6 +118,8 @@ public abstract class Vehicle implements InventoryHolder {
     private int previousProgressed = Integer.MIN_VALUE;
     protected boolean forceActionBarMessage;
     protected boolean removed;
+    protected boolean fuelWarning;
+    private boolean onFire;
 
     protected ArmorStand velocityStand;
     protected final List<Pair<ArmorStand, StandSettings>> chairs = new ArrayList<>();
@@ -115,6 +130,8 @@ public abstract class Vehicle implements InventoryHolder {
     private static final String[] VALID_REGISTRIES = {Tag.REGISTRY_ITEMS, Tag.REGISTRY_BLOCKS};
     private static final double WHEEL_ROTATION_SPEED_MULTIPLIER = 5.0d;
 
+    private static float VEHICLE_FOV = 85.0f;
+    private static final ChatColor TARGET_COLOR = ChatColor.RED;
     private static final MethodHandle SET_CAN_TICK = Reflection.getMethod(ArmorStand.class, "setCanTick", MethodType.methodType(void.class, boolean.class), false, false);
     private static final Multimap<String, Triple<String, ItemStack, ItemStack>> LIGHTS = MultimapBuilder.hashKeys().arrayListValues().build();
     private static final Map<String, Float> MODEL_WHEEL_Y = Map.of(
@@ -124,15 +141,16 @@ public abstract class Vehicle implements InventoryHolder {
 
     public static final Map<VehicleType, Vector> VEHICLE_BOX = Map.of(
             VehicleType.BIKE, new Vector(1.5d, 1.0d, 1.5d),
+            VehicleType.BOAT, new Vector(1.5d, 1.0d, 1.5d),
             VehicleType.CYBERCAR, new Vector(2.0d, 1.0d, 2.0d),
-            VehicleType.KART, new Vector(2.0d, 1.0d, 2.0d),
-            VehicleType.QUAD, new Vector(2.0d, 1.0d, 2.0d),
-            VehicleType.TANK, new Vector(2.0d, 1.0d, 2.0d),
             VehicleType.HELICOPTER, new Vector(3.0d, 1.5d, 3.0d),
-            VehicleType.BOAT, new Vector(1.5d, 1.0d, 1.5d));
+            VehicleType.KART, new Vector(2.0d, 1.0d, 2.0d),
+            VehicleType.PLANE, new Vector(2.5d, 1.0d, 2.5d),
+            VehicleType.QUAD, new Vector(2.0d, 1.0d, 2.0d),
+            VehicleType.TANK, new Vector(2.0d, 1.0d, 2.0d));
 
     // We want ListenMode to ignore our entities.
-    private static final BiConsumer<JavaPlugin, Metadatable> LISTEN_MODE_IGNORE = (plugin, living) -> living.setMetadata("RemoveGlow", new FixedMetadataValue(plugin, true));
+    public static final BiConsumer<JavaPlugin, Metadatable> LISTEN_MODE_IGNORE = (plugin, living) -> living.setMetadata("RemoveGlow", new FixedMetadataValue(plugin, true));
 
     static {
         ItemStack carLightsOn = new ItemStack(Material.LIGHT_WEIGHTED_PRESSURE_PLATE);
@@ -179,7 +197,7 @@ public abstract class Vehicle implements InventoryHolder {
             }
         }
 
-        // Cache every stand metadata, except for wheels.
+        // Cache every stand metadata, except for wheels (otherwise we won't be able to rotate them).
         for (PacketStand stand : model.getStands()) {
             if (stand.getSettings().getPartName().startsWith("FRONT_WHEELS_")) continue;
             stand.setCacheMetadata(true);
@@ -224,7 +242,7 @@ public abstract class Vehicle implements InventoryHolder {
                     stand.setPersistent(false);
                     stand.setInvulnerable(true);
                     stand.setSilent(true);
-                    stand.getPersistentDataContainer().set(plugin.getVehicleModelIdKey(), PersistentDataType.STRING, model.getModelUniqueId().toString());
+                    stand.getPersistentDataContainer().set(plugin.getVehicleModelIdKey(), PersistentDataType.STRING, getModelUUID().toString());
                     lockSlots(stand);
                     LISTEN_MODE_IGNORE.accept(plugin, stand);
 
@@ -256,6 +274,7 @@ public abstract class Vehicle implements InventoryHolder {
         this.acceleration = (float) config.getDouble(configPath + ".acceleration");
         this.upSpeed = (float) config.getDouble(configPath + ".up-speed");
         this.downSpeed = (float) config.getDouble(configPath + ".down-speed");
+        this.liftingSpeed = (float) config.getDouble(configPath + ".lifting-speed");
         int rows = config.getInt(configPath + ".storage-rows");
         this.storageRows = Math.min(rows, 6);
         this.maxFuel = (float) config.getDouble(configPath + ".fuel.max-fuel", 0.0f);
@@ -264,6 +283,9 @@ public abstract class Vehicle implements InventoryHolder {
         this.refuelSound = new SoundWrapper(config.getString(configPath + ".sounds.refuel"));
         this.onSound = new SoundWrapper(config.getString(configPath + ".sounds.turn-on"));
         this.offSound = new SoundWrapper(config.getString(configPath + ".sounds.turn-off"));
+        this.planeFirePrimarySound = new SoundWrapper(Config.PLANE_FIRE_PRIMARY_SOUND.asString());
+        this.planeFireSecondarySound = new SoundWrapper(Config.PLANE_FIRE_SECONDARY_SOUND.asString());
+        this.tankFireSound = new SoundWrapper(Config.TANK_FIRE_SOUND.asString());
     }
 
     public @Nullable Pair<ArmorStand, StandSettings> spawnChair(World world, String chairName) {
@@ -282,11 +304,11 @@ public abstract class Vehicle implements InventoryHolder {
                     stand.setCollidable(false);
                     stand.setPersistent(false);
                     stand.setGravity(false);
-                    stand.setAI(false);
                     stand.setSilent(true);
                     stand.setInvisible(true);
+                    stand.setSmall(true);
 
-                    stand.getPersistentDataContainer().set(plugin.getVehicleModelIdKey(), PersistentDataType.STRING, model.getModelUniqueId().toString());
+                    stand.getPersistentDataContainer().set(plugin.getVehicleModelIdKey(), PersistentDataType.STRING, getModelUUID().toString());
 
                     AttributeInstance attribute = stand.getAttribute(Attribute.GENERIC_MAX_HEALTH);
                     if (attribute != null) attribute.setBaseValue(1);
@@ -327,7 +349,15 @@ public abstract class Vehicle implements InventoryHolder {
     }
 
     public boolean canMove() {
-        return !notAllowedHere(velocityStand.getLocation()) && (!fuelEnabled() || fuel > 0.0f);
+        return !notAllowedHere(velocityStand.getLocation()) && hasFuel();
+    }
+
+    public boolean isOnGround() {
+        return velocityStand.isOnGround();
+    }
+
+    public boolean isOnLiquid() {
+        return velocityStand.getLocation().getBlock().isLiquid();
     }
 
     public boolean canPlaySound() {
@@ -374,12 +404,20 @@ public abstract class Vehicle implements InventoryHolder {
             rotateWheels(0.0f);
         }
 
-        handleVehicleMovement(input, velocityStand.isOnGround());
+        handleVehicleMovement(input, isOnGround());
         updateModelLocation(model, velocityStand.getLocation());
         postModelUpdate();
 
         if (canPlaySound() && tick % 5 == 0) {
             engineSound.playAt(model.getLocation());
+        }
+
+        handleCurrentTarget();
+
+        if (currentTarget != null) {
+            int temp = targetDistance;
+            targetDistance = (int) currentTarget.getLocation().distance(velocityStand.getLocation());
+            if (temp != targetDistance) forceActionBarMessage();
         }
 
         if (Config.ACTION_BAR_ENABLED.asBool()) showSpeedAndFuel();
@@ -396,10 +434,170 @@ public abstract class Vehicle implements InventoryHolder {
 
         previousChunk = temp;
 
+        handleVehicleOnFire();
+
         // We want to make nearby entities ride the vehicle while no one is driving and the vehicle has extra seats.
         if (locked || driver != null || !Config.PICK_UP_NEARBY_ENTITIES.asBool()) return;
 
         handleNearbyEntitiesRide();
+    }
+
+    private void handleVehicleOnFire() {
+        Block block = velocityStand.getLocation().getBlock();
+
+        boolean setOnFire = block.getType() == Material.LAVA;
+        if (onFire == setOnFire) return;
+
+        onFire = setOnFire;
+
+        for (PacketStand stand : model.getStands()) {
+            // Ignore same state.
+            StandSettings settings = stand.getSettings();
+            if (settings.isFire() == setOnFire) continue;
+
+            // Ignore non-named.
+            String name = settings.getPartName();
+            if (name == null
+                    || name.startsWith("CHAIR_")
+                    || name.equals("INTERACTIONS")) continue;
+
+            settings.setFire(setOnFire);
+            if (stand.isCacheMetadata()) {
+                stand.setCachedMetadata(null);
+            }
+            stand.updateMetadata();
+        }
+    }
+
+    private void handleCurrentTarget() {
+        if (!is(VehicleType.PLANE) || !Config.PLANE_FIRE_SECONDARY_FOLLOW_TARGET_ENABLED.asBool()) return;
+
+        Player player;
+        if (!canMove()
+                || driver == null
+                || (player = Bukkit.getPlayer(driver)) == null
+                || player.getInventory().getItemInMainHand().getType() != Material.FIRE_CHARGE
+                || isOnGround()) {
+            invalidateCurrentTarget();
+            return;
+        }
+
+        // Check every 0.5 seconds.
+        if (tick % 10 != 0) return;
+
+        LivingEntity closest = findTarget(player);
+        if (closest == null) {
+            invalidateCurrentTarget();
+            return;
+        }
+
+        if (currentTarget != null && !currentTarget.equals(closest)) {
+            invalidateCurrentTarget();
+        }
+
+        if (currentTarget == null || currentTarget.equals(closest)) {
+            forceActionBarMessage();
+        }
+
+        currentTarget = closest;
+
+        if (!Config.PLANE_FIRE_SECONDARY_FOLLOW_TARGET_GLOWING_ENABLED.asBool()) return;
+
+        try {
+            ChatColor color = PluginUtils.getOrDefault(
+                    ChatColor.class,
+                    Config.PLANE_FIRE_SECONDARY_FOLLOW_TARGET_GLOWING_COLOR.asString(TARGET_COLOR.name()),
+                    TARGET_COLOR);
+
+            plugin.getGlowingEntities().setGlowing(closest, player, color.isColor() ? color : TARGET_COLOR);
+        } catch (Throwable ignored) {
+        }
+    }
+
+    public void invalidateCurrentTarget() {
+        if (currentTarget == null) return;
+
+        try {
+            plugin.getGlowingEntities().unsetGlowing(currentTarget);
+        } catch (Throwable ignored) {
+        }
+
+        currentTarget = null;
+        targetDistance = Integer.MIN_VALUE;
+        forceActionBarMessage();
+    }
+
+    public void forceActionBarMessage() {
+        forceActionBarMessage = true;
+    }
+
+    // Credits to blablubbabc!
+    private LivingEntity findTarget(@NotNull Player player) {
+        double minDot = Double.MIN_VALUE;
+        LivingEntity target = null;
+
+        double range = Config.PLANE_FIRE_SECONDARY_FOLLOW_TARGET_RANGE.asDouble();
+        for (Entity nearby : player.getNearbyEntities(range, range, range)) {
+            // Ignore non-living entities.
+            if (!(nearby instanceof LivingEntity living)) continue;
+
+            // Ignore armor stand (non-living).
+            if (living instanceof ArmorStand) continue;
+
+            // Ignore invalid entities or entities out of sight.
+            if (!player.hasLineOfSight(living) || !living.isValid()) continue;
+
+            // Ignore passengers of this vehicle.
+            if (isDriver(living) || isPassenger(living)) continue;
+
+            // Ignore water mobs?
+            if (living instanceof WaterMob
+                    && Config.PLANE_FIRE_SECONDARY_FOLLOW_TARGET_IGNORE_WATER.asBool()) {
+                continue;
+            }
+
+            // Ignore tamed entities?
+            if (living instanceof Tameable tameable
+                    && tameable.isTamed()
+                    && Config.PLANE_FIRE_SECONDARY_FOLLOW_TARGET_IGNORE_TAMED.asBool()) {
+                continue;
+            }
+
+            // Ignore invisible entities?
+            if ((living.isInvisible() || living.hasPotionEffect(PotionEffectType.INVISIBILITY))
+                    && Config.PLANE_FIRE_SECONDARY_FOLLOW_TARGET_IGNORE_INVISIBLE.asBool()) {
+                continue;
+            }
+
+            Location targetLocation = living.getEyeLocation();
+            Location playerLocation = player.getEyeLocation();
+
+            // Target must be in front of the vehicle.
+            Location location = velocityStand.getLocation();
+            float rotated = lookAt(location, targetLocation), yaw = location.getYaw();
+            float angleDifference = Math.abs((rotated - yaw + 540) % 360 - 180);
+
+            // Target is out of the FOV of the vehicle.
+            if (angleDifference > VEHICLE_FOV) continue;
+
+            Vector direction = playerLocation.getDirection().normalize();
+            Vector targetDirection = targetLocation.toVector().subtract(playerLocation.toVector()).normalize();
+
+            double dot = targetDirection.dot(direction);
+            if (dot > 0.97d && dot > minDot) {
+                minDot = dot;
+                target = living;
+            }
+        }
+
+        return target;
+    }
+
+    private float lookAt(@NotNull Location npcLocation, @NotNull Location location) {
+        double xDifference = location.getX() - npcLocation.getX();
+        double zDifference = location.getZ() - npcLocation.getZ();
+        float yaw = (float) (-Math.atan2(xDifference, zDifference) / Math.PI * 180.0d);
+        return yaw < 0 ? yaw + 360 : yaw;
     }
 
     private void handleNearbyEntitiesRide() {
@@ -417,6 +615,9 @@ public abstract class Vehicle implements InventoryHolder {
                     || near instanceof Boss
                     || near instanceof ArmorStand
                     || near instanceof Player) continue;
+
+            // Ignore by config.
+            if (!plugin.getVehicleManager().canBePickedUp(near)) continue;
 
             // Ignore wardens.
             if (XReflection.supports(19)
@@ -493,7 +694,7 @@ public abstract class Vehicle implements InventoryHolder {
         ArrayList<VehicleData> datas = container.getOrDefault(plugin.getSaveDataKey(), VEHICLE_DATA_LIST, new ArrayList<>());
 
         // Remove if already present and save with current data.
-        datas.removeIf(data -> data.modelUniqueId().equals(model.getModelUniqueId()));
+        datas.removeIf(data -> data.modelUniqueId().equals(getModelUUID()));
         datas.add(createSaveData());
 
         container.set(plugin.getSaveDataKey(), Vehicle.VEHICLE_DATA_LIST, datas);
@@ -510,7 +711,7 @@ public abstract class Vehicle implements InventoryHolder {
         ArrayList<VehicleData> datas = container.get(key, VEHICLE_DATA_LIST);
         if (datas == null) return;
 
-        if (!datas.removeIf(data -> data.modelUniqueId().equals(model.getModelUniqueId()))) return;
+        if (!datas.removeIf(data -> data.modelUniqueId().equals(getModelUUID()))) return;
 
         if (datas.isEmpty()) {
             container.remove(key);
@@ -552,12 +753,20 @@ public abstract class Vehicle implements InventoryHolder {
         int filled = (int) (bars * percent);
 
         int speedAsInt = (int) currentSpeed;
+        boolean previousWarning = fuelWarning;
+
+        int warningDelay = (int) (Config.ACTION_BAR_WARNING_DELAY.asDouble() * 20);
+        double fuelBelowPercentage = Config.ACTION_BAR_WARNING_FUEL_BELOW.asDouble();
+        if (fuel < maxFuel * fuelBelowPercentage && tick % warningDelay == 0) {
+            fuelWarning = !fuelWarning; // Alternate the color.
+        }
 
         // We only want to update the message when the fuel or the speed changed or every 2 seconds.
         if (previousProgressed == filled
                 && (gpsRunning || previousSpeed == speedAsInt)
                 && (!gpsRunning || ((Generic) this).getPreviousDistance() == distance)
                 && tick % 40 != 0
+                && previousWarning == fuelWarning
                 && !forceActionBarMessage) {
             return;
         }
@@ -572,30 +781,58 @@ public abstract class Vehicle implements InventoryHolder {
         String speed = gpsRunning ? Config.ACTION_BAR_GPS.asString() : String.valueOf(speedAsInt);
         String home = gpsRunning ? (((Generic) this).getGpsTick().getHomeName()) : "";
 
-        String message = (fuelEnabled() ? Config.ACTION_BAR_FUEL.asString() + Config.ACTION_BAR_SEPARATOR.asString() : "") + Config.ACTION_BAR_SPEED.asString();
+        String planeTarget;
+        if (is(VehicleType.PLANE) && currentTarget != null) {
+            planeTarget = Config.ACTION_BAR_PLANE_TARGET.asString()
+                    .replace("%name%", currentTarget.getName())
+                    .replace("%distance%", String.valueOf(targetDistance));
+        } else planeTarget = null;
 
-        @SuppressWarnings("DataFlowIssue") Player driver = Bukkit.getPlayer(this.driver != null ? this.driver : ((Helicopter) this).getOutsideDriver());
+        String separator = Config.ACTION_BAR_SEPARATOR.asString();
+        String message = (fuelEnabled() ? Config.ACTION_BAR_FUEL.asString() + separator : "")
+                + Config.ACTION_BAR_SPEED.asString()
+                + (planeTarget != null ? separator + planeTarget : "");
+
+        @SuppressWarnings("DataFlowIssue") Player driver = Bukkit.getPlayer(this.driver != null ?
+                this.driver :
+                ((Helicopter) this).getOutsideDriver());
         if (driver == null) return;
 
         BaseComponent[] components = TextComponent.fromLegacyText(PluginUtils.translate(message
-                .replace("%bar%", getProgressBar(filled, bars))
+                .replace("%bar%", getProgressBar(filled, bars, fuelBelowPercentage))
                 .replace("%speed%", speed)
                 .replace("%distance%", String.valueOf(distance))
                 .replace("%home%", home)));
+
+        VehicleManager vehicleManager = plugin.getVehicleManager();
+        vehicleManager.cancelKeybindTask(driver);
 
         driver.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);
 
         for (UUID uuid : getPassengers().keySet()) {
             Player passenger = Bukkit.getPlayer(uuid);
-            if (passenger != null) passenger.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);
+            if (passenger == null) continue;
+
+            vehicleManager.cancelKeybindTask(passenger);
+            passenger.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);
         }
     }
 
-    public String getProgressBar(int filled, int bars) {
+    public String getProgressBar(int filled, int bars, double fuelBelowPercentage) {
         String symbol = Config.ACTION_BAR_SYMBOL.asString();
         String completed = Config.ACTION_BAR_COMPLETED.asString();
         String empty = Config.ACTION_BAR_EMPTY.asString();
-        return Strings.repeat(completed + symbol, filled) + Strings.repeat(empty + symbol, bars - filled);
+        String warning = Config.ACTION_BAR_WARNING.asString();
+
+        String usedColor;
+        if (fuel < maxFuel * fuelBelowPercentage) { // The remaining fuel is less than the X% of the total.
+            usedColor = fuelWarning ? warning : empty;
+        } else {
+            usedColor = empty;
+            fuelWarning = false;
+        }
+
+        return Strings.repeat(completed + symbol, filled) + Strings.repeat(usedColor + symbol, bars - filled);
     }
 
     public void rotateWheels(float side) {
@@ -643,11 +880,15 @@ public abstract class Vehicle implements InventoryHolder {
     protected abstract void handleVehicleMovement(@NotNull PlayerInput input, boolean onGround);
 
     public void setDriver(@Nullable UUID driver) {
-        toggleLights((this.driver = driver) != null && (!fuelEnabled() || fuel > 0.0f));
+        toggleLights((this.driver = driver) != null && hasFuel());
     }
 
     public void setDriverRaw(@Nullable UUID driver) {
         this.driver = driver;
+    }
+
+    public boolean hasFuel() {
+        return !fuelEnabled() || fuel > 0.0f;
     }
 
     public void toggleLights(boolean on) {
@@ -721,6 +962,10 @@ public abstract class Vehicle implements InventoryHolder {
         for (Pair<ArmorStand, StandSettings> chair : chairs) {
             if (chair != null) teleportChair(location, chair);
         }
+    }
+
+    public boolean hasWeapon() {
+        return false;
     }
 
     public boolean notAllowedHere(Location location) {
@@ -806,7 +1051,7 @@ public abstract class Vehicle implements InventoryHolder {
                 owner,
                 fuel,
                 locked,
-                model.getModelUniqueId(),
+                getModelUUID(),
                 location,
                 type,
                 base64Storage,
@@ -832,5 +1077,9 @@ public abstract class Vehicle implements InventoryHolder {
     public void openInventory(@NotNull Player player) {
         player.openInventory(inventory);
         InventoryUpdate.updateInventory(player, getTitle());
+    }
+
+    public UUID getModelUUID() {
+        return model.getModelUniqueId();
     }
 }

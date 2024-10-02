@@ -6,7 +6,7 @@
 
     <groupId>me.matsubara</groupId>
     <artifactId>VehiclesWASD</artifactId>
-    <version>1.0.6</version>
+    <version>1.1</version>
     <packaging>jar</packaging>
 
     <name>VehiclesWASD</name>
@@ -183,13 +183,13 @@
         <dependency>
             <groupId>net.wesjd</groupId>
             <artifactId>anvilgui</artifactId>
-            <version>1.10.1-SNAPSHOT</version>
+            <version>1.10.2-SNAPSHOT</version>
         </dependency>
         <!-- XSeries -->
         <dependency>
             <groupId>com.github.cryptomorin</groupId>
             <artifactId>XSeries</artifactId>
-            <version>11.2.0.1</version>
+            <version>11.3.0</version>
         </dependency>
         <!-- Annotations -->
         <dependency>
@@ -265,7 +265,7 @@
         <dependency>
             <groupId>com.github.patheloper.pathetic</groupId>
             <artifactId>pathetic-mapping</artifactId>
-            <version>3.1</version>
+            <version>3.1.1</version>
         </dependency>
         <!--  EssentialsX  -->
         <dependency>

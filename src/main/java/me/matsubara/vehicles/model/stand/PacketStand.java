@@ -55,7 +55,7 @@ public final class PacketStand {
     private final StandSettings settings;
 
     private @Setter boolean cacheMetadata;
-    private List<Object> cachedMetadata;
+    private @Setter List<Object> cachedMetadata;
 
     // Protocol version of the server, only needed for 1.17.
     private static int PROTOCOL = -1;
@@ -548,14 +548,17 @@ public final class PacketStand {
 
     public void updateMetadata() {
         try {
-            sendPacket(createEntityMetadata(getCorrectDataWatcherItems()));
+            Object metadata = createEntityMetadata(getCorrectDataWatcherItems());
+            sendPacket(metadata);
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
     }
 
     private List<Object> getCorrectDataWatcherItems() {
-        return !cacheMetadata ? getDataWatcherItems() : cachedMetadata != null ? cachedMetadata : (cachedMetadata = Collections.unmodifiableList(getDataWatcherItems()));
+        if (!cacheMetadata) return getDataWatcherItems();
+        if (cachedMetadata != null) return cachedMetadata;
+        return cachedMetadata = Collections.unmodifiableList(getDataWatcherItems());
     }
 
     private @NotNull List<Object> getDataWatcherItems() {

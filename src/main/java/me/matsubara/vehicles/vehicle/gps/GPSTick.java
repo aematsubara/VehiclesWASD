@@ -40,7 +40,7 @@ public class GPSTick extends BukkitRunnable {
         this.destination = destination;
         this.homeName = homeName;
         this.target = target;
-        lookAtTarget(stand, target);
+        updateCurrentDistance();
     }
 
     @Override
@@ -97,6 +97,10 @@ public class GPSTick extends BukkitRunnable {
         target = next.add(0.5d, 0.5d, 0.5d);
         reached = false;
 
+        updateCurrentDistance();
+    }
+
+    private void updateCurrentDistance() {
         generic.setCurrentDistance((int) destination.distance(stand.getLocation()));
         lookAtTarget(stand, target);
     }

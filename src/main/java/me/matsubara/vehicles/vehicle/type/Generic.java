@@ -1,20 +1,31 @@
 package me.matsubara.vehicles.vehicle.type;
 
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.manager.protocol.ProtocolManager;
+import com.github.retrooper.packetevents.util.Vector3i;
+import io.github.retrooper.packetevents.util.SpigotReflectionUtil;
 import lombok.Getter;
 import lombok.Setter;
 import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.data.PlayerInput;
+import me.matsubara.vehicles.event.protocol.WrapperPlayServerEffect;
+import me.matsubara.vehicles.files.Config;
+import me.matsubara.vehicles.manager.targets.TypeTarget;
 import me.matsubara.vehicles.model.Model;
 import me.matsubara.vehicles.util.BlockUtils;
 import me.matsubara.vehicles.util.PluginUtils;
 import me.matsubara.vehicles.vehicle.Vehicle;
 import me.matsubara.vehicles.vehicle.VehicleData;
+import me.matsubara.vehicles.vehicle.VehicleType;
 import me.matsubara.vehicles.vehicle.gps.GPSTick;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.Ageable;
+import org.bukkit.entity.Player;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
@@ -29,13 +40,15 @@ public class Generic extends Vehicle {
     private @Setter int currentDistance = Integer.MIN_VALUE;
     private GPSTick gpsTick;
 
+    private static final float UP_EXTRA_PITCH = 5.0f;
+
     public Generic(@NotNull VehiclesPlugin plugin, VehicleData data, @NotNull Model model) {
         super(plugin, data, model);
     }
 
     public Generic setGPSTick(GPSTick gpsTick) {
         this.gpsTick = gpsTick;
-        this.forceActionBarMessage = true;
+        forceActionBarMessage();
         return this;
     }
 
@@ -50,15 +63,14 @@ public class Generic extends Vehicle {
     }
 
     public boolean canMove(boolean ignoreGPS) {
-        if (!super.canMove() || (!ignoreGPS && gpsTick != null)) return false;
-
-        Material type = velocityStand.getLocation().getBlock().getType();
-        return type != Material.WATER && type != Material.LAVA;
+        return super.canMove()
+                && (ignoreGPS || gpsTick == null)
+                && !isOnLiquid();
     }
 
     @Override
     public boolean canRotate() {
-        return super.canRotate() && velocityStand.isOnGround();
+        return super.canRotate() && (isOnGround() || is(VehicleType.PLANE));
     }
 
     @Override
@@ -116,10 +128,60 @@ public class Generic extends Vehicle {
                 .multiply(multiplier)
                 .setY(-0.5d);
 
+        Player player;
+        if (driver != null
+                && is(VehicleType.PLANE)
+                && currentSpeed > liftingSpeed
+                && (player = Bukkit.getPlayer(driver)) != null) {
+
+            float pitch = player.getLocation().getPitch(), alternate;
+            if (pitch >= 0.0f && pitch <= UP_EXTRA_PITCH) {
+                alternate = UP_EXTRA_PITCH - pitch;
+            } else {
+                alternate = pitch * -1 + UP_EXTRA_PITCH;
+            }
+
+            velocity.setY(1 * (alternate / 100.0f));
+        }
+
         Location temp = velocityStand.getLocation().clone().add(velocity);
         if (notAllowedHere(temp)) return;
 
         velocityStand.setVelocity(velocity);
+    }
+
+    @Override
+    public boolean hasWeapon() {
+        return is(VehicleType.PLANE) || is(VehicleType.TANK);
+    }
+
+    private boolean breakBlock(@NotNull Block block) {
+        TypeTarget target = plugin.getTypeTargetManager().applies(plugin.getBreakBlocks(), type, block.getType());
+        return target != null || breakCrop(block);
+    }
+
+    private boolean breakCrop(Block block) {
+        return Config.BREAK_BLOCKS_CROPS.asBool() && block.getBlockData() instanceof Ageable;
+    }
+
+    private void breakAndPlaySound(@NotNull Block block) {
+        // Get id before breaking the block.
+        int id = BlockUtils.getBlockStateId(block);
+
+        // If the block was destroyed and the id is valid, then proceed.
+        if (!block.breakNaturally() || id == -1) return;
+
+        // Send particles and sound.
+        ProtocolManager manager = PacketEvents.getAPI().getProtocolManager();
+        WrapperPlayServerEffect wrapper = new WrapperPlayServerEffect(
+                2001,
+                new Vector3i(block.getX(), block.getY(), block.getZ()),
+                id,
+                false);
+
+        for (Player player : block.getWorld().getPlayers()) {
+            manager.sendPacket(SpigotReflectionUtil.getChannel(player), wrapper);
+        }
     }
 
     public void moveUpOrDownIfNeeded(boolean backwards) {
@@ -134,6 +196,16 @@ public class Generic extends Vehicle {
         Material blockType = block.getType();
 
         Block top = block.getRelative(BlockFace.UP);
+
+        if (breakBlock(block)) {
+            breakAndPlaySound(block);
+            return;
+        }
+
+        if (blockType == Material.FARMLAND && breakCrop(top)) {
+            breakAndPlaySound(top);
+            return;
+        }
 
         BlockCollisionResult blockResult = isPassable(block);
         BlockCollisionResult topResult = isPassable(top);

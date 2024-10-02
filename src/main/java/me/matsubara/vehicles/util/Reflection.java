@@ -184,6 +184,7 @@ public final class Reflection {
         return XReflection.ofMinecraft()
                 .inPackage(MinecraftPackage.NMS, packageName)
                 .map(MinecraftMapping.MOJANG, mojangName)
-                .map(MinecraftMapping.SPIGOT, spigotName).unreflect();
+                .map(MinecraftMapping.SPIGOT, spigotName)
+                .unreflect();
     }
 }

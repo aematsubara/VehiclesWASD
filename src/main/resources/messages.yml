@@ -7,9 +7,12 @@ commands:
   not-from-console: "&cThis command cannot be used from the console!"
   reloading: "&6The plugin is being reloaded in another thread, wait a few seconds..."
   reload: "&6The plugin has been reloaded!"
+  # %permission% - the required permission to execute the command.
   no-permission: "&cYou don't have the required permission (%permission%) to execute this command!"
+  # %alias% - the alias of the command used (vehicleswasd/vwasd/vw).
   invalid-command: "&cThat command doesn't exist or was used incorrectly! Do /%alias% to see all commands."
   shop:
+    # %alias% - the alias of the command used (vehicleswasd/vwasd/vw).
     economy-disabled: "&cEconomy is disabled, use /%alias% give <type> to get a vehicle."
   gps:
     disabled: "&cThis feature is disabled."
@@ -19,7 +22,10 @@ commands:
     specify-home: "&cYou must specify a destination home!"
     home-not-found: "&cThat home couldn't be found!"
     different-world: "&cThe destination home is in a different world!"
+    vehicles-denied: "&cThe location of the home does not allow the entry of vehicles."
+    # %max-distance% - the maximum distance allowed.
     too-far: "&cThat home is too far away (>%max-distance%m)!"
+    # %min-distance% - the minimum distance allowed.
     too-close: "&cThat home is too close (<%min-distance%m)!"
     previous-cancelled: "&cThe previous path was cancelled!"
     starting: "&aStarting GPS, wait a moment..."
@@ -35,6 +41,7 @@ commands:
 
 vehicle:
   place:
+    disabled-world: "&cYou cannot place vehicles in this world!"
     not-on-lava: "&cYou cannot put this vehicle on lava!"
     not-on-water: "&cYou cannot put this vehicle on water!"
     invalid-block: "&cYou cannot place this vehicle on this block!"
@@ -46,19 +53,23 @@ vehicle:
   interact:
     not-your-vehicle: "&cYou cannot remove this vehicle, it's not yours."
     vehicle-in-water: "&cYou cannot enter a vehicle stuck in water."
+    vehicle-in-lava: "&cYou cannot enter a vehicle stuck in lava."
     vehicle-locked: "&cThis vehicle is locked and you are not the owner."
     vehicle-full: "&cThis vehicle is already full!"
     allowed-as-passenger: "&cThis vehicle is locked and you are not the owner, you can only sit as a passenger."
     occupied-by-unknown: "&cYour vehicle is occupied, shift + right click to kick him out of the vehicle."
     occupant-kicked: "&cThe occupant has been ejected from your vehicle!"
-    tank-cooldown: "&6You must wait &7%seconds%s &6before launching another fireball!"
+    # %seconds% - the time to wait before shooting again (seconds).
+    weapon-cooldown: "&6You must wait &7%seconds%s &6before firing again!"
   transfer-ownership:
     specify-player: "&cYou must specify the name of the new owner!"
     same-owner: "&cYou are already the owner of this vehicle!"
+    # %player% - the name of the new owner.
     new-owner: "&aThis vehicle now belongs to %player%!"
     offline-player: "&cThe new owner must be online during the transfer!"
 
 shop:
+  # %money% - the money involved in the transaction.
   not-enough-money: "&cYou need &a%money% &cto purchase this vehicle."
   successful-purchase: "&6Enjoy your new vehicle! &a%money% &6has been taken from your account."
 

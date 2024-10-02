@@ -25,6 +25,7 @@ import java.util.function.Function;
 @SuppressWarnings("DataFlowIssue")
 public class BlockUtils {
 
+    private static final Map<Material, Integer> STATE_ID = new HashMap<>();
     private static final Map<Material, Function<BlockData, Double>> HEIGHTS = new HashMap<>();
     private static final Set<Material> UNDERWATER_BLOCKS = builder()
             .add(Tag.UNDERWATER_BONEMEALS)
@@ -39,6 +40,7 @@ public class BlockUtils {
             .add(Material.HOPPER, Material.CAULDRON, Material.COMPOSTER, Material.POINTED_DRIPSTONE, Material.CHORUS_PLANT)
             .add(Tag.DOORS)
             .get();
+
     public static final Set<Material> HEADS = builder()
             .add(Material.SKELETON_SKULL,
                     Material.WITHER_SKELETON_SKULL,
@@ -55,26 +57,38 @@ public class BlockUtils {
     private static final Class<?> VEC_3D = Reflection.getNMSClass("world.phys", "Vec3", "Vec3D");
     private static final Class<?> BLOCK_CONTEXT = Reflection.getNMSClass("world.level", "ClipContext$Block", "RayTrace$BlockCollisionOption");
     private static final Class<?> FLUID_CONTEXT = Reflection.getNMSClass("world.level", "ClipContext$Fluid", "RayTrace$FluidCollisionOption");
-    private static final Class<?> ENTITY = XReflection.getNMSClass("world.entity", "Entity");
+    private static final Class<?> ENTITY = Reflection.getNMSClass("world.entity", "Entity", "Entity");
     private static final Class<?> CRAFT_WORLD = XReflection.getCraftClass("CraftWorld");
     private static final Class<?> CRAFT_PLAYER = XReflection.getCraftClass("entity.CraftPlayer");
     private static final Class<?> MOVING_OBJECT_POSITION = Reflection.getNMSClass("world.phys", "HitResult", "MovingObjectPosition");
     private static final Class<?> MOVING_OBJECT_POSITION_BLOCK = Reflection.getNMSClass("world.phys", "BlockHitResult", "MovingObjectPositionBlock");
     private static final Class<?> BLOCK_POSITION = Reflection.getNMSClass("core", "BlockPos", "BlockPosition");
     private static final Class<?> BASE_BLOCK_POSITION = Reflection.getNMSClass("core", "Vec3i", "BaseBlockPosition");
+    private static final Class<?> CRAFT_BLOCK_DATA = XReflection.getCraftClass("block.data.CraftBlockData");
+    private static final Class<?> BLOCK = Reflection.getNMSClass("world.level.block", "Block", "Block");
+    private static final Class<?> BLOCK_STATE = Reflection.getNMSClass("world.level.block.state", "BlockState", "IBlockData");
 
     // Methods.
-    private static final MethodHandle getVec3X = Reflection.getMethod(VEC_3D, "a", MethodType.methodType(double.class), "getX");
-    private static final MethodHandle getVec3Y = Reflection.getMethod(VEC_3D, "b", MethodType.methodType(double.class), "getY");
-    private static final MethodHandle getVec3Z = Reflection.getMethod(VEC_3D, "c", MethodType.methodType(double.class), "getZ");
-    private static final MethodHandle clip = Reflection.getMethod(BLOCK_ACCESS, "a", MethodType.methodType(MOVING_OBJECT_POSITION_BLOCK, RAY_TRACE), "rayTrace");
-    private static final MethodHandle getWorldHandle = Reflection.getMethod(CRAFT_WORLD, "getHandle");
-    private static final MethodHandle getPlayerHandle = Reflection.getMethod(CRAFT_PLAYER, "getHandle");
-    private static final MethodHandle getLocation = Reflection.getMethod(MOVING_OBJECT_POSITION, "e", MethodType.methodType(VEC_3D), "getPos");
-    private static final MethodHandle getBlockPos = Reflection.getMethod(MOVING_OBJECT_POSITION_BLOCK, "a", MethodType.methodType(BLOCK_POSITION), "getBlockPosition");
-    private static final MethodHandle getPosX = Reflection.getMethod(BASE_BLOCK_POSITION, "u", MethodType.methodType(int.class), "getX");
-    private static final MethodHandle getPosY = Reflection.getMethod(BASE_BLOCK_POSITION, "v", MethodType.methodType(int.class), "getY");
-    private static final MethodHandle getPosZ = Reflection.getMethod(BASE_BLOCK_POSITION, "w", MethodType.methodType(int.class), "getZ");
+    private static final MethodHandle GET_VEC3_X = Reflection.getMethod(VEC_3D, "a", MethodType.methodType(double.class), "getX");
+    private static final MethodHandle GET_VEC3_Y = Reflection.getMethod(VEC_3D, "b", MethodType.methodType(double.class), "getY");
+    private static final MethodHandle GET_VEC3_Z = Reflection.getMethod(VEC_3D, "c", MethodType.methodType(double.class), "getZ");
+    private static final MethodHandle CLIP = Reflection.getMethod(BLOCK_ACCESS, "a", MethodType.methodType(MOVING_OBJECT_POSITION_BLOCK, RAY_TRACE), "rayTrace");
+    private static final MethodHandle GET_WORLD_HANDLE = Reflection.getMethod(CRAFT_WORLD, "getHandle");
+    private static final MethodHandle GET_PLAYER_HANDLE = Reflection.getMethod(CRAFT_PLAYER, "getHandle");
+    private static final MethodHandle GET_LOCATION = Reflection.getMethod(MOVING_OBJECT_POSITION, "e", MethodType.methodType(VEC_3D), "getPos");
+    private static final MethodHandle GET_BLOCK_POS = Reflection.getMethod(MOVING_OBJECT_POSITION_BLOCK, "a", MethodType.methodType(BLOCK_POSITION), "getBlockPosition");
+    private static final MethodHandle GET_POS_X = Reflection.getMethod(BASE_BLOCK_POSITION, "u", MethodType.methodType(int.class), "getX");
+    private static final MethodHandle GET_POS_Y = Reflection.getMethod(BASE_BLOCK_POSITION, "v", MethodType.methodType(int.class), "getY");
+    private static final MethodHandle GET_POS_Z = Reflection.getMethod(BASE_BLOCK_POSITION, "w", MethodType.methodType(int.class), "getZ");
+    private static final MethodHandle GET_STATE = Reflection.getMethod(CRAFT_BLOCK_DATA, "getState");
+    private static final MethodHandle GET_ID = Reflection.getMethod(
+            BLOCK,
+            "getId",
+            MethodType.methodType(int.class, BLOCK_STATE),
+            true,
+            true,
+            "i",
+            "getCombinedId");
 
     // Constructors.
     private static final MethodHandle clipConstructor = Reflection.getConstructor(RAY_TRACE, VEC_3D, VEC_3D, BLOCK_CONTEXT, FLUID_CONTEXT, ENTITY);
@@ -243,16 +257,8 @@ public class BlockUtils {
                 material);
     }
 
-    @Contract("_ -> new")
-    private static @NotNull org.bukkit.util.Vector offsetFromSettings(@NotNull StandSettings settings) {
-        return new org.bukkit.util.Vector(
-                settings.getXOffset() + settings.getExternalX(),
-                settings.getYOffset(),
-                settings.getZOffset() + settings.getExternalZ());
-    }
-
-    public static @NotNull Location getCorrectLocation(@Nullable UUID driverUUID, VehicleType type, @NotNull Location main, StandSettings settings) {
-        Vector offset = offsetFromSettings(settings);
+    public static @NotNull Location getCorrectLocation(@Nullable UUID driverUUID, VehicleType type, @NotNull Location main, @NotNull StandSettings settings) {
+        Vector offset = new Vector(settings.getXOffset(), settings.getYOffset(), settings.getZOffset());
 
         Location location = main.clone();
 
@@ -269,10 +275,6 @@ public class BlockUtils {
 
         float extraYaw = settings.getExtraYaw();
         if (extraYaw != 0.0f) location.setYaw(yaw(location.getYaw() + extraYaw));
-
-        if (settings.getPartName().startsWith("CHAIR")) {
-            location.subtract(0.0d, 0.9d, 0.0d);
-        }
 
         return location;
     }
@@ -341,31 +343,51 @@ public class BlockUtils {
 
         try {
             Object craftWorld = CRAFT_WORLD.cast(world);
-            Object nmsWorld = getWorldHandle.invoke(craftWorld);
+            Object nmsWorld = GET_WORLD_HANDLE.invoke(craftWorld);
 
-            Object result = clip.invoke(nmsWorld, clipConstructor.invoke(
+            Object result = CLIP.invoke(nmsWorld, clipConstructor.invoke(
                     vec3dConstructor.invoke(locationVector.getX(), locationVector.getY(), locationVector.getZ()),
                     vec3dConstructor.invoke(direction.getX(), direction.getY(), direction.getZ()),
                     OUTLINE,
                     NONE,
-                    getPlayerHandle.invoke(CRAFT_PLAYER.cast(player))));
+                    GET_PLAYER_HANDLE.invoke(CRAFT_PLAYER.cast(player))));
 
-            Object blockPos = getBlockPos.invoke(result);
-            int blockPosX = (int) getPosX.invoke(blockPos);
-            int blockPosY = (int) getPosY.invoke(blockPos);
-            int blockPosZ = (int) getPosZ.invoke(blockPos);
+            Object blockPos = GET_BLOCK_POS.invoke(result);
+            int blockPosX = (int) GET_POS_X.invoke(blockPos);
+            int blockPosY = (int) GET_POS_Y.invoke(blockPos);
+            int blockPosZ = (int) GET_POS_Z.invoke(blockPos);
 
-            Object position = getLocation.invoke(result);
+            Object position = GET_LOCATION.invoke(result);
             return new Vector(
-                    (double) getVec3X.invoke(position),
-                    (double) getVec3Y.invoke(position),
-                    (double) getVec3Z.invoke(position))
+                    (double) GET_VEC3_X.invoke(position),
+                    (double) GET_VEC3_Y.invoke(position),
+                    (double) GET_VEC3_Z.invoke(position))
                     .subtract(new Vector(
                             blockPosX,
                             blockPosY,
                             blockPosZ));
         } catch (Throwable throwable) {
             return null;
+        }
+    }
+
+    public static int getBlockStateId(@NotNull Block block) {
+        Material type = block.getType();
+
+        Integer id = STATE_ID.get(type);
+        if (id != null) return id;
+
+        try {
+            Object data = CRAFT_BLOCK_DATA.cast(block.getBlockData());
+            Object state = GET_STATE.invoke(data);
+
+            int temp = (int) GET_ID.invoke(state);
+            STATE_ID.put(type, temp);
+
+            return temp;
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+            return -1;
         }
     }
 

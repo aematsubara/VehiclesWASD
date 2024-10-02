@@ -63,6 +63,7 @@ opposite-face-spawn: false
 close-customization-gui-if-successful: false
 
 # If true, every time a player teleports, the vehicle will also be transported to the player's location.
+# NOTE: Experimental feature!
 follow-player-teleport: false
 
 # If true, nearby entities will be added to the vehicle seats.
@@ -71,6 +72,77 @@ follow-player-teleport: false
 # NOTE: The vehicle must not be locked and there must not be a driver.
 # NOTE 2: As with boats and minecarts, to remove nearby entities, you must remove the vehicle.
 pick-up-nearby-entities: false
+
+# Here you can choose which entities can be added to the vehicle seats.
+# If type is set BLACKLIST, entities listed here will be ignored.
+# If type is set WHITELIST, entities listed here will be allowed.
+# NOTE: {@pick-up-nearby-entities} must be true.
+# NOTE 2: Some large entities could block the driver's vision.
+entities-filter:
+  type: BLACKLIST
+  entities:
+    - SLIME
+    - COW
+    - SHEEP
+    - MUSHROOM_COW
+
+# Here you can choose the worlds in which vehicles can be placed.
+# If type is set BLACKLIST, worlds listed here will be disabled.
+# If type is set WHITELIST, only worlds listed here will be enabled.
+# NOTE: Vehicles that are already placed will not be removed.
+worlds-filter:
+  type: BLACKLIST
+  worlds:
+    - world_name_1
+    - world_name_2
+    - world_name_3
+
+# If true, the vehicle will stop when a player gets off, instead of continuing until they slow down.
+stop-vehicle-on-dismount: false
+
+# If true, when a player gets off a vehicle, the player will be teleported to the ground to prevent falling damage.
+safe-dismount-teleport: false
+
+# Here you can configure what is related to key mapping.
+# NOTE: If @{open-menu} and @{shoot-weapon} have the same mapping, @{shoot-weapon} will take priority.
+vehicle-keybinds:
+  # How do you want the vehicle menu to open when driving?
+  # LEFT_CLICK - will open the menu when left clicking.
+  # RIGHT_CLICK - will open the menu when right clicking.
+  open-menu: LEFT_CLICK
+  # With which key do you want to fire the weapon that the vehicle has?
+  # LEFT_CLICK - shoot when left clicking.
+  # RIGHT_CLICK - shoot when right clicking.
+  shoot-weapon: RIGHT_CLICK
+  # Here you can show the key mapping per vehicle.
+  action-bar-message:
+    # Whether to send an action bar message.
+    enabled: true
+    # How long to display the message (in seconds).
+    seconds: 5.0
+    # The separator to put between each key.
+    separator: " &f| "
+    # Here you can customize the prefix of each key binding.
+    # After the prefix, the key binding that the player has in their client will be shown.
+    #
+    # For example, the key used to move backwards is "key.back", which by default is the "S" key.
+    # If a player has changed the key to "Down Arrow", then that key will be shown to the player.
+    #
+    # NOTE: If you don't want to display a bind, you must leave empty double quotes ("").
+    type:
+      up:
+        helicopter: "&7Up &a"
+        plane: "&7Up &aLook Up"
+      down:
+        helicopter: "&7Down &a"
+        plane: "&7Down &aLook Down"
+      forward: "&7Forward &a"
+      back: "&7Back &a"
+      left: "&7Left &a"
+      right: "&7Right &a"
+      shoot: "&7Shoot &a"
+      leave: "&7Leave &a"
+      menu: "&7Menu &a"
 
 input-gui:
   customization-search:
@@ -89,24 +161,137 @@ gps:
   # The minimum distance required before starting.
   min-distance: 5
 
+# Here you can modify the arrows that the planes throw.
+plane-fire:
+  # If true, creepers will explode instantly after being hit by a weapon from this plane.
+  # NOTE: other plugins can prevent creepers from exploding.
+  # NOTE 2: This function obeys the mobGriefing gamerule, so it must be enabled.
+  creeper-explode: true
+  primary:
+    # Whether players can throw arrows.
+    enabled: true
+    # The speed multiplier.
+    speed-multiplier: 5.0
+    # Whether this arrow should be critical. Critical arrows have increased damage and cause particle effects.
+    critical: true
+    # The power level of the arrow (between 0 and 5).
+    # If @{power-level} = 0, the base damage of the arrow will be: 2.0
+    # If @{power-level} > 0, the base damage of the arrow will be: 2.0 + 0.5 * (1 + @{power-level})
+    power-level: 0
+    # The number of times (between 0 and 127) an arrow can pierce through an entity.
+    pierce-level: 5
+    # Ticks before the arrow stops being on fire. 1 second = 20 ticks.
+    fire-ticks: 100
+    # The time you must wait to be able to launch another arrow (in seconds).
+    cooldown: 0.15
+    # If true, the player will receive a message before being able to shoot another arrow.
+    # If a low cooldown is used, the message may be annoying to the player.
+    cooldown-message: false
+    # The sound of the shot.
+    sound: ENTITY_ARROW_SHOOT, 0.75, 1.0
+  secondary:
+    # Whether players can throw fireballs.
+    enabled: true
+    # The speed multiplier.
+    speed-multiplier: 3.0
+    # Whether this explosive's explosion causes fire.
+    incendiary: false
+    # The radius affected by this explosive's explosion.
+    radius: 3.5
+    # The time you must wait to be able to launch another fireball (in seconds).
+    cooldown: 1.3
+    # If true, the player will receive a message before being able to shoot another fireball.
+    # If a low cooldown is used, the message may be annoying to the player.
+    cooldown-message: true
+    # The sound of the shot.
+    sound: ENTITY_GHAST_SHOOT, 0.75, 1.0
+    # The item that will be used as the plane's cannon ball.
+    fireball-item:
+      url: 18ab5f9ee9e2d3dc6667fe38b07eca344975409daef4fcde19814c563f41e776
+      material: PLAYER_HEAD
+    # With this new function, the fireballs will follow the entity that the player chooses by targeting them.
+    # Colors: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/ChatColor.html
+    follow-target:
+      # Whether this function is enabled.
+      enabled: true
+      # The range of blocks to search for entities.
+      range: 64
+      # Here you can choose which entities to ignore.
+      ignore:
+        # If true, water entities will be ignored.
+        water: true
+        # If true, tamed entities will be ignored.
+        tamed: true
+        # If true, invisible entities will be ignored.
+        invisible: true
+      # To better see the selected target, a glowing effect can be applied to it.
+      glowing:
+        # Whether to add glowing effect to the target.
+        enabled: true
+        # The color to use.
+        color: RED
+
 # Here you can modify the fireballs that the tanks throw.
 tank-fire:
   # Whether players can throw fireballs.
   enabled: true
   # The speed multiplier.
-  speed-multiplier: 3.0
+  speed-multiplier: 4.0
   # Whether this explosive's explosion causes fire.
   incendiary: false
   # The radius affected by this explosive's explosion.
-  radius: 1.0
+  radius: 5.0
   # The time you must wait to be able to launch another fireball (in seconds).
-  cooldown: 1.3
+  cooldown: 1.0
+  # If true, the player will receive a message before being able to shoot another fireball.
+  # If a low cooldown is used, the message may be annoying to the player.
+  cooldown-message: true
+  # The sound of the shot.
+  sound: ENTITY_GHAST_SHOOT, 0.75, 1.0
+  # The item that will be used as the tank's cannon ball.
+  fireball-item:
+    url: 25dffc5e53c837385f5d7863935bc5afa3e4a8176ae52e2f8d7d797c952e3f
+    material: PLAYER_HEAD
+
+# Here you can choose which blocks a vehicle can break when colliding with it.
+# You should use this for bisected (TALL_GRASS/DOOR) or passable blocks (SHORT_GRASS/DEAD_BUSH),
+# not solid since they might not respond as you would like.
+#
+# You can add materials and tags, those already existing in minecraft and those you created above in @{extra-tags}.
+# To specify a tag, use the format: ${TAG_NAME} (in uppercase and using "_" instead of "-").
+# For example, $WOOL_CARPETS - the tag that contains all the wool carpets.
+#
+# You can also specify if a material can only be broken by a certain vehicle,
+# indicating it with a "?" at the beginning next to the type of vehicle, ending with ":".
+# For example,
+# * ?TANK:GRASS - The grass will be broken ONLY by the tanks.
+break-blocks:
+  # Whether to break crops.
+  crops: true
+  # List of materials and tags (as explained above).
+  blocks:
+    - CACTUS
+    - SUGAR_CANE
+    - BAMBOO
+    - ?TANK:$FLOWERS
+    - ?TANK:$SMALL_FLOWERS
+    - ?TANK:$TALL_FLOWERS
+    - ?TANK:DEAD_BUSH
+
+# Here you can customize the fuel item, which can be used to fill the entire tank of any vehicle.
+premium-fuel:
+  url: db89de48a9b87cfd07c704f2be5e5a8cc45e8079d38faaedf13b15d15a10a70c
+  material: PLAYER_HEAD
+  display-name: "&a&lFuel"
+  lore:
+    - "&7With this single can, you can fill the"
+    - "&7entire fuel tank of any vehicle!"
 
 # The message that will be shown to both the driver and passengers of a vehicle.
 action-bar:
   enabled: true
   message:
-    # The separator between fuel and speed (if fuel is activated).
+    # The separator between fuel (if enabled), speed and tank target.
     separator: " &7| "
     # If the vehicle doesn't have fuel enabled, it won't be shown in the message, only @speed. If not, it'll be displayed as: %fuel%|%separator%|%speed%
     # %bar% - the bar that represents the remaining fuel, you can modify it below in @{action-bar.fuel-bar}.
@@ -114,12 +299,25 @@ action-bar:
     # %speed% - the current speed of the vehicle, or the distance to the destination if the GPS is running.
     speed: "&e&lSpeed: &f%speed%"
     # If GPS is running, the distance to the destination will be shown instead of the speed.
+    # %distance% - the distance to the destination.
+    # %home% - the name of the home.
     gps: "GPS (%distance%m away - ≪%home%≫)"
+    # If @{follow-target} is enabled, the name of the current target will be displayed.
+    # %name% - the name of the entity.
+    # %distance% - the distance to the target.
+    plane-target: "&c☠ %name% &f(%distance%m)"
   fuel-bar:
     symbol: "▉"
+    warning:
+      # Below what limit should the fuel bar start flashing?
+      # NOTE: Percentage expected (0.15 = 15% / 0.5 = 50% / 1 = 100%).
+      fuel-below: 0.15
+      # How often should the fuel bar flash if it is below the limit? (in seconds)
+      delay: 0.5
     color:
       completed: "&a"
       empty: "&7"
+      warning: "&c"
 
 # Here you can create special tags that contain the necessary materials for your customizations.
 # You can also combine materials with existing tags.
@@ -145,6 +343,7 @@ extra-tags:
     - ;.*_CONCRETE$
 
 # Here you can choose the materials that can be used as fuel.
+#
 # You can add materials and tags, those already existing in minecraft and those you created above in @{extra-tags}.
 # To specify a tag, use the format: ${TAG_NAME} (in uppercase and using "_" instead of "-").
 # For example, $WOOL_CARPETS - the tag that contains all the wool carpets.
@@ -161,7 +360,7 @@ extra-tags:
 # For example,
 # * ?TANK:NETHERITE_INGOT(30) - Each netherite ingot will add 30 of fuel ONLY to the tanks.
 #
-# Types of vehicles: BIKE, BOAT, CYBERCAR, HELICOPTER, KART, QUAD, TANK.
+# Types of vehicles: BIKE, BOAT, CYBERCAR, HELICOPTER, KART, PLANE, QUAD, TANK.
 fuel-items:
   - COAL(3)
   - LAVA_BUCKET(10)
@@ -183,12 +382,14 @@ translations:
     cybercar: "Cybercar"
     helicopter: "Helicopter"
     kart: "Kart"
+    plane: "Plane"
     quad: "Quad"
     tank: "Tank"
   material:
     coal: "Coal"
     lava-bucket: "Lava Bucket"
     netherite-ingot: "Netherite Ingot"
+    iron-block: "Iron Block"
   tag:
     carpets: "Wool Carpet*"
     wool-carpets: "Wool Carpet*"
@@ -198,10 +399,12 @@ translations:
     concrete: "Concrete*"
     wool: "Wool*"
     glass: "Glass*"
-    glass-pane: "Glass pane*"
+    glass-pane: "Glass Pane*"
     lantern: "Lantern*"
     slabs: "Slab*"
     trapdoors: "Trapdoor*"
+    stairs: "Stairs*"
+    planks: "Planks*"
 
 shop:
   # If you must confirm the purchase instead of buying instantly with a single click.
@@ -341,6 +544,37 @@ shop:
           - SPOILER:BAMBOO_FENCE
           - SECONDARY-COLOR:BAMBOO_TRAPDOOR
         price: 5000
+    plane:
+      '1':
+        display-name: "&#2b1f13&lSpruce Plane"
+        changes:
+          - BLOCKS:SPRUCE_PLANKS
+          - CHAIR:WHITE_CARPET
+          - SLAB:SPRUCE_SLAB
+          - STAIRS:SPRUCE_STAIRS
+          - TRAPDOOR:SPRUCE_TRAPDOOR
+          - GLASS:GLASS_PANE
+        price: 8000
+      '2':
+        display-name: "&d&lCrimson Plane"
+        changes:
+          - BLOCKS:CRIMSON_PLANKS
+          - CHAIR:MAGENTA_CARPET
+          - SLAB:CRIMSON_SLAB
+          - STAIRS:CRIMSON_STAIRS
+          - TRAPDOOR:CRIMSON_TRAPDOOR
+          - GLASS:MAGENTA_STAINED_GLASS_PANE
+        price: 8000
+      '3':
+        display-name: "&#4d3a17Jungle Plane"
+        changes:
+          - BLOCKS:JUNGLE_LOG
+          - CHAIR:BROWN_CARPET
+          - SLAB:JUNGLE_SLAB
+          - STAIRS:JUNGLE_STAIRS
+          - TRAPDOOR:JUNGLE_TRAPDOOR
+          - GLASS:BROWN_STAINED_GLASS_PANE
+        price: 8000
     quad:
       '1':
         display-name: "&5&lDark Quad"
@@ -497,6 +731,40 @@ customizations:
       name: "Spoiler"
       items:
         - $FENCES
+  plane:
+    blocks:
+      priority: 1
+      name: "Blocks"
+      items:
+        - $PLANKS
+        - $LOGS
+        - IRON_BLOCK
+    chair:
+      priority: 2
+      name: "Chair"
+      items:
+        - $CARPETS
+        - $WOOL_CARPETS
+    slab:
+      priority: 3
+      name: "Slab"
+      items:
+        - $SLABS
+    stairs:
+      priority: 4
+      name: "Stairs"
+      items:
+        - $STAIRS
+    trapdoor:
+      priority: 5
+      name: "Trapdoor"
+      items:
+        - $TRAPDOORS
+    glass:
+      priority: 6
+      name: "Glass"
+      items:
+        - $GLASS_PANE
   quad:
     color:
       priority: 1
@@ -575,9 +843,9 @@ vehicles:
       reduction-per-second: 1.5
     sounds:
       engine: ENTITY_ENDER_DRAGON_FLAP, 0.475, 1.5
-      refuel: BLOCK_FURNACE_FIRE_CRACKLE, 0.75, 1.0
-      turn-on: BLOCK_PISTON_EXTEND, 0.5725, 0.75
-      turn-off: BLOCK_PISTON_CONTRACT, 0.5725, 0.75
+      refuel: ITEM_BUCKET_FILL, 1.0, 1.0
+      turn-on: BLOCK_PISTON_EXTEND, 0.7725, 0.75
+      turn-off: BLOCK_PISTON_CONTRACT, 0.7725, 0.75
   boat:
     item:
       url: afea7dddd176199362e99e4724f7bf87886b0d596914bd1097b475a1d97ebbdb
@@ -594,9 +862,9 @@ vehicles:
       reduction-per-second: 0.0
     sounds:
       engine: ENTITY_BOAT_PADDLE_WATER, 0.65, 1.5
-      refuel: BLOCK_FURNACE_FIRE_CRACKLE, 0.75, 1.0
-      turn-on: ENTITY_BOAT_PADDLE_LAND, 0.5725, 0.75
-      turn-off: ENTITY_BOAT_PADDLE_LAND, 0.5725, 0.75
+      refuel: ITEM_BUCKET_FILL, 1.0, 1.0
+      turn-on: ENTITY_BOAT_PADDLE_LAND, 0.7725, 0.75
+      turn-off: ENTITY_BOAT_PADDLE_LAND, 0.7725, 0.75
   cybercar:
     item:
       url: ddfe5a963869415340d2cec0f82d08df73dcb168428487b514aa8d4ec19fe2c
@@ -613,9 +881,9 @@ vehicles:
       reduction-per-second: 2.0
     sounds:
       engine: ENTITY_ENDER_DRAGON_FLAP, 0.475, 1.5
-      refuel: BLOCK_FURNACE_FIRE_CRACKLE, 0.75, 1.0
-      turn-on: BLOCK_PISTON_EXTEND, 0.5725, 0.75
-      turn-off: BLOCK_PISTON_CONTRACT, 0.5725, 0.75
+      refuel: ITEM_BUCKET_FILL, 1.0, 1.0
+      turn-on: BLOCK_PISTON_EXTEND, 0.7725, 0.75
+      turn-off: BLOCK_PISTON_CONTRACT, 0.7725, 0.75
   helicopter:
     item:
       url: 3e1b468242a3c3aa4544f5389a12bb4f8675f0b14ef7f3a27fe194284802046b
@@ -633,9 +901,9 @@ vehicles:
       reduction-per-second: 1.75
     sounds:
       engine: ENTITY_WOLF_SHAKE, 0.475, 1.5
-      refuel: BLOCK_FURNACE_FIRE_CRACKLE, 0.75, 1.0
-      turn-on: BLOCK_PISTON_EXTEND, 0.5725, 0.75
-      turn-off: BLOCK_PISTON_CONTRACT, 0.5725, 0.75
+      refuel: ITEM_BUCKET_FILL, 1.0, 1.0
+      turn-on: BLOCK_PISTON_EXTEND, 0.7725, 0.75
+      turn-off: BLOCK_PISTON_CONTRACT, 0.7725, 0.75
   kart:
     item:
       url: 2ce0746b12ee4053958e140ba29593272bd84ca34baf50d0d80b5bc3c615e9c6
@@ -652,9 +920,30 @@ vehicles:
       reduction-per-second: 1.5
     sounds:
       engine: ENTITY_ENDER_DRAGON_FLAP, 0.475, 1.5
-      refuel: BLOCK_FURNACE_FIRE_CRACKLE, 0.75, 1.0
-      turn-on: BLOCK_PISTON_EXTEND, 0.5725, 0.75
-      turn-off: BLOCK_PISTON_CONTRACT, 0.5725, 0.75
+      refuel: ITEM_BUCKET_FILL, 1.0, 1.0
+      turn-on: BLOCK_PISTON_EXTEND, 0.7725, 0.75
+      turn-off: BLOCK_PISTON_CONTRACT, 0.7725, 0.75
+  plane:
+    item:
+      url: 84cee84f5f259da1add4b401ebe958d4067dd7dcbd1c35fd6834c63c01345cd0
+      material: PLAYER_HEAD
+      display-name: "&f&lPlane"
+      lore:
+        - "&7Right click to place it!"
+    min-speed: -45.0
+    max-speed: 80.0
+    # The speed at which the plane can begin to take off.
+    lifting-speed: 60
+    acceleration: 0.125
+    storage-rows: 6
+    fuel:
+      max-fuel: 1500.0
+      reduction-per-second: 1.75
+    sounds:
+      engine: ENTITY_WOLF_SHAKE, 0.475, 1.5
+      refuel: ITEM_BUCKET_FILL, 1.0, 1.0
+      turn-on: BLOCK_PISTON_EXTEND, 0.7725, 0.75
+      turn-off: BLOCK_PISTON_CONTRACT, 0.7725, 0.75
   quad:
     item:
       url: bb7d2e84ae10c971d92cb05b6ab4116f76503a87d3174249cd1f4992ba181db4
@@ -671,9 +960,9 @@ vehicles:
       reduction-per-second: 1.85
     sounds:
       engine: ENTITY_ENDER_DRAGON_FLAP, 0.475, 1.5
-      refuel: BLOCK_FURNACE_FIRE_CRACKLE, 0.75, 1.0
-      turn-on: BLOCK_PISTON_EXTEND, 0.5725, 0.75
-      turn-off: BLOCK_PISTON_CONTRACT, 0.5725, 0.75
+      refuel: ITEM_BUCKET_FILL, 1.0, 1.0
+      turn-on: BLOCK_PISTON_EXTEND, 0.7725, 0.75
+      turn-off: BLOCK_PISTON_CONTRACT, 0.7725, 0.75
   tank:
     item:
       url: b9ae2dfb5d44e97e3a95af9071711a3d0fb6899cd3a568df1c00daf4dabe918f
@@ -682,17 +971,17 @@ vehicles:
       lore:
         - "&7Right click to place it!"
     min-speed: -25.0
-    max-speed: 45.0
-    acceleration: 0.4
+    max-speed: 25.0
+    acceleration: 0.25
     storage-rows: 6
     fuel:
       max-fuel: 2000.0
       reduction-per-second: 2.5
     sounds:
       engine: ENTITY_ENDER_DRAGON_FLAP, 0.475, 1.5
-      refuel: BLOCK_FURNACE_FIRE_CRACKLE, 0.75, 1.0
-      turn-on: BLOCK_PISTON_EXTEND, 0.5725, 0.75
-      turn-off: BLOCK_PISTON_CONTRACT, 0.5725, 0.75
+      refuel: ITEM_BUCKET_FILL, 1.0, 1.0
+      turn-on: BLOCK_PISTON_EXTEND, 0.7725, 0.75
+      turn-off: BLOCK_PISTON_CONTRACT, 0.7725, 0.75
 
 gui:
   vehicle:
@@ -747,7 +1036,7 @@ gui:
       fuel-right:
         url: 19bf3292e126a105b54eba713aa1b152d541a1d8938829c56364d178ed22bf
         material: PLAYER_HEAD
-        display-name: "&6&l⮕ Fuel ⮕"
+        display-name: "&6&l⇾ Fuel ⇾"
         # %fuel% - fuels and the amount they give.
         lore:
           - "&7Add any of the following items:"
@@ -755,7 +1044,7 @@ gui:
       fuel-left:
         url: bd69e06e5dadfd84e5f3d1c21063f2553b2fa945ee1d4d7152fdc5425bc12a9
         material: PLAYER_HEAD
-        display-name: "&6&l⬅ Fuel ⬅"
+        display-name: "&6&l⇽ Fuel ⇽"
         # %fuel% - fuels and the amount they give.
         lore:
           - "&7Add any of the following items:"

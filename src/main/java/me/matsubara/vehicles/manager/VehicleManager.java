@@ -1,5 +1,7 @@
 package me.matsubara.vehicles.manager;
 
+import com.cryptomorin.xseries.reflection.XReflection;
+import com.google.common.collect.Multimap;
 import lombok.Getter;
 import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.event.VehicleSpawnEvent;
@@ -16,6 +18,7 @@ import me.matsubara.vehicles.vehicle.Vehicle;
 import me.matsubara.vehicles.vehicle.VehicleData;
 import me.matsubara.vehicles.vehicle.VehicleType;
 import me.matsubara.vehicles.vehicle.gps.GPSResultHandler;
+import me.matsubara.vehicles.vehicle.task.KeybindTask;
 import me.matsubara.vehicles.vehicle.task.PreviewTick;
 import me.matsubara.vehicles.vehicle.task.VehicleTick;
 import me.matsubara.vehicles.vehicle.type.Boat;
@@ -33,17 +36,18 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.player.*;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
@@ -56,6 +60,7 @@ import java.awt.Color;
 import java.io.File;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
 public class VehicleManager implements Listener {
@@ -66,6 +71,14 @@ public class VehicleManager implements Listener {
     private final Map<UUID, PreviewTick> previews = new HashMap<>();
     private final Map<UUID, VehicleType> selectedShopCategory = new HashMap<>();
     private final Map<UUID, GPSResultHandler> runningPaths = new HashMap<>();
+    private final Set<UUID> conflictTeleport = new HashSet<>();
+    private final Map<UUID, KeybindTask> keybindTasks = new ConcurrentHashMap<>();
+
+    private static final Material[] ARROWS = Tag.ITEMS_ARROWS.getValues().toArray(Material[]::new);
+    private static final List<String> FILTER_TYPES = List.of("WHITELIST", "BLACKLIST");
+    private static final PlayerTeleportEvent.TeleportCause CONFLICT_CAUSE = XReflection.supports(19, 3) ?
+            PlayerTeleportEvent.TeleportCause.DISMOUNT :
+            PlayerTeleportEvent.TeleportCause.UNKNOWN;
 
     public VehicleManager(VehiclesPlugin plugin) {
         this.plugin = plugin;
@@ -130,9 +143,18 @@ public class VehicleManager implements Listener {
         }
     }
 
+    public @Nullable Vehicle getVehicleByProjectile(@NotNull Projectile projectile, @Nullable Entity driver) {
+        for (MetadataValue value : projectile.getMetadata("VehicleSource")) {
+            if (!(value.value() instanceof Vehicle vehicle)) continue;
+            if (driver != null && !vehicle.isDriver(driver)) continue;
+            return vehicle;
+        }
+        return null;
+    }
+
     public @Nullable Vehicle getVehicleByModelId(UUID modelId) {
         for (Vehicle vehicle : vehicles) {
-            if (vehicle.getModel().getModelUniqueId().equals(modelId)) return vehicle;
+            if (vehicle.getModelUUID().equals(modelId)) return vehicle;
         }
         return null;
     }
@@ -176,10 +198,16 @@ public class VehicleManager implements Listener {
         Model model = vehicle.getModel();
         model.kill();
 
-        if (picker != null) {
-            ItemStack item = plugin.createVehicleItem(model.getName(), vehicle.createSaveData());
-            picker.getWorld().dropItemNaturally(dropAt, item);
-        }
+        vehicle.invalidateCurrentTarget();
+
+        if (picker == null) return;
+
+        picker.getWorld()
+                .dropItemNaturally(
+                        dropAt,
+                        plugin.createVehicleItem(model.getName(), vehicle.createSaveData()),
+                        temp -> Vehicle.LISTEN_MODE_IGNORE.accept(plugin, temp))
+                .setThrower(picker.getUniqueId());
     }
 
     public Vehicle createVehicle(@Nullable Player player, @NotNull VehicleData data) {
@@ -204,10 +232,10 @@ public class VehicleManager implements Listener {
         Model model = new Model(plugin, modelName, modelUniqueId, location, Config.RENDER_DISTANCE.asInt());
 
         Vehicle vehicle;
-        if (type == VehicleType.HELICOPTER) {
-            vehicle = new Helicopter(plugin, data, model);
-        } else if (type == VehicleType.BOAT) {
+        if (type == VehicleType.BOAT) {
             vehicle = new Boat(plugin, data, model);
+        } else if (type == VehicleType.HELICOPTER) {
+            vehicle = new Helicopter(plugin, data, model);
         } else {
             vehicle = new Generic(plugin, data, model);
         }
@@ -217,25 +245,83 @@ public class VehicleManager implements Listener {
         tick.runTaskTimer(plugin, 10L, 1L);
         vehicle.setVehicleTick(tick);
 
-        // We only save the vehicle if it's newly created.
-        if (player != null) vehicle.saveToChunk();
+        if (player != null) {
+            // We only save the vehicle if it's newly created.
+            vehicle.saveToChunk();
+
+            // Let the player know the controls.
+            handleKeybindMessage(player, vehicle);
+        }
 
         vehicles.add(vehicle);
         return vehicle;
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    private void handleKeybindMessage(Player player, Vehicle vehicle) {
+        if (!Config.KEYBINDS_ACTION_BAR_MESSAGE_ENABLED.asBool()) return;
+
+        int ticks = (int) (Config.KEYBINDS_ACTION_BAR_MESSAGE_SECONDS.asDouble() * 20);
+
+        // Cancel current task before starting a new one.
+        cancelKeybindTask(player);
+
+        keybindTasks.put(player.getUniqueId(), new KeybindTask(player, vehicle, ticks));
+    }
+
+    public void cancelKeybindTask(@NotNull Entity entity) {
+        KeybindTask task = keybindTasks.get(entity.getUniqueId());
+        if (task != null && !task.isCancelled()) task.cancel();
+    }
+
+    public boolean canBePickedUp(@NotNull Entity entity) {
+        return contains(Config.ENTITIES_FILTER_TYPE, Config.ENTITIES_FILTER_WORLDS, entity.getType().name());
+    }
+
+    public boolean isEnabledIn(@NotNull World world) {
+        return contains(Config.WORLDS_FILTER_TYPE, Config.WORLDS_FILTER_WORLDS, world.getName());
+    }
+
+    private boolean contains(@NotNull Config filterConfig, Config listConfig, String check) {
+        String filter = filterConfig.asString();
+        if (filter == null || !FILTER_TYPES.contains(filter.toUpperCase(Locale.ROOT))) return true;
+
+        List<String> list = listConfig.asStringList();
+        return filter.equalsIgnoreCase("WHITELIST") == list.contains(check);
+    }
+
+    @EventHandler
     public void onPlayerInteractEntity(@NotNull PlayerInteractEntityEvent event) {
-        handleInteractAndDamage(event.getRightClicked(), event);
+        // Prevent interactions with the (real) stands of a vehicle.
+        handleRealStands(event.getRightClicked(), event);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler
+    public void onEntityPortal(@NotNull EntityPortalEvent event) {
+        // We don't want to send vehicles to another world through a portal.
+        handleRealStands(event);
+    }
+
+    @EventHandler
     public void onEntityDamage(@NotNull EntityDamageEvent event) {
-        handleInteractAndDamage(event.getEntity(), event);
+        // Prevent damage for vehicles.
+        handleRealStands(event);
     }
 
-    private void handleInteractAndDamage(@NotNull Entity entity, Cancellable cancellable) {
-        if (!entity.getPersistentDataContainer().has(plugin.getVehicleModelIdKey(), PersistentDataType.STRING)) return;
+    @EventHandler
+    public void onEntityCombust(EntityCombustEvent event) {
+        // Prevent combust for vehicles.
+        handleRealStands(event);
+    }
+
+    private void handleRealStands(@NotNull EntityEvent event) {
+        if (!(event instanceof Cancellable cancellable)) return;
+        handleRealStands(event.getEntity(), cancellable);
+    }
+
+    private void handleRealStands(@NotNull Entity entity, Cancellable cancellable) {
+        PersistentDataContainer container = entity.getPersistentDataContainer();
+        if (!container.has(plugin.getVehicleModelIdKey(), PersistentDataType.STRING)) return;
+
         cancellable.setCancelled(true);
     }
 
@@ -277,10 +363,23 @@ public class VehicleManager implements Listener {
                 () -> newVehicle.getModel().getStands().forEach(stand -> stand.spawn(player, true)));
     }
 
+    private void handleTeleportConflict(@NotNull PlayerTeleportEvent event) {
+        Player player = event.getPlayer();
+
+        Vehicle vehicle = getVehicleByEntity(player, true);
+        if (vehicle == null || !player.isInsideVehicle()) return;
+
+        if (event.getCause() != CONFLICT_CAUSE) {
+            conflictTeleport.add(player.getUniqueId());
+        }
+    }
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerTeleport(@NotNull PlayerTeleportEvent event) {
+        handleTeleportConflict(event);
+
         if (!Config.FOLLOW_PLAYER_TELEPORT.asBool()) return;
-        if (event.getCause() == PlayerTeleportEvent.TeleportCause.DISMOUNT) return;
+        if (event.getCause() == CONFLICT_CAUSE) return;
 
         Location to = event.getTo();
         if (to == null) return;
@@ -337,7 +436,7 @@ public class VehicleManager implements Listener {
             }
         }
 
-        if (!entity.isDead()) {
+        if (!entity.isDead() && !conflictTeleport.remove(entityUUID)) {
             handleDismountLocation(entity, vehicle, false);
         }
 
@@ -348,36 +447,72 @@ public class VehicleManager implements Listener {
             vehicle.getPassengers().remove(entityUUID);
         }
 
+        // Remove speed and velocity.
+        if (Config.STOP_VEHICLE_ON_DISMOUNT.asBool()) {
+            vehicle.setCurrentSpeed(0.0f);
+            vehicle.getVelocityStand().setVelocity(new Vector());
+        }
+
         if (!(entity instanceof Player player)) return;
 
-        // Remove fireball cooldown.
-        if (Config.TANK_FIRE_ENABLED.asBool()
-                && Config.TANK_FIRE_COOLDOWN.asDouble() > 0.0d) {
-            // Save cooldown for later.
-            int cooldown = player.getCooldown(Material.FIRE_CHARGE);
-            if (cooldown > 0) vehicle.getFireballCooldown().put(entityUUID, cooldown);
-
-            player.setCooldown(Material.FIRE_CHARGE, 0);
-        }
+        // Remove cooldowns.
+        removeCooldown(player, vehicle, Config.PLANE_FIRE_PRIMARY_ENABLED, Config.PLANE_FIRE_PRIMARY_COOLDOWN, ARROWS);
+        removeCooldown(player, vehicle, Config.PLANE_FIRE_SECONDARY_ENABLED, Config.PLANE_FIRE_SECONDARY_COOLDOWN, Material.FIRE_CHARGE);
+        removeCooldown(player, vehicle, Config.TANK_FIRE_ENABLED, Config.TANK_FIRE_COOLDOWN, Material.FIRE_CHARGE);
 
         if (Config.ACTION_BAR_ENABLED.asBool()) {
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR); // Clear message.
         }
     }
 
+    private void removeCooldown(Player player,
+                                Vehicle vehicle,
+                                @NotNull Config enabledConfig,
+                                Config cooldownConfig,
+                                Material... materials) {
+        if (!enabledConfig.asBool() || cooldownConfig.asDouble() <= 0.0d) return;
+
+        UUID playerUUID = player.getUniqueId();
+
+        // Save cooldown for later.
+        for (Material material : materials) {
+            int cooldown = player.getCooldown(material);
+            if (cooldown <= 0) continue;
+
+            Multimap<UUID, Pair<Material, Integer>> cooldowns = vehicle.getCooldowns();
+            cooldowns.get(playerUUID).removeIf(next -> next.getKey() == material);
+            cooldowns.put(playerUUID, Pair.of(material, cooldown));
+
+            player.setCooldown(material, 0);
+        }
+    }
+
     private void handleDismountLocation(@NotNull Entity entity, @NotNull Vehicle vehicle, boolean bypass) {
         Location entityLocation = entity.getLocation();
-        ArmorStand stand = vehicle.getVelocityStand();
 
-        boolean useCurrent = stand.isOnGround() || (!bypass && !vehicle.isRemoved() && !vehicle.is(VehicleType.HELICOPTER));
+        boolean useCurrent = !Config.SAFE_DISMOUNT_TELEPORT.asBool() && (vehicle.isOnGround() || (!bypass
+                && !vehicle.isRemoved()
+                && !vehicle.is(VehicleType.HELICOPTER)
+                && !vehicle.is(VehicleType.PLANE)));
+
         Location highest = useCurrent ? null : BlockUtils.getHighestLocation(entityLocation);
-        Location current = stand.getLocation().clone().setDirection(entityLocation.getDirection());
+        Location current = vehicle.getVelocityStand().getLocation()
+                .clone()
+                .setDirection(entityLocation.getDirection());
 
         Location location = Objects.requireNonNullElse(highest, current);
 
+        // We need to do it instantly when a player quits.
+        Runnable runnable = () -> entity.teleport(location, CONFLICT_CAUSE);
+
+        if (bypass) {
+            runnable.run();
+            return;
+        }
+
         // We need to teleport the entity on the next tick.
         plugin.getServer().getScheduler().runTask(plugin,
-                () -> entity.teleport(location, PlayerTeleportEvent.TeleportCause.DISMOUNT));
+                runnable);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -395,7 +530,12 @@ public class VehicleManager implements Listener {
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return;
 
+        // Prevent interacting with a fuel item.
         PersistentDataContainer container = meta.getPersistentDataContainer();
+        if (container.has(plugin.getFuelItemKey(), PersistentDataType.INTEGER)) {
+            event.setCancelled(true);
+            return;
+        }
 
         String modelName = container.get(plugin.getVehicleTypeKey(), PersistentDataType.STRING);
         if (modelName == null) return;
@@ -411,6 +551,11 @@ public class VehicleManager implements Listener {
         boolean waterReplaced = false;
 
         Messages messages = plugin.getMessages();
+
+        if (!isEnabledIn(player.getWorld())) {
+            messages.send(player, Messages.Message.PLACE_DISABLED_WORLD);
+            return;
+        }
 
         if (block == null) {
             Block temp;

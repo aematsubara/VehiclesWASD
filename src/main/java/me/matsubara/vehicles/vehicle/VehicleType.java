@@ -11,6 +11,7 @@ public enum VehicleType {
     CYBERCAR,
     HELICOPTER,
     KART,
+    PLANE,
     QUAD,
     TANK;
 
