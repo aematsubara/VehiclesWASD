@@ -1,11 +1,7 @@
 package me.matsubara.vehicles.hook;
 
-import com.cryptomorin.xseries.particles.ParticleDisplay;
-import com.cryptomorin.xseries.particles.Particles;
-import com.cryptomorin.xseries.particles.XParticle;
 import com.google.common.base.Preconditions;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
@@ -14,9 +10,8 @@ import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
-import com.sk89q.worldguard.protection.managers.RegionManager;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
 import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.event.VehicleSpawnEvent;
 import org.bukkit.Location;
@@ -27,14 +22,10 @@ import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
-
 public class WGExtension implements AVExtension<WGExtension>, Listener {
 
     private StateFlag placeFlag;
     private StateFlag useFlag;
-
-    private static final int PARTICLE_DELAY = 30;
 
     @Override
     public WGExtension init(@NotNull VehiclesPlugin plugin) {
@@ -73,51 +64,27 @@ public class WGExtension implements AVExtension<WGExtension>, Listener {
         Player player = event.getPlayer();
         if (player == null) return;
 
-        if (!allowed(player, event.getLocation(), placeFlag, PARTICLE_DELAY)) {
+        if (!allowed(player, event.getLocation(), placeFlag)) {
             event.setCancelled(true);
         }
     }
 
-    public boolean canMoveHere(Player player, Location location, int tick) {
-        if (placeFlag == null) return true;
-        return allowed(player, location, useFlag, tick);
+    public boolean canMoveHere(Player player, Location location) {
+        return placeFlag != null && allowed(player, location, useFlag);
     }
 
-    private boolean allowed(@Nullable Player player, Location location, StateFlag flag, int tick) {
-        ApplicableRegionSet set = getRegionSet(location);
-        boolean allowed = set == null || set.testState(wrapPlayer(player), flag);
-
-        if (tick % PARTICLE_DELAY == 0 && set != null && player != null && !allowed) {
-            ParticleDisplay display = ParticleDisplay.of(XParticle.DUST)
-                    .withColor(Color.RED, 1.5f)
-                    .onlyVisibleTo(player);
-
-            for (ProtectedRegion region : set.getRegions()) {
-                World world = player.getWorld();
-                Particles.structuredCube(
-                        BukkitAdapter.adapt(world, region.getMinimumPoint()),
-                        BukkitAdapter.adapt(world, region.getMaximumPoint()),
-                        0.5d,
-                        display);
-            }
-        }
-
-        return allowed;
-    }
-
-    private @Nullable LocalPlayer wrapPlayer(@Nullable Player bukkitPlayer) {
-        return bukkitPlayer == null ? null : WorldGuardPlugin.inst().wrapPlayer(bukkitPlayer);
-    }
-
-    private @Nullable ApplicableRegionSet getRegionSet(@NotNull Location location) {
+    private boolean allowed(@Nullable Player player, @NotNull Location location, StateFlag flag) {
         World world = location.getWorld();
         Preconditions.checkNotNull(world);
 
         RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        RegionQuery query = container.createQuery();
 
-        RegionManager manager = container.get(BukkitAdapter.adapt(world));
-        if (manager == null) return null;
+        ApplicableRegionSet set = query.getApplicableRegions(BukkitAdapter.adapt(location));
+        return set == null || set.testState(wrapPlayer(player), flag);
+    }
 
-        return manager.getApplicableRegions(BlockVector3.at(location.getX(), location.getY(), location.getZ()));
+    private @Nullable LocalPlayer wrapPlayer(@Nullable Player player) {
+        return player == null ? null : WorldGuardPlugin.inst().wrapPlayer(player);
     }
 }

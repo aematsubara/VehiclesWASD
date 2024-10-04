@@ -352,16 +352,16 @@ public abstract class Vehicle implements InventoryHolder {
         return !notAllowedHere(velocityStand.getLocation()) && hasFuel();
     }
 
+    public boolean canPlaySound() {
+        return canMove() && driver != null;
+    }
+
     public boolean isOnGround() {
         return velocityStand.isOnGround();
     }
 
     public boolean isOnLiquid() {
         return velocityStand.getLocation().getBlock().isLiquid();
-    }
-
-    public boolean canPlaySound() {
-        return canMove() && driver != null;
     }
 
     public boolean isMovingBackwards(PlayerInput input) {
@@ -984,7 +984,7 @@ public abstract class Vehicle implements InventoryHolder {
         WGExtension wgExtension = plugin.getWgExtension();
         if (wgExtension == null) return false;
 
-        return !wgExtension.canMoveHere(driver, location, tick);
+        return !wgExtension.canMoveHere(driver, location);
     }
 
     protected void teleportChair(Location location, @NotNull Pair<ArmorStand, StandSettings> pair) {
