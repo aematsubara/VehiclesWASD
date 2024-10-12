@@ -62,9 +62,8 @@ opposite-face-spawn: false
 # Whether to close the customization GUI after a customization has been made.
 close-customization-gui-if-successful: false
 
-# If true, every time a player teleports, the vehicle will also be transported to the player's location.
-# NOTE: Experimental feature!
-follow-player-teleport: false
+# If true, the vehicle will be saved in the player's inventory when they exit the vehicle.
+pick-up-on-dismount: false
 
 # If true, nearby entities will be added to the vehicle seats.
 # This function follows the same rules as boats and minecarts.
@@ -369,13 +368,15 @@ fuel-items:
 
 # Both materials and tags must use "-" instead of "_".
 translations:
-  unknown: "Unknown"
   no-customization: "&cNo customization!"
   no-types: "&cNo types!"
   no-fuel: "&cNo fuel!"
   only-owner: "&cOnly the owner can perform this action!"
   # %name% - the name of the vehicle purchased.
   from-shop: "&8&oFrom shop: %name%"
+  lock:
+    locked: "&cLocked"
+    unlocked: "&aUnlocked"
   vehicle:
     bike: "Bike"
     boat: "Boat"
@@ -1169,3 +1170,56 @@ gui:
           - "&8* &a%material%"
           - "&7"
           - "&6Right click to glow the parts to be modified!"
+  vehicles:
+    # %page% - current page.
+    # %max-page% - amount of pages
+    title: "Vehicles (%page%/%max-page%)"
+    items:
+      previous-page:
+        url: bd69e06e5dadfd84e5f3d1c21063f2553b2fa945ee1d4d7152fdc5425bc12a9
+        material: PLAYER_HEAD
+        display-name: "&aPrevious"
+        lore:
+          - "&7Go to the previous page."
+      next-page:
+        url: 19bf3292e126a105b54eba713aa1b152d541a1d8938829c56364d178ed22bf
+        material: PLAYER_HEAD
+        display-name: "&aNext"
+        lore:
+          - "&7Go to the next page."
+      close:
+        material: BARRIER
+        display-name: "&cClose"
+        lore:
+          - "&7Click to close this inventory."
+      information:
+        material: OAK_SIGN
+        display-name: "&aInformation"
+        lore:
+          - "&7All the vehicles that belong to you"
+          - "&7will appear in this menu."
+          - "&7"
+          - "&7Some vehicles may not appear, so you"
+          - "&7will have to find them to be saved."
+          - "&c(This will only be required once)"
+      # Only the lore is used, since the item of each vehicle will be used.
+      vehicle:
+        # %type% - the type of the vehicle.
+        # %world% - the world in which the vehicle is located.
+        # %x%, %y%, %z% - the coordinates where the vehicle is located.
+        # %fuel% - the amount of fuel left.
+        # %max-fuel% - the maximum amount of fuel allowed for this vehicle.
+        # %lock% - if the vehicle is locked.
+        lore:
+          - "&7Information about this vehicle:"
+          - "&7"
+          - "&eType: &7%type%"
+          - "&eLocation:"
+          - "&f* &eWorld: &7%world%"
+          - "&f* &eX: &7%x%"
+          - "&f* &eY: &7%y%"
+          - "&f* &eZ: &7%z%"
+          - "&eFuel: &7%fuel%&f/&7%max-fuel%"
+          - "&eLock: %lock%"
+          - "&7"
+          - "&6Click to pick up the vehicle."

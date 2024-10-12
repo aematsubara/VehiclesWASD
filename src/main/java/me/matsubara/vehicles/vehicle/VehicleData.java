@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public record VehicleData(
         UUID owner,
@@ -18,7 +19,21 @@ public record VehicleData(
         VehicleType type,
         String base64Storage,
         String shopDisplayName,
-        Map<String, Material> customizationChanges) implements ConfigurationSerializable {
+        Map<String, Material> customizationChanges,
+        AtomicBoolean keepWorld) implements ConfigurationSerializable {
+
+    public VehicleData(
+            UUID owner,
+            Float fuel,
+            boolean locked,
+            UUID modelUniqueId,
+            Location location,
+            VehicleType type,
+            String base64Storage,
+            String shopDisplayName,
+            Map<String, Material> customizationChanges) {
+        this(owner, fuel, locked, modelUniqueId, location, type, base64Storage, shopDisplayName, customizationChanges, new AtomicBoolean());
+    }
 
     public static @NotNull VehicleData createDefault(UUID owner, @Nullable UUID modelUniqueId, Location location, VehicleType type) {
         return new VehicleData(owner, null, true, modelUniqueId, location, type, null, null, null);
@@ -33,7 +48,9 @@ public record VehicleData(
         result.put("locked", locked);
         if (modelUniqueId != null) result.put("model-unique-id", modelUniqueId.toString());
         if (location != null) {
-            location.setWorld(null);
+            if (keepWorld == null || !keepWorld.get()) {
+                location.setWorld(null);
+            }
             result.putAll(location.serialize());
         }
         result.put("type", type.name());

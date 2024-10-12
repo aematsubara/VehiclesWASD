@@ -2,6 +2,7 @@ package me.matsubara.vehicles.gui;
 
 import lombok.Getter;
 import me.matsubara.vehicles.VehiclesPlugin;
+import me.matsubara.vehicles.data.ShopVehicle;
 import me.matsubara.vehicles.util.InventoryUpdate;
 import me.matsubara.vehicles.util.ItemBuilder;
 import me.matsubara.vehicles.util.PluginUtils;
@@ -26,7 +27,7 @@ public class ShopGUI implements InventoryHolder {
     private final Inventory inventory;
     private final Player player;
 
-    private List<ItemStack> items;
+    private List<ShopVehicle> items;
     private VehicleType currentType;
     private int currentPage;
     private int pages;
@@ -46,8 +47,8 @@ public class ShopGUI implements InventoryHolder {
         this.player = player;
         this.currentPage = currentPage;
 
-        updateInventory();
         player.openInventory(inventory);
+        updateInventory();
     }
 
     public void updateInventory() {
@@ -110,7 +111,7 @@ public class ShopGUI implements InventoryHolder {
         boolean isLastPage = currentPage == pages - 1;
 
         for (int index = 0, aux = startFrom; isLastPage ? (index < items.size() - startFrom) : (index < SLOTS.length); index++, aux++) {
-            inventory.setItem(slotIndex.get(index), items.get(aux));
+            inventory.setItem(slotIndex.get(index), items.get(aux).item());
         }
 
         InventoryUpdate.updateInventory(player, getTitle());

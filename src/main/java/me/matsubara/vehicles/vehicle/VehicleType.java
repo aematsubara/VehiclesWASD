@@ -15,11 +15,7 @@ public enum VehicleType {
     QUAD,
     TANK;
 
-    public @NotNull String toConfigPath() {
-        return toFilePath().replace("_", "-");
-    }
-
-    public @NotNull String toFilePath() {
-        return name().toLowerCase(Locale.ROOT);
+    public @NotNull String toPath() {
+        return name().toLowerCase(Locale.ROOT).replace("_", "-");
     }
 }

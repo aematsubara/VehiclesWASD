@@ -71,7 +71,7 @@ import java.util.function.BiConsumer;
 public abstract class Vehicle implements InventoryHolder {
 
     public static final PersistentDataType<byte[], VehicleData> VEHICLE_DATA = new ConfigurationSerializableDataType<>(VehicleData.class);
-    public static final CollectionDataType<ArrayList<VehicleData>, VehicleData> VEHICLE_DATA_LIST = DataType.asArrayList(Vehicle.VEHICLE_DATA);
+    public static final CollectionDataType<ArrayList<VehicleData>, VehicleData> VEHICLE_DATA_LIST = DataType.asArrayList(VEHICLE_DATA);
 
     protected final VehiclesPlugin plugin;
     protected final Model model;
@@ -139,6 +139,7 @@ public abstract class Vehicle implements InventoryHolder {
             "quad", 90.0f,
             "kart", 0.0f);
 
+    public static boolean MY_VEHICLES_FEATURE_MODERN = XReflection.supports(18, 1);
     public static final Map<VehicleType, Vector> VEHICLE_BOX = Map.of(
             VehicleType.BIKE, new Vector(1.5d, 1.0d, 1.5d),
             VehicleType.BOAT, new Vector(1.5d, 1.0d, 1.5d),
@@ -688,24 +689,41 @@ public abstract class Vehicle implements InventoryHolder {
         manager.handleStandRender(player, player.getLocation(), false);
     }
 
-    public void saveToChunk(@NotNull Chunk chunk) {
-        PersistentDataContainer container = chunk.getPersistentDataContainer();
+    public void saveToChunk() {
+        saveToChunk(velocityStand.getLocation().getChunk());
+    }
 
-        ArrayList<VehicleData> datas = container.getOrDefault(plugin.getSaveDataKey(), VEHICLE_DATA_LIST, new ArrayList<>());
+    public void saveToChunk(@NotNull Chunk chunk) {
+        saveToContainer(chunk.getPersistentDataContainer());
+        if (!MY_VEHICLES_FEATURE_MODERN) return;
+
+        saveToContainer(chunk.getWorld().getPersistentDataContainer());
+    }
+
+    public void removeFromChunk() {
+        removeFromChunk(velocityStand.getLocation().getChunk());
+    }
+
+    public void removeFromChunk(@NotNull Chunk chunk) {
+        removeFromContainer(chunk.getPersistentDataContainer());
+        if (!MY_VEHICLES_FEATURE_MODERN) return;
+
+        removeFromContainer(chunk.getWorld().getPersistentDataContainer());
+    }
+
+    private void saveToContainer(@NotNull PersistentDataContainer container) {
+        NamespacedKey key = plugin.getSaveDataKey();
+
+        ArrayList<VehicleData> datas = container.getOrDefault(key, VEHICLE_DATA_LIST, new ArrayList<>());
 
         // Remove if already present and save with current data.
         datas.removeIf(data -> data.modelUniqueId().equals(getModelUUID()));
         datas.add(createSaveData());
 
-        container.set(plugin.getSaveDataKey(), Vehicle.VEHICLE_DATA_LIST, datas);
+        container.set(key, Vehicle.VEHICLE_DATA_LIST, datas);
     }
 
-    public void saveToChunk() {
-        saveToChunk(velocityStand.getLocation().getChunk());
-    }
-
-    public void removeFromChunk(@NotNull Chunk chunk) {
-        PersistentDataContainer container = chunk.getPersistentDataContainer();
+    private void removeFromContainer(@NotNull PersistentDataContainer container) {
         NamespacedKey key = plugin.getSaveDataKey();
 
         ArrayList<VehicleData> datas = container.get(key, VEHICLE_DATA_LIST);
@@ -713,15 +731,8 @@ public abstract class Vehicle implements InventoryHolder {
 
         if (!datas.removeIf(data -> data.modelUniqueId().equals(getModelUUID()))) return;
 
-        if (datas.isEmpty()) {
-            container.remove(key);
-        } else {
-            container.set(key, VEHICLE_DATA_LIST, datas);
-        }
-    }
-
-    public void removeFromChunk() {
-        removeFromChunk(velocityStand.getLocation().getChunk());
+        if (datas.isEmpty()) container.remove(key);
+        else container.set(key, VEHICLE_DATA_LIST, datas);
     }
 
     private void handleFuel() {

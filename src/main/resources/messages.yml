@@ -20,7 +20,7 @@ commands:
     not-driving: "&cYou must be driving a vehicle to use this command!"
     not-generic: "&cThis vehicle doesn't have an integrated GPS system!"
     specify-home: "&cYou must specify a destination home!"
-    home-not-found: "&cThat home couldn't be found!"
+    home-not-found: "&cThat home could not be found!"
     different-world: "&cThe destination home is in a different world!"
     vehicles-denied: "&cThe location of the home does not allow the entry of vehicles."
     # %max-distance% - the maximum distance allowed.
@@ -37,9 +37,19 @@ commands:
   give:
     specify-type: "&cYou must specify a vehicle type!"
     type-not-found: "&cThis type of vehicle doesn't exist!"
-    player-not-found: "&cThe player couldn't be found!"
+    player-not-found: "&cThe player could not be found!"
+  vehicles:
+    empty: "&cYour vehicles could not be found!"
+  preview:
+    specify-type: "&cYou must specify a vehicle type!"
+    type-not-found: "&cThis type of vehicle doesn't exist!"
+    shop-not-found: "&cThe shop version was not found, using the default one."
 
 vehicle:
+  pick:
+    saved-in-inventory: "&aThe vehicle has been saved in your inventory!"
+    not-enough-space: "&cYou don't have enough space in your inventory to save your vehicle!"
+    not-found: "&cThe vehicle could not be found!"
   place:
     disabled-world: "&cYou cannot place vehicles in this world!"
     not-on-lava: "&cYou cannot put this vehicle on lava!"

@@ -3,11 +3,9 @@ package me.matsubara.vehicles.listener;
 import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.files.Config;
 import me.matsubara.vehicles.files.Messages;
-import me.matsubara.vehicles.gui.ConfirmShopGUI;
-import me.matsubara.vehicles.gui.CustomizationGUI;
-import me.matsubara.vehicles.gui.ShopGUI;
-import me.matsubara.vehicles.gui.VehicleGUI;
+import me.matsubara.vehicles.gui.*;
 import me.matsubara.vehicles.hook.EconomyExtension;
+import me.matsubara.vehicles.manager.VehicleManager;
 import me.matsubara.vehicles.manager.targets.TypeTarget;
 import me.matsubara.vehicles.model.stand.StandSettings;
 import me.matsubara.vehicles.util.PluginUtils;
@@ -15,13 +13,10 @@ import me.matsubara.vehicles.vehicle.Customization;
 import me.matsubara.vehicles.vehicle.Vehicle;
 import me.matsubara.vehicles.vehicle.VehicleData;
 import me.matsubara.vehicles.vehicle.VehicleType;
-import me.matsubara.vehicles.vehicle.task.PreviewTick;
 import me.matsubara.vehicles.vehicle.type.Helicopter;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.apache.commons.lang3.tuple.Pair;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.Particle;
+import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
@@ -208,6 +203,7 @@ public final class InventoryListener implements Listener {
         }
 
         Messages messages = plugin.getMessages();
+        VehicleManager manager = plugin.getVehicleManager();
 
         if (holder instanceof ShopGUI shop) {
             event.setCancelled(true);
@@ -280,9 +276,54 @@ public final class InventoryListener implements Listener {
             if (!event.getClick().isRightClick()) return;
             if (!Config.SHOP_PREVIEW_ENABLED.asBool()) return;
 
-            startPreview(player, data);
+            manager.startPreview(player, data);
             closeInventory(player);
+            return;
+        }
 
+        if (holder instanceof MyVehiclesGUI vehicles) {
+            event.setCancelled(true);
+
+            if (current == null) return;
+
+            boolean isShiftClick = event.isShiftClick();
+
+            if (isCustomItem(current, "close")) {
+                closeInventory(player);
+            } else if (isCustomItem(current, "previous-page")) {
+                vehicles.previousPage(isShiftClick);
+            } else if (isCustomItem(current, "next-page")) {
+                vehicles.nextPage(isShiftClick);
+            }
+
+            ItemMeta meta = current.getItemMeta();
+            if (meta == null) return;
+
+            PersistentDataContainer container = meta.getPersistentDataContainer();
+
+            VehicleData data = container.get(plugin.getSaveDataKey(), Vehicle.VEHICLE_DATA);
+            if (data == null) return;
+
+            Location location = data.location();
+            UUID modelUniqueId = data.modelUniqueId();
+
+            Vehicle temp = manager.getVehicleByModelId(modelUniqueId);
+            if (temp != null) temp.getVelocityStand().getLocation(location);
+
+            // Load the chunk before looking for the vehicle.
+            Chunk chunk = location.getChunk();
+            chunk.load();
+            chunk.getEntities();
+
+            // After loading the chunk, the vehicle SHOULD be present.
+            Vehicle vehicle = manager.getVehicleByModelId(modelUniqueId);
+            if (vehicle != null) {
+                manager.saveVehicleOnInventory(player, vehicle);
+            } else {
+                messages.send(player, Messages.Message.PICK_NOT_FOUND);
+            }
+
+            closeInventory(player);
             return;
         }
 
@@ -403,18 +444,9 @@ public final class InventoryListener implements Listener {
                 shopDisplayName,
                 data.customizationChanges());
 
-        player.getInventory().addItem(plugin.createVehicleItem(temp.type().toFilePath(), temp));
+        player.getInventory().addItem(plugin.createVehicleItem(temp.type(), temp));
 
         closeInventory(player);
-    }
-
-    private void startPreview(@NotNull Player player, VehicleData data) {
-        PreviewTick currentPreview = plugin.getVehicleManager().getPreviews().remove(player.getUniqueId());
-        if (currentPreview != null && !currentPreview.isCancelled()) {
-            currentPreview.cancel();
-        }
-
-        new PreviewTick(plugin, player, data).runTaskTimerAsynchronously(plugin, 1L, 1L);
     }
 
     @SuppressWarnings("deprecation")

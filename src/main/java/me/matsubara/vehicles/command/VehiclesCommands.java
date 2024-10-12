@@ -1,12 +1,10 @@
 package me.matsubara.vehicles.command;
 
 import me.matsubara.vehicles.VehiclesPlugin;
+import me.matsubara.vehicles.data.ShopVehicle;
 import me.matsubara.vehicles.files.Config;
 import me.matsubara.vehicles.files.Messages;
-import me.matsubara.vehicles.gui.ConfirmShopGUI;
-import me.matsubara.vehicles.gui.CustomizationGUI;
-import me.matsubara.vehicles.gui.ShopGUI;
-import me.matsubara.vehicles.gui.VehicleGUI;
+import me.matsubara.vehicles.gui.*;
 import me.matsubara.vehicles.hook.EconomyExtension;
 import me.matsubara.vehicles.hook.EssentialsExtension;
 import me.matsubara.vehicles.manager.VehicleManager;
@@ -56,7 +54,8 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             new PassablePathFilter(),
             new DangerousMaterialsFilter(EnumSet.of(Material.CACTUS, Material.LAVA), 3));
 
-    private static final List<String> COMMAND_ARGS = List.of("reload", "shop", "give", "gps", "fuel");
+    private static final List<String> VALID_TYPES = Stream.of(VehicleType.values()).map(VehicleType::toPath).toList();
+    private static final List<String> COMMAND_ARGS = List.of("reload", "shop", "give", "gps", "fuel", "preview", "vehicles");
     private static final List<String> HELP = Stream.of(
             "&8----------------------------------------",
             "&9&lVehiclesWASD &f&oCommands &c<required> | [optional]",
@@ -64,10 +63,13 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             "&e/vwasd shop &f- &7Opens the vehicle shop.",
             "&8(requires Vault and an economy provider like EssentialsX, CMI, etc...)",
             "&e/vwasd give <type> [player] &f- &7Gives a vehicle.",
+            "&e/vwasd preview <type> [shop-id] &f- &7Preview a vehicle.",
+            "&e/vwasd vehicles &f- &7Manage your vehicles.",
             "&e/vwasd gps <home> &f- &7Automatically drives to a home.",
-            "&e/vwasd fuel &f- &7Gives a fuel can.",
             "&8(requires EssentialsX)",
+            "&e/vwasd fuel &f- &7Gives a fuel can.",
             "&8----------------------------------------").map(PluginUtils::translate).toList();
+    private static final Set<String> TYPE_LIST_USER = Set.of("give", "preview");
 
     public VehiclesCommands(@NotNull VehiclesPlugin plugin) {
         this.plugin = plugin;
@@ -95,7 +97,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        VehicleManager vehicleManager = plugin.getVehicleManager();
+        VehicleManager manager = plugin.getVehicleManager();
 
         if (subCommand.equalsIgnoreCase("reload")) {
             if (notAllowed(sender, "vehicleswasd.reload")) return true;
@@ -126,19 +128,19 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
                 plugin.reloadBreakBlocks();
                 plugin.reloadCraftings();
 
-                vehicleManager.getModels().clear();
+                manager.getModels().clear();
 
                 // Save data and remove vehicle(s) from world.
                 List<VehicleData> datas = new ArrayList<>();
-                for (Vehicle vehicle : vehicleManager.getVehicles()) {
+                for (Vehicle vehicle : manager.getVehicles()) {
                     datas.add(vehicle.createSaveData());
-                    vehicleManager.removeVehicle(vehicle, null);
+                    manager.removeVehicle(vehicle, null);
                 }
-                vehicleManager.getVehicles().clear();
+                manager.getVehicles().clear();
 
                 // Respawn vehicles.
                 for (VehicleData data : datas) {
-                    vehicleManager.createVehicle(null, data);
+                    manager.createVehicle(null, data);
                 }
 
                 messages.send(sender, Messages.Message.RELOAD);
@@ -160,11 +162,9 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
 
             // We need to reload this here instead of on VehiclesPlugin#onEnabled()
             // because the provider may not be enabled yet.
-            if (plugin.getTypeCategoryItem().isEmpty() || plugin.getTypeVehicles().isEmpty()) {
-                plugin.reloadShopItems();
-            }
+            plugin.reloadShopItemsIfNeeded();
 
-            new ShopGUI(plugin, player, vehicleManager.getSelectedType(player));
+            new ShopGUI(plugin, player, manager.getSelectedType(player));
         }
 
         if (subCommand.equalsIgnoreCase("gps")) {
@@ -184,7 +184,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
                 return true;
             }
 
-            Vehicle vehicle = vehicleManager.getVehicleByEntity(player);
+            Vehicle vehicle = manager.getVehicleByEntity(player);
             if (vehicle == null) {
                 messages.send(player, Messages.Message.GPS_NOT_DRIVING);
                 return true;
@@ -209,7 +209,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
 
             UUID playerUUID = player.getUniqueId();
 
-            if (vehicleManager.invalidateGPSResult(playerUUID)) {
+            if (manager.invalidateGPSResult(playerUUID)) {
                 messages.send(player, Messages.Message.GPS_STOPPED);
             }
 
@@ -261,7 +261,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             GPSResultHandler result = new GPSResultHandler(player, generic, args[1]);
             stage.thenAccept(result);
 
-            vehicleManager.getRunningPaths().put(playerUUID, result);
+            manager.getRunningPaths().put(playerUUID, result);
         }
 
         if (subCommand.equalsIgnoreCase("fuel")) {
@@ -276,6 +276,50 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             return true;
         }
 
+        if (subCommand.equalsIgnoreCase("vehicles")) {
+            Player player = isPlayer(sender);
+            if (player == null) return true;
+
+            if (notAllowed(player, "vehicleswasd.vehicles")) return true;
+
+            // We need to reload this here instead of on VehiclesPlugin#onEnabled()
+            // because the provider may not be enabled yet.
+            plugin.reloadShopItemsIfNeeded();
+
+            new MyVehiclesGUI(plugin, player);
+            return true;
+        }
+
+        if (subCommand.equalsIgnoreCase("preview")) {
+            Player player = isPlayer(sender);
+            if (player == null) return true;
+
+            // We don't need a permission to use this command since the same function can be used in the store.
+
+            if (args.length == 1) {
+                messages.send(sender, Messages.Message.PREVIEW_SPECIFY_TYPE);
+                return true;
+            }
+
+            VehicleType type = PluginUtils.getOrNull(VehicleType.class, args[1].toUpperCase(Locale.ROOT));
+            if (type == null) {
+                messages.send(sender, Messages.Message.PREVIEW_TYPE_NOT_FOUND);
+                return true;
+            }
+
+            boolean shopProvided = args.length == 3;
+            VehicleData data = shopProvided ? getPreviewData(type, args) : null;
+
+            if (shopProvided && data == null) {
+                messages.send(sender, Messages.Message.PREVIEW_SHOP_NOT_FOUND);
+            }
+
+            VehicleData temp = data != null ? data : VehicleData.createDefault(null, null, null, type);
+            manager.startPreview(player, temp);
+
+            return true;
+        }
+
         if (!subCommand.equalsIgnoreCase("give")) return true;
         if (notAllowed(sender, "vehicleswasd.give")) return true;
 
@@ -284,8 +328,8 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        String modelName = args[1];
-        if (!plugin.validModel(modelName)) {
+        VehicleType type = PluginUtils.getOrNull(VehicleType.class, args[1].toUpperCase(Locale.ROOT));
+        if (type == null) {
             messages.send(sender, Messages.Message.GIVE_TYPE_NOT_FOUND);
             return true;
         }
@@ -296,8 +340,32 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        target.getInventory().addItem(plugin.createVehicleItem(modelName, null));
+        target.getInventory().addItem(plugin.createVehicleItem(type, null));
         return true;
+    }
+
+    private @Nullable List<ShopVehicle> getShopVehicles(VehicleType type) {
+        // We need to reload this here instead of on VehiclesPlugin#onEnabled()
+        // because the provider may not be enabled yet.
+        plugin.reloadShopItemsIfNeeded();
+
+        List<ShopVehicle> vehicles = plugin.getTypeVehicles().get(type);
+        if (vehicles == null || vehicles.isEmpty()) return null;
+
+        return vehicles;
+    }
+
+    private @Nullable VehicleData getPreviewData(VehicleType type, String @NotNull [] args) {
+        List<ShopVehicle> vehicles = getShopVehicles(type);
+        if (vehicles == null) return null;
+
+        for (ShopVehicle vehicle : vehicles) {
+            if (vehicle.shopId().equals(args[2])) {
+                return vehicle.data();
+            }
+        }
+
+        return null;
     }
 
     private boolean notAllowed(@NotNull CommandSender sender, String permission) {
@@ -321,12 +389,22 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             return StringUtil.copyPartialMatches(args[0], COMMAND_ARGS, new ArrayList<>());
         }
 
-        if (args.length == 2 && args[0].equalsIgnoreCase("give")) {
-            return StringUtil.copyPartialMatches(args[1], plugin.getModelList(), new ArrayList<>());
+        if (args.length == 2 && TYPE_LIST_USER.contains(args[0])) {
+            return StringUtil.copyPartialMatches(args[1], VALID_TYPES, new ArrayList<>());
         }
 
-        if (args.length == 3 && args[0].equalsIgnoreCase("give") && plugin.getModelList().contains(args[1])) {
-            return null; // Return player list.
+        if (args.length == 3 && TYPE_LIST_USER.contains(args[0]) && VALID_TYPES.contains(args[1])) {
+            if (args[0].equalsIgnoreCase("give")) {
+                return null; // Return player list.
+            }
+
+            VehicleType type = PluginUtils.getOrNull(VehicleType.class, args[1].toUpperCase(Locale.ROOT));
+            List<ShopVehicle> vehicles;
+            if (type != null && (vehicles = getShopVehicles(type)) != null) {
+                return StringUtil.copyPartialMatches(args[2], vehicles.stream()
+                        .map(ShopVehicle::shopId)
+                        .toList(), new ArrayList<>());
+            }
         }
 
         if (args.length == 2

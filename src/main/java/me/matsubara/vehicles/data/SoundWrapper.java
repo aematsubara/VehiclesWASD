@@ -5,6 +5,8 @@ import com.google.common.base.Strings;
 import me.matsubara.vehicles.util.PluginUtils;
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.World;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 public class SoundWrapper {
@@ -12,6 +14,7 @@ public class SoundWrapper {
     private Sound sound;
     private float volume = Float.MIN_VALUE;
     private float pitch = Float.MIN_VALUE;
+    private boolean valid;
 
     public SoundWrapper(String soundName) {
         if (Strings.isNullOrEmpty(soundName)) return;
@@ -28,19 +31,20 @@ public class SoundWrapper {
         this.sound = sound;
         this.volume = volume;
         this.pitch = pitch;
+
+        valid = volume != Float.MIN_VALUE && pitch != Float.MIN_VALUE;
     }
 
     public void playAt(@NotNull Location location) {
-        if (!validSound()) return;
+        if (!valid) return;
 
-        Preconditions.checkNotNull(location.getWorld());
-        location.getWorld().playSound(location, sound, volume, pitch);
+        World world = location.getWorld();
+        Preconditions.checkNotNull(world);
+
+        world.playSound(location, sound, volume, pitch);
     }
 
-    public boolean validSound() {
-        return sound != null && volume != Float.MIN_VALUE && pitch != Float.MIN_VALUE;
-    }
-
+    @Contract(pure = true)
     private float getValidFloat(String @NotNull [] data, int index) {
         try {
             return Float.parseFloat(data[index]);

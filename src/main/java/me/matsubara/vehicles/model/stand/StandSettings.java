@@ -15,9 +15,7 @@ public final class StandSettings implements Cloneable {
 
     // Model data.
     private String partName;
-    private double xOffset;
-    private double yOffset;
-    private double zOffset;
+    private Vector offset;
     private float extraYaw;
     private final List<String> tags = new ArrayList<>();
 
@@ -67,12 +65,6 @@ public final class StandSettings implements Cloneable {
 
     public boolean hasEquipment() {
         return equipment.values().stream().anyMatch(Objects::nonNull);
-    }
-
-    public void setOffset(@NotNull Vector vector) {
-        xOffset = vector.getX();
-        yOffset = vector.getY();
-        zOffset = vector.getZ();
     }
 
     @NotNull

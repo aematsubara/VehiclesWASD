@@ -13,6 +13,7 @@ import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder
 import lombok.Getter;
 import me.matsubara.vehicles.command.VehiclesCommands;
 import me.matsubara.vehicles.data.ActionKeybind;
+import me.matsubara.vehicles.data.ShopVehicle;
 import me.matsubara.vehicles.files.Config;
 import me.matsubara.vehicles.files.Messages;
 import me.matsubara.vehicles.hook.*;
@@ -56,6 +57,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -71,7 +73,7 @@ public final class VehiclesPlugin extends JavaPlugin {
     private GlowingEntities glowingEntities;
 
     private final Map<VehicleType, ItemStack> typeCategoryItem = new EnumMap<>(VehicleType.class);
-    private final Map<VehicleType, List<ItemStack>> typeVehicles = new EnumMap<>(VehicleType.class);
+    private final Map<VehicleType, List<ShopVehicle>> typeVehicles = new EnumMap<>(VehicleType.class);
     private final Map<VehicleType, Shape> vehicleCrafting = new EnumMap<>(VehicleType.class);
     private final Set<TypeTarget> fuelItems = new HashSet<>();
     private final Set<TypeTarget> breakBlocks = new HashSet<>();
@@ -114,17 +116,19 @@ public final class VehiclesPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        Logger logger = getLogger();
+
         // Disable the plugin if the server version is older than 1.17.
         PluginManager pluginManager = getServer().getPluginManager();
         if (XReflection.MINOR_NUMBER < 17) {
-            getLogger().severe("This plugin only works from 1.17 and up, disabling...");
+            logger.severe("This plugin only works from 1.17 and up, disabling...");
             pluginManager.disablePlugin(this);
             return;
         }
 
         // Disable the plugin if ProtocolLib isn't installed.
         if (pluginManager.getPlugin("packetevents") == null) {
-            getLogger().severe("This plugin depends on PacketEvents, disabling...");
+            logger.severe("This plugin depends on PacketEvents, disabling...");
             pluginManager.disablePlugin(this);
             return;
         }
@@ -256,7 +260,7 @@ public final class VehiclesPlugin extends JavaPlugin {
         }
 
         for (VehicleType type : VehicleType.values()) {
-            String path = type.toConfigPath();
+            String path = type.toPath();
             SPECIAL_SECTIONS.add("vehicles." + path + ".item");
         }
     }
@@ -334,8 +338,9 @@ public final class VehiclesPlugin extends JavaPlugin {
         }
     }
 
-    public ItemStack createVehicleItem(@NotNull String modelName, @Nullable VehicleData data) {
-        ItemBuilder builder = getItem("vehicles." + modelName.replace("_", "-") + ".item")
+    public ItemStack createVehicleItem(@NotNull VehicleType type, @Nullable VehicleData data) {
+        String modelName = type.toPath();
+        ItemBuilder builder = getItem("vehicles." + modelName + ".item")
                 .setData(vehicleTypeKey, PersistentDataType.STRING, modelName);
 
         if (data != null) {
@@ -403,29 +408,38 @@ public final class VehiclesPlugin extends JavaPlugin {
         if (!file.exists()) saveResource(name, false);
     }
 
+    public void reloadShopItemsIfNeeded() {
+        if (!typeCategoryItem.isEmpty() && !typeVehicles.isEmpty()) return;
+        reloadShopItems();
+    }
+
     public void reloadShopItems() {
         typeCategoryItem.clear();
         typeVehicles.clear();
 
         for (VehicleType type : VehicleType.values()) {
-            typeCategoryItem.put(type, new ItemBuilder(createVehicleItem(type.toFilePath(), null))
+            typeCategoryItem.put(type, new ItemBuilder(createVehicleItem(type, null))
                     .clearLore()
                     .build());
 
-            ConfigurationSection section = getConfig().getConfigurationSection("shop.vehicles." + type.toConfigPath());
+            String pathName = type.toPath();
+
+            ConfigurationSection section = getConfig().getConfigurationSection("shop.vehicles." + pathName);
             if (section == null) continue;
 
-            ItemStack vehicleItem = new ItemBuilder(createVehicleItem(type.toFilePath(), null))
+            ItemStack vehicleItem = new ItemBuilder(createVehicleItem(type, null))
                     .removeData(vehicleTypeKey)
                     .setLore(Config.SHOP_ITEM_LORE.asStringList())
                     .build();
 
-            List<ItemStack> itemList = new ArrayList<>();
+            List<ShopVehicle> itemList = new ArrayList<>();
 
             for (String key : section.getKeys(false)) {
-                String displayName = getConfig().getString("shop.vehicles." + type.toConfigPath() + "." + key + ".display-name");
-                List<String> customizations = getConfig().getStringList("shop.vehicles." + type.toConfigPath() + "." + key + ".changes");
-                double price = getConfig().getDouble("shop.vehicles." + type.toConfigPath() + "." + key + ".price");
+                String path = "shop.vehicles." + pathName + "." + key + ".";
+
+                String displayName = getConfig().getString(path + "display-name");
+                List<String> customizations = getConfig().getStringList(path + "changes");
+                double price = getConfig().getDouble(path + "price");
 
                 List<String> finalCustomizations;
                 Map<String, Material> customizationChanges = new HashMap<>();
@@ -440,7 +454,7 @@ public final class VehiclesPlugin extends JavaPlugin {
                         Material material = PluginUtils.getOrNull(Material.class, data[1]);
                         if (material == null) continue;
 
-                        String nameFromConfig = getConfig().getString("customizations." + type.toConfigPath() + "." + customizationName.toLowerCase(Locale.ROOT) + ".name");
+                        String nameFromConfig = getConfig().getString("customizations." + pathName + "." + customizationName.toLowerCase(Locale.ROOT) + ".name");
                         finalCustomizations.add(nameFromConfig);
 
                         customizationChanges.put(customizationName, material);
@@ -452,12 +466,14 @@ public final class VehiclesPlugin extends JavaPlugin {
                 ItemBuilder builder = new ItemBuilder(vehicleItem);
                 if (displayName != null) builder.setDisplayName(displayName);
 
-                itemList.add(builder
+                ItemStack item = builder
                         .applyMultiLineLore(finalCustomizations, "%customization-on%", getConfig().getString("translations.no-customization"))
                         .setData(saveDataKey, Vehicle.VEHICLE_DATA, data)
                         .setData(moneyKey, PersistentDataType.DOUBLE, price)
                         .replace("%money%", economyExtension != null && economyExtension.isEnabled() ? economyExtension.format(price) : price)
-                        .build());
+                        .build();
+
+                itemList.add(new ShopVehicle(key, item, data));
             }
 
             if (!itemList.isEmpty()) {
@@ -496,14 +512,15 @@ public final class VehiclesPlugin extends JavaPlugin {
         vehicleCrafting.clear();
 
         for (VehicleType type : VehicleType.values()) {
-            String path = "vehicles." + type.toConfigPath() + ".item";
+            String pathName = type.toPath();
+            String path = "vehicles." + pathName + ".item";
             vehicleCrafting.put(type, new Shape(
                     this,
-                    type.toFilePath(),
+                    pathName,
                     getConfig().getBoolean(path + ".crafting.shaped"),
                     getConfig().getStringList(path + ".crafting.ingredients"),
                     getConfig().getStringList(path + ".crafting.shape"),
-                    createVehicleItem(type.toFilePath(), null)));
+                    createVehicleItem(type, null)));
         }
     }
 
@@ -650,18 +667,6 @@ public final class VehiclesPlugin extends JavaPlugin {
         return colors;
     }
 
-    public List<String> getModelList() {
-        File modelsFolder = new File(getModelFolder());
-        if (!modelsFolder.exists()) return Collections.emptyList();
-
-        String[] files = modelsFolder.list((directory, name) -> name.endsWith(".yml"));
-        return files != null ? Arrays.stream(files).map(name -> name.replace(".yml", "")).toList() : Collections.emptyList();
-    }
-
-    public boolean validModel(String name) {
-        return new File(getModelFolder(), name + ".yml").exists();
-    }
-
     public @NotNull String getModelFolder() {
         return getDataFolder() + File.separator + "models";
     }
@@ -691,6 +696,6 @@ public final class VehiclesPlugin extends JavaPlugin {
     }
 
     public String getVehicleTypeFormatted(@NotNull VehicleType type) {
-        return getConfig().getString("translations.vehicle." + type.toConfigPath(), type.name());
+        return getConfig().getString("translations.vehicle." + type.toPath(), type.name());
     }
 }

@@ -258,8 +258,6 @@ public class BlockUtils {
     }
 
     public static @NotNull Location getCorrectLocation(@Nullable UUID driverUUID, VehicleType type, @NotNull Location main, @NotNull StandSettings settings) {
-        Vector offset = new Vector(settings.getXOffset(), settings.getYOffset(), settings.getZOffset());
-
         Location location = main.clone();
 
         Player driver;
@@ -271,7 +269,7 @@ public class BlockUtils {
             location.setYaw(driver.getLocation().getYaw());
         }
 
-        location.add(PluginUtils.offsetVector(offset, location.getYaw(), location.getPitch()));
+        location.add(PluginUtils.offsetVector(settings.getOffset(), location.getYaw(), location.getPitch()));
 
         float extraYaw = settings.getExtraYaw();
         if (extraYaw != 0.0f) location.setYaw(yaw(location.getYaw() + extraYaw));

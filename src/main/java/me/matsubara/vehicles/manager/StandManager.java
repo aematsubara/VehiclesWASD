@@ -1,9 +1,12 @@
 package me.matsubara.vehicles.manager;
 
 import me.matsubara.vehicles.VehiclesPlugin;
+import me.matsubara.vehicles.files.Config;
 import me.matsubara.vehicles.model.stand.PacketStand;
 import me.matsubara.vehicles.vehicle.Vehicle;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -20,6 +23,8 @@ public final class StandManager implements Listener {
 
     private final VehiclesPlugin plugin;
 
+    private static final double BUKKIT_VIEW_DISTANCE = Math.pow(Bukkit.getViewDistance() << 4, 2);
+
     public StandManager(VehiclesPlugin plugin) {
         this.plugin = plugin;
         this.plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -33,6 +38,7 @@ public final class StandManager implements Listener {
 
     @EventHandler
     public void onPlayerTeleport(@NotNull PlayerTeleportEvent event) {
+        if (event.getCause() == VehicleManager.CONFLICT_CAUSE) return; // Ignore dismount teleport?
         handleMovement(event, true);
     }
 
@@ -61,32 +67,38 @@ public final class StandManager implements Listener {
         handleStandRender(player, player.getLocation(), true);
     }
 
-    public void handleStandRender(@NotNull Player player, Location location, boolean isSpawn) {
+    public boolean isInRange(@NotNull Location location, Location check) {
+        double distance = Config.RENDER_DISTANCE.asDouble();
+        double distanceSquared = Math.min(distance * distance, BUKKIT_VIEW_DISTANCE);
+
+        World world = location.getWorld();
+        if (world == null) return false;
+
+        return world.equals(check.getWorld())
+                && location.distanceSquared(check) <= distanceSquared;
+    }
+
+    public void handleStandRender(@NotNull Player player, Location location, boolean spawn) {
         for (Vehicle vehicle : plugin.getVehicleManager().getVehicles()) {
             if (vehicle.isDriver(player) || vehicle.isPassenger(player)) continue;
 
-            boolean shouldShow = true;
+            boolean show = isInRange(vehicle.getVelocityStand().getLocation(), location);
+            handleStandRender(player, vehicle.getModel().getStands(), show, spawn);
+        }
+    }
 
-            for (PacketStand stand : vehicle.getModel().getStands()) {
-                if (!stand.isInRange(location)) shouldShow = false;
+    private void handleStandRender(Player player, @NotNull Collection<PacketStand> stands, boolean show, boolean spawn) {
+        for (PacketStand stand : stands) {
+            if (show) {
+                if (stand.isIgnored(player) || spawn) {
+                    stand.spawn(player, true);
+                }
+                continue;
             }
 
-            // Show/hide model stands.
-            handleStandRender(player, vehicle.getModel().getStands(), shouldShow, isSpawn);
-        }
-    }
-
-    private void handleStandRender(Player player, @NotNull Collection<PacketStand> stands, boolean shouldShow, boolean isSpawn) {
-        for (PacketStand stand : stands) {
-            handleStandRender(player, stand, shouldShow, isSpawn);
-        }
-    }
-
-    private void handleStandRender(Player player, PacketStand stand, boolean shouldShow, boolean isSpawn) {
-        if (shouldShow) {
-            if (stand.isIgnored(player) || isSpawn) stand.spawn(player, true);
-        } else {
-            if (!stand.isIgnored(player)) stand.destroy(player);
+            if (!stand.isIgnored(player)) {
+                stand.destroy(player);
+            }
         }
     }
 }

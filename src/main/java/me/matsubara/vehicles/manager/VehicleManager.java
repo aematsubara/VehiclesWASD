@@ -42,10 +42,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.*;
+import org.bukkit.event.entity.EntityCombustEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityEvent;
+import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -74,11 +78,12 @@ public class VehicleManager implements Listener {
     private final Set<UUID> conflictTeleport = new HashSet<>();
     private final Map<UUID, KeybindTask> keybindTasks = new ConcurrentHashMap<>();
 
-    private static final Material[] ARROWS = Tag.ITEMS_ARROWS.getValues().toArray(Material[]::new);
-    private static final List<String> FILTER_TYPES = List.of("WHITELIST", "BLACKLIST");
-    private static final PlayerTeleportEvent.TeleportCause CONFLICT_CAUSE = XReflection.supports(19, 3) ?
+    public static final PlayerTeleportEvent.TeleportCause CONFLICT_CAUSE = XReflection.supports(19, 3) ?
             PlayerTeleportEvent.TeleportCause.DISMOUNT :
             PlayerTeleportEvent.TeleportCause.UNKNOWN;
+
+    private static final Material[] ARROWS = Tag.ITEMS_ARROWS.getValues().toArray(Material[]::new);
+    private static final List<String> FILTER_TYPES = List.of("WHITELIST", "BLACKLIST");
 
     public VehicleManager(VehiclesPlugin plugin) {
         this.plugin = plugin;
@@ -187,8 +192,6 @@ public class VehicleManager implements Listener {
             vehicle.removeFromChunk(); // Remove vehicle from chunk BEFORE removing velocity stand.
         }
 
-        Location dropAt = picker != null ? vehicle.getBox().getCenter().toLocation(picker.getWorld()) : null;
-
         List<Pair<ArmorStand, StandSettings>> chairs = vehicle.getChairs();
         chairs.stream().map(Pair::getKey).forEach(vehicle::clearChair);
         chairs.clear();
@@ -202,10 +205,11 @@ public class VehicleManager implements Listener {
 
         if (picker == null) return;
 
+        Location dropAt = vehicle.getBox().getCenter().toLocation(picker.getWorld());
         picker.getWorld()
                 .dropItemNaturally(
                         dropAt,
-                        plugin.createVehicleItem(model.getName(), vehicle.createSaveData()),
+                        plugin.createVehicleItem(vehicle.getType(), vehicle.createSaveData()),
                         temp -> Vehicle.LISTEN_MODE_IGNORE.accept(plugin, temp))
                 .setThrower(picker.getUniqueId());
     }
@@ -229,7 +233,7 @@ public class VehicleManager implements Listener {
         // This may be null if it's a new vehicle.
         UUID modelUniqueId = data.modelUniqueId();
 
-        Model model = new Model(plugin, modelName, modelUniqueId, location, Config.RENDER_DISTANCE.asInt());
+        Model model = new Model(plugin, modelName, modelUniqueId, location);
 
         Vehicle vehicle;
         if (type == VehicleType.BOAT) {
@@ -325,24 +329,6 @@ public class VehicleManager implements Listener {
         cancellable.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerDeath(@NotNull PlayerDeathEvent event) {
-        if (!Config.FOLLOW_PLAYER_TELEPORT.asBool()) return;
-
-        Player player = event.getEntity();
-
-        Vehicle vehicle = getVehicleByEntity(player);
-        if (vehicle == null) return;
-
-        // Remove the vehicle.
-        vehicles.remove(vehicle);
-        removeVehicle(vehicle, null, true);
-
-        // Save the vehicle on the player.
-        PersistentDataContainer container = player.getPersistentDataContainer();
-        container.set(plugin.getSaveDataKey(), Vehicle.VEHICLE_DATA, vehicle.createSaveData());
-    }
-
     @EventHandler
     public void onPlayerRespawn(@NotNull PlayerRespawnEvent event) {
         Player player = event.getPlayer();
@@ -377,40 +363,6 @@ public class VehicleManager implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerTeleport(@NotNull PlayerTeleportEvent event) {
         handleTeleportConflict(event);
-
-        if (!Config.FOLLOW_PLAYER_TELEPORT.asBool()) return;
-        if (event.getCause() == CONFLICT_CAUSE) return;
-
-        Location to = event.getTo();
-        if (to == null) return;
-
-        World world = to.getWorld();
-        if (world == null) return;
-
-        Player player = event.getPlayer();
-
-        Vehicle vehicle = getVehicleByEntity(player);
-        if (vehicle == null) return;
-
-        // Remove the vehicle.
-        vehicles.remove(vehicle);
-        removeVehicle(vehicle, null, true);
-
-        // Load the chunk if necessary.
-        Chunk chunk = world.getChunkAt(to);
-        chunk.load();
-        chunk.getEntities();
-
-        // Adjust the location pitch to prevent issues.
-        Location destination = to.clone();
-        destination.setPitch(0.0f);
-
-        // TODO: What should we do if the destination is not allowed? (WG, WorldBorder)
-
-        // After creating the vehicle, we need to show the model to the player here.
-        Vehicle newVehicle = createVehicle(null, vehicle.createSaveData(destination));
-        plugin.getServer().getScheduler().runTask(plugin,
-                () -> newVehicle.getModel().getStands().forEach(stand -> stand.spawn(player, true)));
     }
 
     @EventHandler // We can keep using this event if we stay in 1.20.1.
@@ -436,7 +388,8 @@ public class VehicleManager implements Listener {
             }
         }
 
-        if (!entity.isDead() && !conflictTeleport.remove(entityUUID)) {
+        boolean valid = entity.isValid();
+        if (valid && !conflictTeleport.remove(entityUUID)) {
             handleDismountLocation(entity, vehicle, false);
         }
 
@@ -463,6 +416,29 @@ public class VehicleManager implements Listener {
         if (Config.ACTION_BAR_ENABLED.asBool()) {
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR); // Clear message.
         }
+
+        if (!valid || !driver || !Config.PICK_UP_ON_DISMOUNT.asBool()) return;
+
+        saveVehicleOnInventory(player, vehicle);
+    }
+
+    public void saveVehicleOnInventory(@NotNull Player player, Vehicle vehicle) {
+        Messages messages = plugin.getMessages();
+
+        PlayerInventory inventory = player.getInventory();
+        if (inventory.firstEmpty() == -1) {
+            messages.send(player, Messages.Message.PICK_NOT_ENOUGH_SPACE);
+            return;
+        }
+
+        // Remove the vehicle.
+        vehicles.remove(vehicle);
+        removeVehicle(vehicle, null, true);
+
+        ItemStack item = plugin.createVehicleItem(vehicle.getType(), vehicle.createSaveData());
+        inventory.addItem(item);
+
+        messages.send(player, Messages.Message.PICK_SAVED_IN_INVENTORY);
     }
 
     private void removeCooldown(Player player,
@@ -557,12 +533,14 @@ public class VehicleManager implements Listener {
             return;
         }
 
+        List<Block> sight = player.getLineOfSight(null, 5);
+
         if (block == null) {
             Block temp;
-            if (interactedWithFluid(player, Material.LAVA) != null) {
+            if (interactedWithFluid(sight, Material.LAVA) != null) {
                 messages.send(player, Messages.Message.PLACE_NOT_ON_LAVA);
                 return;
-            } else if ((temp = interactedWithFluid(player, Material.WATER)) != null) {
+            } else if ((temp = interactedWithFluid(sight, Material.WATER)) != null) {
                 if (isBoat) {
                     block = temp;
                     waterReplaced = true;
@@ -573,14 +551,14 @@ public class VehicleManager implements Listener {
             } else return; // Interacted with air.
         }
 
-        if (interactedWithFluid(player, Material.LAVA) != null) {
+        if (interactedWithFluid(sight, Material.LAVA) != null) {
             messages.send(player, Messages.Message.PLACE_NOT_ON_LAVA);
             return;
         }
 
         if (!waterReplaced) {
             Block temp;
-            if ((temp = interactedWithFluid(player, Material.WATER)) != null) {
+            if ((temp = interactedWithFluid(sight, Material.WATER)) != null) {
                 if (isBoat) {
                     block = temp;
                 } else {
@@ -713,12 +691,10 @@ public class VehicleManager implements Listener {
         return Tag.DOORS.isTagged(type) || (Tag.FENCE_GATES.isTagged(type) && block.getBlockData() instanceof Gate gate && gate.isOpen());
     }
 
-    private @Nullable Block interactedWithFluid(@NotNull Player player, Material... materials) {
-        for (Block block : player.getLineOfSight(null, 5)) {
+    private @Nullable Block interactedWithFluid(@NotNull List<Block> blocks, Material check) {
+        for (Block block : blocks) {
             Material type = block.getType();
-            for (Material material : materials) {
-                if (material == type) return block;
-            }
+            if (check == type) return block;
         }
         return null;
     }
@@ -800,19 +776,22 @@ public class VehicleManager implements Listener {
     }
 
     private @Nullable Triple<String, Boolean, Integer> getCustomizationOverride(String customizationName, Set<TypeTarget> typeTargets, @NotNull VehicleType type) {
-        ConfigurationSection section = plugin.getConfig().getConfigurationSection("customizations." + type.toConfigPath());
+        String pathName = type.toPath();
+        FileConfiguration config = plugin.getConfig();
+
+        ConfigurationSection section = config.getConfigurationSection("customizations." + pathName);
         if (section == null) return null;
 
         for (String partName : section.getKeys(false)) {
             if (!partName.equalsIgnoreCase(customizationName)) continue;
 
-            String configPath = customizationName.toLowerCase(Locale.ROOT);
-            String nameFromConfig = plugin.getConfig().getString("customizations." + type.toConfigPath() + "." + configPath + ".name");
+            String path = "customizations." + pathName + "." + customizationName.toLowerCase(Locale.ROOT) + ".";
+            String nameFromConfig = config.getString(path + "name");
 
-            int priority = plugin.getConfig().getInt("customizations." + type.toConfigPath() + "." + configPath + ".priority", Integer.MAX_VALUE);
+            int priority = config.getInt(path + "priority", Integer.MAX_VALUE);
 
             boolean filled = false;
-            List<String> items = plugin.getConfig().getStringList("customizations." + type.toConfigPath() + "." + configPath + ".items");
+            List<String> items = config.getStringList(path + "items");
             if (!items.isEmpty()) {
                 for (String item : items) {
                     plugin.getTypeTargetManager().fillTargets(null, typeTargets, item);
@@ -850,5 +829,12 @@ public class VehicleManager implements Listener {
 
             stand.setEquipment(new ItemStack(newType), slot);
         }
+    }
+
+    public void startPreview(@NotNull Player player, VehicleData data) {
+        PreviewTick current = previews.remove(player.getUniqueId());
+        if (current != null && !current.isCancelled()) current.cancel();
+
+        new PreviewTick(plugin, player, data).runTaskTimer(plugin, 1L, 1L);
     }
 }

@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Getter
@@ -41,19 +42,15 @@ public final class Model {
     // List with all stands associated with a name.
     private final List<PacketStand> stands = new ArrayList<>();
 
-    // Render distance of this model.
-    private int renderDistance;
-
     // File and configuration.
     private File file;
     private FileConfiguration configuration;
 
-    public Model(VehiclesPlugin plugin, String name, @Nullable UUID oldUniqueId, Location location, int renderDistance) {
+    public Model(VehiclesPlugin plugin, String name, @Nullable UUID oldUniqueId, Location location) {
         this.plugin = plugin;
         this.modelUniqueId = (oldUniqueId != null) ? oldUniqueId : UUID.randomUUID();
         this.name = name;
         this.location = location;
-        this.renderDistance = renderDistance;
 
         loadFile();
         loadModel();
@@ -71,7 +68,7 @@ public final class Model {
         settings.setInvisible(true);
         settings.setExtraYaw(0.0f);
 
-        Vector offset = new Vector(0.0d, chair.getSettings().getYOffset() + 0.49375d, 0.0d);
+        Vector offset = new Vector(0.0d, chair.getSettings().getOffset().getY() + 0.49375d, 0.0d);
         settings.setOffset(offset);
 
         Location at = location.clone().add(PluginUtils.offsetVector(offset, location.getYaw(), location.getPitch()));
@@ -79,9 +76,9 @@ public final class Model {
     }
 
     private void loadFile() {
-        String fileName = name + ".yml";
+        Map<String, Pair<File, FileConfiguration>> models = plugin.getVehicleManager().getModels();
 
-        Pair<File, FileConfiguration> pair = plugin.getVehicleManager().getModels().computeIfAbsent(fileName, name -> {
+        Pair<File, FileConfiguration> pair = models.computeIfAbsent(name + ".yml", name -> {
             File temp = new File(plugin.getModelFolder(), name);
             return Pair.of(temp, YamlConfiguration.loadConfiguration(temp));
         });
@@ -104,7 +101,7 @@ public final class Model {
         settings.setPartName(name);
 
         // Spawn model but don't show it to anyone, we want to apply customizations first.
-        stands.add(new PacketStand(finalLocation, settings, false, renderDistance));
+        stands.add(new PacketStand(finalLocation, settings, false));
     }
 
     public void kill() {

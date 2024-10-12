@@ -51,8 +51,8 @@ public final class CustomizationGUI implements InventoryHolder {
                     .contains(keyword.toLowerCase(Locale.ROOT)));
         }
 
-        updateInventory();
         player.openInventory(inventory);
+        updateInventory();
     }
 
     public void updateInventory() {

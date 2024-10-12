@@ -200,7 +200,6 @@ public final class ItemBuilder {
         return this;
     }
 
-    @SuppressWarnings("deprecation")
     public ItemBuilder setBasePotionData(PotionType type) {
         if (!(item.getItemMeta() instanceof PotionMeta meta)) return this;
 
@@ -218,7 +217,6 @@ public final class ItemBuilder {
         return this;
     }
 
-    @SuppressWarnings("deprecation")
     public ItemBuilder addPattern(int colorId, String patternCode) {
         return addPattern(DyeColor.values()[colorId], PatternType.getByIdentifier(patternCode));
     }

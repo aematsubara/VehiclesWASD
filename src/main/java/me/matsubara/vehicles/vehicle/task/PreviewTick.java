@@ -59,7 +59,7 @@ public class PreviewTick extends BukkitRunnable {
         VehicleType type = data.type();
 
         Location targetLocation = getPlayerTargetLocation(player);
-        this.model = new Model(plugin, type.toFilePath(), null, targetLocation, Config.RENDER_DISTANCE.asInt());
+        this.model = new Model(plugin, type.toPath(), null, targetLocation);
         this.data = data;
         this.center = model.getByName("CENTER");
 
@@ -74,8 +74,7 @@ public class PreviewTick extends BukkitRunnable {
         }
 
         if (center != null) {
-            StandSettings settings = center.getSettings();
-            centerStands(targetLocation, settings.getXOffset(), settings.getYOffset(), settings.getZOffset());
+            centerStands(targetLocation, center.getSettings().getOffset());
         }
 
         // Only show to this player!
@@ -88,18 +87,13 @@ public class PreviewTick extends BukkitRunnable {
         plugin.getVehicleManager().getPreviews().put(player.getUniqueId(), this);
     }
 
-    private void centerStands(Location location, double xOffset, double yOffset, double zOffset) {
+    private void centerStands(Location location, Vector offset) {
         for (PacketStand stand : model.getStands()) {
-            StandSettings otherSettings = stand.getSettings();
+            StandSettings settings = stand.getSettings();
+            Vector temp = settings.getOffset().subtract(offset);
 
-            otherSettings.setXOffset(otherSettings.getXOffset() - xOffset);
-            otherSettings.setYOffset(otherSettings.getYOffset() - yOffset);
-            otherSettings.setZOffset(otherSettings.getZOffset() - zOffset);
-
-            Vector offset = new Vector(otherSettings.getXOffset(), otherSettings.getYOffset(), otherSettings.getZOffset());
-
-            Location modified = location.clone().add(PluginUtils.offsetVector(offset, location.getYaw(), location.getPitch()));
-            modified.setYaw(BlockUtils.yaw(modified.getYaw() + stand.getSettings().getExtraYaw()));
+            Location modified = location.clone().add(PluginUtils.offsetVector(temp, location.getYaw(), location.getPitch()));
+            modified.setYaw(BlockUtils.yaw(modified.getYaw() + settings.getExtraYaw()));
 
             stand.setLocation(modified);
         }

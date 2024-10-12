@@ -8,6 +8,7 @@ import io.netty.buffer.Unpooled;
 import lombok.Getter;
 import lombok.Setter;
 import me.matsubara.vehicles.VehiclesPlugin;
+import me.matsubara.vehicles.manager.StandManager;
 import me.matsubara.vehicles.util.Reflection;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.Bukkit;
@@ -42,9 +43,6 @@ public final class PacketStand {
     // Set with the unique id of the players who aren't seeing the entity due to the distance.
     private final Set<UUID> ignored = new HashSet<>();
 
-    // The render distance taken from the model.
-    private final double renderDistance;
-
     // Entity id.
     private final int entityId;
 
@@ -63,7 +61,6 @@ public final class PacketStand {
     // Version of the server.
     private static final int VERSION = XReflection.MINOR_NUMBER;
 
-    private static final double BUKKIT_VIEW_DISTANCE = Math.pow(Bukkit.getViewDistance() << 4, 2);
     private final static char[] ALPHABET = "abcdefghijklmnopqrstuvwxyz".toCharArray();
 
     // Classes.
@@ -369,22 +366,15 @@ public final class PacketStand {
         }
     }
 
-    public PacketStand(@NotNull Location location, StandSettings settings, boolean showEveryone, int renderDistance) {
+    public PacketStand(@NotNull Location location, StandSettings settings, boolean showEveryone) {
         Validate.notNull(location.getWorld(), "World can't be null.");
 
         setLocation(location);
-        this.renderDistance = Math.min(renderDistance * renderDistance, BUKKIT_VIEW_DISTANCE);
         this.entityId = SpigotReflectionUtil.generateEntityId();
         this.entityUniqueId = UUID.randomUUID();
         this.settings = settings;
 
         if (showEveryone) spawn();
-    }
-
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public boolean isInRange(@NotNull Location location) {
-        if (!this.location.getWorld().equals(location.getWorld())) return false;
-        return this.location.distanceSquared(location) <= renderDistance;
     }
 
     public void spawn() {
@@ -398,7 +388,9 @@ public final class PacketStand {
     }
 
     public void spawn(@NotNull Player player, boolean ignoreRangeCheck) {
-        if (!ignoreRangeCheck && !isInRange(player.getLocation())) return;
+        StandManager manager = plugin.getStandManager();
+        if (!ignoreRangeCheck && !manager.isInRange(location, player.getLocation())) return;
+
         if (!plugin.isEnabled()) return;
 
         ignored.remove(player.getUniqueId());
