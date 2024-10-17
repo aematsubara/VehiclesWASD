@@ -11,6 +11,7 @@ commands:
   no-permission: "&cYou don't have the required permission (%permission%) to execute this command!"
   # %alias% - the alias of the command used (vehicleswasd/vwasd/vw).
   invalid-command: "&cThat command doesn't exist or was used incorrectly! Do /%alias% to see all commands."
+  player-not-found: "&cThe player could not be found!"
   shop:
     # %alias% - the alias of the command used (vehicleswasd/vwasd/vw).
     economy-disabled: "&cEconomy is disabled, use /%alias% give <type> to get a vehicle."
@@ -37,7 +38,6 @@ commands:
   give:
     specify-type: "&cYou must specify a vehicle type!"
     type-not-found: "&cThis type of vehicle doesn't exist!"
-    player-not-found: "&cThe player could not be found!"
   vehicles:
     empty: "&cYour vehicles could not be found!"
   preview:

@@ -527,7 +527,7 @@ public final class InventoryListener implements Listener {
                             return CLOSE_RESPONSE;
                         }
 
-                        Player newOwner = Bukkit.getPlayer(text);
+                        Player newOwner = Bukkit.getPlayerExact(text);
                         if (newOwner != null && newOwner.isOnline()) {
                             if (vehicle.isOwner(newOwner)) {
                                 messages.send(clicker, Messages.Message.TRANSFER_SAME_OWNER);

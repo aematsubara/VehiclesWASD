@@ -258,10 +258,7 @@ public abstract class Vehicle implements InventoryHolder {
                 });
     }
 
-    public void clearChair(LivingEntity living) {
-        if (living instanceof InventoryHolder holder) {
-            holder.getInventory().clear();
-        }
+    public void clearChair(@NotNull LivingEntity living) {
         living.eject();
         living.remove();
     }

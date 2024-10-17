@@ -32,6 +32,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 import org.patheloper.api.pathing.Pathfinder;
 import org.patheloper.api.pathing.configuration.PathfinderConfiguration;
 import org.patheloper.api.pathing.filter.PathFilter;
@@ -63,11 +64,11 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             "&e/vwasd shop &f- &7Opens the vehicle shop.",
             "&8(requires Vault and an economy provider like EssentialsX, CMI, etc...)",
             "&e/vwasd give <type> [player] &f- &7Gives a vehicle.",
-            "&e/vwasd preview <type> [shop-id] &f- &7Preview a vehicle.",
+            "&e/vwasd preview <type> <none/shop-id> [player] &f- &7Preview a vehicle.",
             "&e/vwasd vehicles &f- &7Manage your vehicles.",
             "&e/vwasd gps <home> &f- &7Automatically drives to a home.",
             "&8(requires EssentialsX)",
-            "&e/vwasd fuel &f- &7Gives a fuel can.",
+            "&e/vwasd fuel [player] &f- &7Gives a fuel can.",
             "&8----------------------------------------").map(PluginUtils::translate).toList();
     private static final Set<String> TYPE_LIST_USER = Set.of("give", "preview");
 
@@ -88,18 +89,18 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
 
         Messages messages = plugin.getMessages();
 
-        String subCommand;
-        boolean noArgs = args.length == 0;
+        String sub;
+        boolean empty = args.length == 0;
 
-        if (noArgs || args.length > 3 || !COMMAND_ARGS.contains((subCommand = args[0]).toLowerCase(Locale.ROOT))) {
-            if (noArgs) HELP.forEach(sender::sendMessage);
+        if (empty || args.length > 4 || !COMMAND_ARGS.contains((sub = args[0]).toLowerCase(Locale.ROOT))) {
+            if (empty) HELP.forEach(sender::sendMessage);
             else messages.send(sender, Messages.Message.INVALID_COMMAND, line -> line.replace("%alias%", label));
             return true;
         }
 
         VehicleManager manager = plugin.getVehicleManager();
 
-        if (subCommand.equalsIgnoreCase("reload")) {
+        if (sub.equalsIgnoreCase("reload")) {
             if (notAllowed(sender, "vehicleswasd.reload")) return true;
 
             messages.send(sender, Messages.Message.RELOADING);
@@ -148,7 +149,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        if (subCommand.equalsIgnoreCase("shop")) {
+        if (sub.equalsIgnoreCase("shop")) {
             Player player = isPlayer(sender);
             if (player == null) return true;
 
@@ -167,7 +168,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             new ShopGUI(plugin, player, manager.getSelectedType(player));
         }
 
-        if (subCommand.equalsIgnoreCase("gps")) {
+        if (sub.equalsIgnoreCase("gps")) {
             Player player = isPlayer(sender);
             if (player == null) return true;
 
@@ -264,19 +265,17 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             manager.getRunningPaths().put(playerUUID, result);
         }
 
-        if (subCommand.equalsIgnoreCase("fuel")) {
-            Player player = isPlayer(sender);
-            if (player == null) return true;
+        if (sub.equalsIgnoreCase("fuel")) {
+            Player target = getTargetPlayer(sender, args, 2, "fuel");
+            if (target == null) return true;
 
-            if (notAllowed(player, "vehicleswasd.fuel")) return true;
-
-            player.getInventory().addItem(Config.PREMIUM_FUEL.asItemBuilder()
+            target.getInventory().addItem(Config.PREMIUM_FUEL.asItemBuilder()
                     .setData(plugin.getFuelItemKey(), PersistentDataType.INTEGER, 1)
                     .build());
             return true;
         }
 
-        if (subCommand.equalsIgnoreCase("vehicles")) {
+        if (sub.equalsIgnoreCase("vehicles")) {
             Player player = isPlayer(sender);
             if (player == null) return true;
 
@@ -290,11 +289,9 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        if (subCommand.equalsIgnoreCase("preview")) {
-            Player player = isPlayer(sender);
-            if (player == null) return true;
-
-            // We don't need a permission to use this command since the same function can be used in the store.
+        if (sub.equalsIgnoreCase("preview")) {
+            Player target = getTargetPlayer(sender, args, 4, "preview");
+            if (target == null) return true;
 
             if (args.length == 1) {
                 messages.send(sender, Messages.Message.PREVIEW_SPECIFY_TYPE);
@@ -307,21 +304,23 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
                 return true;
             }
 
-            boolean shopProvided = args.length == 3;
+            boolean shopProvided = args.length >= 3;
             VehicleData data = shopProvided ? getPreviewData(type, args) : null;
 
-            if (shopProvided && data == null) {
+            if (shopProvided && data == null && !args[2].equalsIgnoreCase("none")) {
                 messages.send(sender, Messages.Message.PREVIEW_SHOP_NOT_FOUND);
             }
 
             VehicleData temp = data != null ? data : VehicleData.createDefault(null, null, null, type);
-            manager.startPreview(player, temp);
+            manager.startPreview(target, temp);
 
             return true;
         }
 
-        if (!subCommand.equalsIgnoreCase("give")) return true;
-        if (notAllowed(sender, "vehicleswasd.give")) return true;
+        if (!sub.equalsIgnoreCase("give")) return true;
+
+        Player target = getTargetPlayer(sender, args, 3, "give");
+        if (target == null) return true;
 
         if (args.length == 1) {
             messages.send(sender, Messages.Message.GIVE_SPECIFY_TYPE);
@@ -334,14 +333,44 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        Player target = args.length == 3 ? Bukkit.getPlayer(args[2]) : sender instanceof Player player ? player : null;
-        if (target == null) {
-            messages.send(sender, Messages.Message.GIVE_PLAYER_NOT_FOUND);
-            return true;
-        }
-
         target.getInventory().addItem(plugin.createVehicleItem(type, null));
         return true;
+    }
+
+    private @Nullable Player getTargetPlayer(CommandSender sender, @NotNull String @NotNull [] args, int at, String action) {
+        boolean other = args.length >= at;
+
+        Player target;
+        if (other) {
+            target = Bukkit.getPlayerExact(args[at - 1]);
+        } else if (sender instanceof Player player) {
+            target = player;
+        } else target = null;
+
+        String extra = other && !sender.equals(target) ? ".other" : "";
+
+        String permission = "vehicleswasd." + action + extra;
+        if (notAllowed(sender, permission)) return null;
+
+        if (target != null) return target;
+
+        plugin.getMessages().send(sender, Messages.Message.PLAYER_NOT_FOUND);
+        return null;
+    }
+
+    private @NotNull @Unmodifiable List<String> getShopVehicles(@NotNull String typeName, String token) {
+        VehicleType type = PluginUtils.getOrNull(VehicleType.class, typeName.toUpperCase(Locale.ROOT));
+        if (type == null) return Collections.emptyList();
+
+        List<ShopVehicle> vehicles = getShopVehicles(type);
+        if (vehicles == null) return Collections.emptyList();
+
+        List<String> complete = Stream.concat(
+                        Stream.of("none"),
+                        vehicles.stream().map(ShopVehicle::shopId))
+                .toList();
+
+        return StringUtil.copyPartialMatches(token, complete, new ArrayList<>());
     }
 
     private @Nullable List<ShopVehicle> getShopVehicles(VehicleType type) {
@@ -389,22 +418,27 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             return StringUtil.copyPartialMatches(args[0], COMMAND_ARGS, new ArrayList<>());
         }
 
+        if (args.length == 2 && args[0].equalsIgnoreCase("fuel")) {
+            return null; // Return player list.
+        }
+
         if (args.length == 2 && TYPE_LIST_USER.contains(args[0])) {
             return StringUtil.copyPartialMatches(args[1], VALID_TYPES, new ArrayList<>());
         }
 
-        if (args.length == 3 && TYPE_LIST_USER.contains(args[0]) && VALID_TYPES.contains(args[1])) {
+        if (args.length == 3
+                && TYPE_LIST_USER.contains(args[0])
+                && VALID_TYPES.contains(args[1])) {
             if (args[0].equalsIgnoreCase("give")) {
                 return null; // Return player list.
             }
+            return getShopVehicles(args[1], args[2]);
+        }
 
-            VehicleType type = PluginUtils.getOrNull(VehicleType.class, args[1].toUpperCase(Locale.ROOT));
-            List<ShopVehicle> vehicles;
-            if (type != null && (vehicles = getShopVehicles(type)) != null) {
-                return StringUtil.copyPartialMatches(args[2], vehicles.stream()
-                        .map(ShopVehicle::shopId)
-                        .toList(), new ArrayList<>());
-            }
+        if (args.length == 4
+                && args[0].equalsIgnoreCase("preview")
+                && VALID_TYPES.contains(args[1])) {
+            return null; // Return player list.
         }
 
         if (args.length == 2

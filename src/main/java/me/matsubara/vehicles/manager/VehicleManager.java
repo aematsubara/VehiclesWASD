@@ -193,7 +193,7 @@ public class VehicleManager implements Listener {
         }
 
         List<Pair<ArmorStand, StandSettings>> chairs = vehicle.getChairs();
-        chairs.stream().map(Pair::getKey).forEach(vehicle::clearChair);
+        chairs.stream().map(Pair::getKey).toList().forEach(vehicle::clearChair);
         chairs.clear();
 
         vehicle.getVelocityStand().remove();
