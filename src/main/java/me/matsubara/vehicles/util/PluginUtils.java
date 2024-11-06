@@ -38,6 +38,8 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -258,6 +260,10 @@ public final class PluginUtils {
                 || type.name().startsWith("LONG_")
                 || type.name().startsWith("STRONG_")
                 || type.getEffectType() == null;
+    }
+
+    public static double fixedDouble(double value) {
+        return new BigDecimal(value).setScale(1, RoundingMode.HALF_UP).doubleValue();
     }
 
     public static <T extends Enum<T>> T getOrNull(Class<T> clazz, String name) {

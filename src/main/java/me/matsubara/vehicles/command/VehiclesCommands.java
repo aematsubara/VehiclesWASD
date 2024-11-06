@@ -1,5 +1,6 @@
 package me.matsubara.vehicles.command;
 
+import com.google.common.collect.Lists;
 import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.data.ShopVehicle;
 import me.matsubara.vehicles.files.Config;
@@ -18,6 +19,8 @@ import me.matsubara.vehicles.vehicle.gps.filter.DangerousMaterialsFilter;
 import me.matsubara.vehicles.vehicle.gps.filter.WalkableFilter;
 import me.matsubara.vehicles.vehicle.gps.filter.WorldBorderFilter;
 import me.matsubara.vehicles.vehicle.type.Generic;
+import net.md_5.bungee.api.chat.*;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -55,8 +58,9 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             new PassablePathFilter(),
             new DangerousMaterialsFilter(EnumSet.of(Material.CACTUS, Material.LAVA), 3));
 
+    private static final List<String> NONE = List.of("none");
     private static final List<String> VALID_TYPES = Stream.of(VehicleType.values()).map(VehicleType::toPath).toList();
-    private static final List<String> COMMAND_ARGS = List.of("reload", "shop", "give", "gps", "fuel", "preview", "vehicles");
+    private static final List<String> COMMAND_ARGS = List.of("reload", "shop", "give", "gps", "fuel", "preview", "vehicles", "customization");
     private static final List<String> HELP = Stream.of(
             "&8----------------------------------------",
             "&9&lVehiclesWASD &f&oCommands &c<required> | [optional]",
@@ -69,6 +73,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             "&e/vwasd gps <home> &f- &7Automatically drives to a home.",
             "&8(requires EssentialsX)",
             "&e/vwasd fuel [player] &f- &7Gives a fuel can.",
+            "&e/vswad customization &f- &7Copy customizations from the current vehicle.",
             "&8----------------------------------------").map(PluginUtils::translate).toList();
     private static final Set<String> TYPE_LIST_USER = Set.of("give", "preview");
 
@@ -85,7 +90,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (notAllowed(sender, "vehicleswasd.help")) return true;
+        if (notAllowed(sender, "vehicleswasd.command.help")) return true;
 
         Messages messages = plugin.getMessages();
 
@@ -100,8 +105,48 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
 
         VehicleManager manager = plugin.getVehicleManager();
 
+        if (sub.equalsIgnoreCase("customization")) {
+            Player player = isPlayer(sender);
+            if (player == null) return true;
+
+            if (notAllowed(player, "vehicleswasd.command.customization")) return true;
+
+            Vehicle vehicle = manager.getVehicleByEntity(player);
+            if (vehicle == null) {
+                messages.send(player, Messages.Message.CUSTOMIZATION_NOT_DRIVING);
+                return true;
+            }
+
+            List<String> list = vehicle.getCustomizationChanges().entrySet().stream()
+                    .map(entry -> entry.getKey() + ":" + entry.getValue().name())
+                    .toList();
+
+            if (list.isEmpty()) {
+                messages.send(player, Messages.Message.CUSTOMIZATION_NO_CUSTOMIZATIONS);
+                return true;
+            }
+
+            String click = String.join("\n", Lists.asList("changes:", list.stream()
+                    .map(object -> "  - " + object)
+                    .toArray(String[]::new)));
+
+            String hover = String.join("\n", messages.getMessages(Messages.Message.CUSTOMIZATION_CLICK_HOVER));
+
+            Player.Spigot spigot = player.spigot();
+            for (String line : messages.getMessages(Messages.Message.CUSTOMIZATION_CLICK_TO_COPY)) {
+                BaseComponent[] message = new ComponentBuilder()
+                        .append(TextComponent.fromLegacyText(PluginUtils.translate(line)))
+                        .event(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, click))
+                        .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(hover)))
+                        .create();
+                spigot.sendMessage(message);
+            }
+
+            return true;
+        }
+
         if (sub.equalsIgnoreCase("reload")) {
-            if (notAllowed(sender, "vehicleswasd.reload")) return true;
+            if (notAllowed(sender, "vehicleswasd.command.reload")) return true;
 
             messages.send(sender, Messages.Message.RELOADING);
 
@@ -127,7 +172,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
                 plugin.reloadExtraTags();
                 plugin.reloadFuelItems();
                 plugin.reloadBreakBlocks();
-                plugin.reloadCraftings();
+                plugin.reloadRecipes();
 
                 manager.getModels().clear();
 
@@ -153,7 +198,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             Player player = isPlayer(sender);
             if (player == null) return true;
 
-            if (notAllowed(player, "vehicleswasd.shop")) return true;
+            if (notAllowed(player, "vehicleswasd.command.shop")) return true;
 
             EconomyExtension<?> economyExtension = plugin.getEconomyExtension();
             if (economyExtension == null || !economyExtension.isEnabled()) {
@@ -172,7 +217,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             Player player = isPlayer(sender);
             if (player == null) return true;
 
-            if (notAllowed(player, "vehicleswasd.gps")) return true;
+            if (notAllowed(player, "vehicleswasd.command.gps")) return true;
 
             EssentialsExtension essentials = plugin.getEssentialsExtension();
             if (essentials == null) {
@@ -279,7 +324,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             Player player = isPlayer(sender);
             if (player == null) return true;
 
-            if (notAllowed(player, "vehicleswasd.vehicles")) return true;
+            if (notAllowed(player, "vehicleswasd.command.vehicles")) return true;
 
             // We need to reload this here instead of on VehiclesPlugin#onEnabled()
             // because the provider may not be enabled yet.
@@ -349,7 +394,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
 
         String extra = other && !sender.equals(target) ? ".other" : "";
 
-        String permission = "vehicleswasd." + action + extra;
+        String permission = "vehicleswasd.command." + action + extra;
         if (notAllowed(sender, permission)) return null;
 
         if (target != null) return target;
@@ -363,10 +408,10 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
         if (type == null) return Collections.emptyList();
 
         List<ShopVehicle> vehicles = getShopVehicles(type);
-        if (vehicles == null) return Collections.emptyList();
+        if (vehicles == null) return NONE;
 
         List<String> complete = Stream.concat(
-                        Stream.of("none"),
+                        NONE.stream(),
                         vehicles.stream().map(ShopVehicle::shopId))
                 .toList();
 

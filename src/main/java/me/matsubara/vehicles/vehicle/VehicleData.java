@@ -20,6 +20,7 @@ public record VehicleData(
         String base64Storage,
         String shopDisplayName,
         Map<String, Material> customizationChanges,
+        TractorMode tractorMode,
         AtomicBoolean keepWorld) implements ConfigurationSerializable {
 
     public VehicleData(
@@ -31,12 +32,13 @@ public record VehicleData(
             VehicleType type,
             String base64Storage,
             String shopDisplayName,
-            Map<String, Material> customizationChanges) {
-        this(owner, fuel, locked, modelUniqueId, location, type, base64Storage, shopDisplayName, customizationChanges, new AtomicBoolean());
+            Map<String, Material> customizationChanges,
+            TractorMode tractorMode) {
+        this(owner, fuel, locked, modelUniqueId, location, type, base64Storage, shopDisplayName, customizationChanges, tractorMode, new AtomicBoolean());
     }
 
     public static @NotNull VehicleData createDefault(UUID owner, @Nullable UUID modelUniqueId, Location location, VehicleType type) {
-        return new VehicleData(owner, null, true, modelUniqueId, location, type, null, null, null);
+        return new VehicleData(owner, null, true, modelUniqueId, location, type, null, null, null, null);
     }
 
     @Override
@@ -59,6 +61,7 @@ public record VehicleData(
         result.put("customizations", customizationChanges.entrySet().stream()
                 .map(entry -> entry.getKey() + ":" + entry.getValue().name())
                 .toList());
+        if (tractorMode != null) result.put("tractor-mode", tractorMode.name());
 
         return result;
     }
@@ -70,10 +73,7 @@ public record VehicleData(
         boolean locked = (boolean) args.getOrDefault("locked", true);
         UUID modelUniqueId = getUUID(args, "model-unique-id");
 
-        VehicleType type;
-        if (!(args.get("type") instanceof String typeString) || (type = PluginUtils.getOrNull(VehicleType.class, typeString)) == null) {
-            throw new IllegalArgumentException("Serialized data doesn't contain vehicle type!");
-        }
+        VehicleType type = getEnumType(args, VehicleType.class, "type", true);
 
         String base64Storage = args.get("storage") instanceof String storageString ? storageString : null;
         String shopDisplayName = args.get("shop-display-name") instanceof String shopDisplayNameString ? shopDisplayNameString : null;
@@ -83,7 +83,29 @@ public record VehicleData(
             fillCustomizations(list, customizationChanges);
         }
 
-        return new VehicleData(owner, fuel, locked, modelUniqueId, Location.deserialize(args), type, base64Storage, shopDisplayName, customizationChanges);
+        TractorMode tractorMode = getEnumType(args, TractorMode.class, "tractor-mode", false);
+
+        return new VehicleData(owner,
+                fuel,
+                locked,
+                modelUniqueId,
+                Location.deserialize(args),
+                type,
+                base64Storage,
+                shopDisplayName,
+                customizationChanges,
+                tractorMode);
+    }
+
+    private static <T extends Enum<T>> @Nullable T getEnumType(@NotNull Map<String, Object> args, Class<T> clazz, String name, boolean exception) {
+        T value;
+        if (!(args.get(name) instanceof String string) || (value = PluginUtils.getOrNull(clazz, string)) == null) {
+            if (exception) {
+                throw new IllegalArgumentException("Serialized data doesn't contain vehicle {" + name + "}!");
+            }
+            return null;
+        }
+        return value;
     }
 
     private static void fillCustomizations(@NotNull List<?> changes, Map<String, Material> saveTo) {

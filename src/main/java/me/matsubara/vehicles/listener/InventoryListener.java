@@ -9,10 +9,8 @@ import me.matsubara.vehicles.manager.VehicleManager;
 import me.matsubara.vehicles.manager.targets.TypeTarget;
 import me.matsubara.vehicles.model.stand.StandSettings;
 import me.matsubara.vehicles.util.PluginUtils;
-import me.matsubara.vehicles.vehicle.Customization;
-import me.matsubara.vehicles.vehicle.Vehicle;
-import me.matsubara.vehicles.vehicle.VehicleData;
-import me.matsubara.vehicles.vehicle.VehicleType;
+import me.matsubara.vehicles.vehicle.*;
+import me.matsubara.vehicles.vehicle.type.Generic;
 import me.matsubara.vehicles.vehicle.type.Helicopter;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.apache.commons.lang3.tuple.Pair;
@@ -65,11 +63,8 @@ public final class InventoryListener implements Listener {
             return;
         }
 
-        if (holder instanceof Vehicle vehicle) {
-            Inventory storage = vehicle.getInventory();
-            String base64Storage = PluginUtils.itemStackArrayToBase64(storage.getContents());
-            vehicle.setBase64Storage(base64Storage);
-        }
+        // Save inventory when closing.
+        if (holder instanceof Vehicle vehicle) vehicle.saveInventory();
     }
 
     @EventHandler
@@ -442,7 +437,8 @@ public final class InventoryListener implements Listener {
                 data.type(),
                 data.base64Storage(),
                 shopDisplayName,
-                data.customizationChanges());
+                data.customizationChanges(),
+                null);
 
         player.getInventory().addItem(plugin.createVehicleItem(temp.type(), temp));
 
@@ -480,15 +476,17 @@ public final class InventoryListener implements Listener {
         UUID playerUUID = player.getUniqueId();
         boolean isOwner = playerUUID.equals(vehicle.getOwner());
 
+        Messages messages = plugin.getMessages();
+
         if (isCustomItem(current, "lock") || isCustomItem(current, "unlock")) {
             if (!isOwner) return;
 
             if (vehicle.isLocked()) {
                 vehicle.setLocked(false);
-                inventory.setItem(slot, plugin.getItem("gui.vehicle.items.lock").build());
+                inventory.setItem(slot, gui.getItem(player, "lock"));
             } else {
                 vehicle.setLocked(true);
-                inventory.setItem(slot, plugin.getItem("gui.vehicle.items.unlock").build());
+                inventory.setItem(slot, gui.getItem(player, "unlock"));
 
                 // After locking the vehicle, we want to eject the passengers (except the driver and owner).
                 for (Pair<ArmorStand, StandSettings> pair : vehicle.getChairs()) {
@@ -508,6 +506,10 @@ public final class InventoryListener implements Listener {
             if (!isOwner) return;
 
             if (!vehicle.getCustomizations().isEmpty()) {
+                if (Config.CUSTOMIZATIONS_REQUIRE_PERMISSION.asBool() && !player.hasPermission("vehicleswasd.customization")) {
+                    messages.send(player, Messages.Message.CUSTOMIZATION_NO_PERMISSION);
+                    return;
+                }
                 runTask(() -> new CustomizationGUI(plugin, vehicle, player, null));
             }
         } else if (isCustomItem(current, "transfer-ownership")) {
@@ -519,8 +521,6 @@ public final class InventoryListener implements Listener {
 
                         String text = snapshot.getText();
                         Player clicker = snapshot.getPlayer();
-
-                        Messages messages = plugin.getMessages();
 
                         if (text.isEmpty()) {
                             messages.send(clicker, Messages.Message.TRANSFER_SPECIFY_PLAYER);
@@ -564,6 +564,19 @@ public final class InventoryListener implements Listener {
                     .open(player);
         }
 
+        if (vehicle.is(VehicleType.TRACTOR)) {
+            if (isCustomItem(current, "enabled") || isCustomItem(current, "disabled")) {
+                TractorMode mode = TractorMode.values()[slot - VehicleGUI.STATE_START];
+                handleTractorMode(player, gui, mode);
+            } else {
+                for (TractorMode mode : TractorMode.values()) {
+                    if (!isCustomItem(current, mode.toPath())) continue;
+                    handleTractorMode(player, gui, mode);
+                    break;
+                }
+            }
+        }
+
         if (!(vehicle instanceof Helicopter helicopter)) return;
 
         ItemMeta meta = current.getItemMeta();
@@ -596,6 +609,27 @@ public final class InventoryListener implements Listener {
         }
 
         closeInventory(player);
+    }
+
+    private void handleTractorMode(Player player, @NotNull VehicleGUI gui, TractorMode newMode) {
+        if (!(gui.getVehicle() instanceof Generic generic)) return;
+
+        Inventory inventory = gui.getInventory();
+
+        int start = VehicleGUI.STATE_START;
+
+        TractorMode previousMode = generic.getTractorMode();
+        if (previousMode != null) inventory.setItem(
+                start + previousMode.ordinal(),
+                gui.getItem(player, "disabled"));
+
+        // We don't want to enable the same mode again.
+        generic.setTractorMode(previousMode == newMode ? null : newMode);
+        if (generic.getTractorMode() == null) return;
+
+        inventory.setItem(
+                start + newMode.ordinal(),
+                gui.getItem(player, "enabled"));
     }
 
     private void sitOnChair(@NotNull Helicopter helicopter, @NotNull Player player, int chair) {

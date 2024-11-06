@@ -61,7 +61,7 @@ public class PreviewTick extends BukkitRunnable {
         Location targetLocation = getPlayerTargetLocation(player);
         this.model = new Model(plugin, type.toPath(), null, targetLocation);
         this.data = data;
-        this.center = model.getByName("CENTER");
+        this.center = model.getStandByName("CENTER");
 
         VehicleManager manager = plugin.getVehicleManager();
         manager.initCustomizations(model, customizations, type);
@@ -129,8 +129,7 @@ public class PreviewTick extends BukkitRunnable {
 
         for (PacketStand stand : model.getStands()) {
             Location correctLocation = BlockUtils.getCorrectLocation(null, data.type(), location, stand.getSettings());
-            if (stand.getLocation().equals(correctLocation)) continue;
-            stand.teleport(correctLocation);
+            stand.teleport(player, correctLocation);
         }
 
         tick++;

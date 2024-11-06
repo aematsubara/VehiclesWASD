@@ -4,6 +4,7 @@ import com.cryptomorin.xseries.particles.ParticleDisplay;
 import com.cryptomorin.xseries.particles.Particles;
 import com.cryptomorin.xseries.particles.XParticle;
 import com.cryptomorin.xseries.reflection.XReflection;
+import com.github.retrooper.packetevents.util.Vector3f;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Multimap;
@@ -12,6 +13,7 @@ import com.google.common.collect.Multimaps;
 import com.jeff_media.morepersistentdatatypes.DataType;
 import com.jeff_media.morepersistentdatatypes.datatypes.collections.CollectionDataType;
 import com.jeff_media.morepersistentdatatypes.datatypes.serializable.ConfigurationSerializableDataType;
+import io.github.retrooper.packetevents.util.SpigotConversionUtil;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,6 +25,7 @@ import me.matsubara.vehicles.hook.WGExtension;
 import me.matsubara.vehicles.manager.StandManager;
 import me.matsubara.vehicles.manager.VehicleManager;
 import me.matsubara.vehicles.model.Model;
+import me.matsubara.vehicles.model.stand.ModelLocation;
 import me.matsubara.vehicles.model.stand.PacketStand;
 import me.matsubara.vehicles.model.stand.StandSettings;
 import me.matsubara.vehicles.util.BlockUtils;
@@ -54,7 +57,6 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.BoundingBox;
-import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -65,6 +67,7 @@ import java.lang.invoke.MethodType;
 import java.util.List;
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 @Getter
 @Setter
@@ -130,6 +133,7 @@ public abstract class Vehicle implements InventoryHolder {
     private static final String[] VALID_REGISTRIES = {Tag.REGISTRY_ITEMS, Tag.REGISTRY_BLOCKS};
     private static final double WHEEL_ROTATION_SPEED_MULTIPLIER = 5.0d;
 
+    private static final int SAVE_INVENTORY_INTERVAL = 6000;
     private static float VEHICLE_FOV = 85.0f;
     private static final ChatColor TARGET_COLOR = ChatColor.RED;
     private static final MethodHandle SET_CAN_TICK = Reflection.getMethod(ArmorStand.class, "setCanTick", MethodType.methodType(void.class, boolean.class), false, false);
@@ -148,7 +152,8 @@ public abstract class Vehicle implements InventoryHolder {
             VehicleType.KART, new Vector(2.0d, 1.0d, 2.0d),
             VehicleType.PLANE, new Vector(2.5d, 1.0d, 2.5d),
             VehicleType.QUAD, new Vector(2.0d, 1.0d, 2.0d),
-            VehicleType.TANK, new Vector(2.0d, 1.0d, 2.0d));
+            VehicleType.TANK, new Vector(2.0d, 1.0d, 2.0d),
+            VehicleType.TRACTOR, new Vector(2.0d, 1.0d, 2.0d));
 
     // We want ListenMode to ignore our entities.
     public static final BiConsumer<JavaPlugin, Metadatable> LISTEN_MODE_IGNORE = (plugin, living) -> living.setMetadata("RemoveGlow", new FixedMetadataValue(plugin, true));
@@ -198,22 +203,17 @@ public abstract class Vehicle implements InventoryHolder {
             }
         }
 
-        // Cache every stand metadata, except for wheels (otherwise we won't be able to rotate them).
-        for (PacketStand stand : model.getStands()) {
-            if (stand.getSettings().getPartName().startsWith("FRONT_WHEELS_")) continue;
-            stand.setCacheMetadata(true);
-        }
-
         // AFTER finishing customizations, now we can spawn the model.
         model.getStands().forEach(PacketStand::spawn);
 
-        // Fill chairs.
+        // Fill chairs and sort them by name.
         for (PacketStand stand : model.getStands()) {
             String partName = stand.getSettings().getPartName();
             if (!partName.startsWith("CHAIR_")) continue;
 
             chairs.add(spawnChair(world, partName));
         }
+        chairs.sort(Comparator.comparing(pair -> pair.getValue().getPartName()));
     }
 
     private void initStorage(@NotNull VehicleData data) {
@@ -275,7 +275,7 @@ public abstract class Vehicle implements InventoryHolder {
         this.liftingSpeed = (float) config.getDouble(configPath + ".lifting-speed");
         int rows = config.getInt(configPath + ".storage-rows");
         this.storageRows = Math.min(rows, 6);
-        this.maxFuel = (float) config.getDouble(configPath + ".fuel.max-fuel", 0.0f);
+        this.maxFuel = (float) plugin.getMaxFuel(type);
         this.fuelReduction = (float) config.getDouble(configPath + ".fuel.reduction-per-second");
         this.engineSound = new SoundWrapper(config.getString(configPath + ".sounds.engine"));
         this.refuelSound = new SoundWrapper(config.getString(configPath + ".sounds.refuel"));
@@ -287,7 +287,7 @@ public abstract class Vehicle implements InventoryHolder {
     }
 
     public @Nullable Pair<ArmorStand, StandSettings> spawnChair(World world, String chairName) {
-        PacketStand temp = model.getByName(chairName);
+        PacketStand temp = model.getStandByName(chairName);
         if (temp == null) return null;
 
         // Fix visual issue since 1.20.2.
@@ -359,7 +359,8 @@ public abstract class Vehicle implements InventoryHolder {
     }
 
     public boolean isOnLiquid() {
-        return velocityStand.getLocation().getBlock().isLiquid();
+        Material type = velocityStand.getLocation().getBlock().getType();
+        return type == Material.LAVA || (type == Material.WATER && velocityStand.isInWater());
     }
 
     public boolean isMovingBackwards(PlayerInput input) {
@@ -406,8 +407,29 @@ public abstract class Vehicle implements InventoryHolder {
         updateModelLocation(model, velocityStand.getLocation());
         postModelUpdate();
 
+        // Play sounds.
         if (canPlaySound() && tick % 5 == 0) {
             engineSound.playAt(model.getLocation());
+        }
+
+        // Save inventory.
+        if (storageRows > 0 && tick % SAVE_INVENTORY_INTERVAL == 0) {
+            saveInventory();
+        }
+
+        // Spawn particles.
+        if (driver != null && tick % 15 == 0 && hasFuel() && is(VehicleType.TRACTOR)) {
+            ModelLocation muffler = model.getLocationByName("MUFFLER_PARTICLES");
+            if (muffler != null) {
+                velocityStand.getWorld().spawnParticle(
+                        Particle.CAMPFIRE_COSY_SMOKE,
+                        muffler.getLocation(),
+                        0,
+                        (Math.random() * 0.15d) * (Math.random() < 0.5d ? 1 : -1),
+                        1.0d,
+                        (Math.random() * 0.15d) * (Math.random() < 0.5d ? 1 : -1),
+                        0.025d);
+            }
         }
 
         handleCurrentTarget();
@@ -460,10 +482,7 @@ public abstract class Vehicle implements InventoryHolder {
                     || name.equals("INTERACTIONS")) continue;
 
             settings.setFire(setOnFire);
-            if (stand.isCacheMetadata()) {
-                stand.setCachedMetadata(null);
-            }
-            stand.updateMetadata();
+            stand.sendMetadata();
         }
     }
 
@@ -856,12 +875,12 @@ public abstract class Vehicle implements InventoryHolder {
         boolean right = side < 0.0f;
 
         for (int i = 1; i <= 2; i++) {
-            PacketStand frontWheel = model.getByName("FRONT_WHEELS_" + i);
+            PacketStand frontWheel = model.getStandByName("FRONT_WHEELS_" + i);
             if (frontWheel == null) continue;
 
-            EulerAngle head = frontWheel.getSettings().getHeadPose();
+            Vector3f previousHead = frontWheel.getSettings().getHeadPose();
 
-            double previousY = Math.toDegrees(head.getY());
+            double previousY = Math.toDegrees(previousHead.getY());
             if (notMoving && previousY == wheelY) continue; // Already centered.
 
             double rotation;
@@ -871,8 +890,10 @@ public abstract class Vehicle implements InventoryHolder {
                 rotation = createRotation(previousY, right, Math.abs(side), -side, minWheelY, maxWheelY);
             }
 
-            frontWheel.getSettings().setHeadPose(head.setY(Math.toRadians(rotation)));
-            frontWheel.updateMetadata();
+            Vector3f newHead = previousHead.with(null, (float) Math.toRadians(rotation), null);
+            frontWheel.getSettings().setHeadPose(newHead);
+
+            frontWheel.sendMetadata();
         }
     }
 
@@ -901,11 +922,15 @@ public abstract class Vehicle implements InventoryHolder {
 
     public void toggleLights(boolean on) {
         for (Triple<String, ItemStack, ItemStack> triple : LIGHTS.get(model.getName())) {
-            PacketStand stand = model.getByName(triple.getLeft());
+            PacketStand stand = model.getStandByName(triple.getLeft());
             if (stand == null) continue;
 
             ItemStack item = new ItemStack(on ? triple.getMiddle() : triple.getRight());
-            stand.setEquipment(item, PacketStand.ItemSlot.HEAD);
+
+            stand.getSettings().getEquipment().put(com.github.retrooper.packetevents.protocol.player.EquipmentSlot.HELMET,
+                    SpigotConversionUtil.fromBukkitItemStack(item));
+
+            stand.sendEquipment();
         }
 
         // Play sound sync.
@@ -959,16 +984,37 @@ public abstract class Vehicle implements InventoryHolder {
         // Update model location based on the moving stand.
         model.setLocation(location);
 
-        for (PacketStand stand : model.getStands()) {
-            Location correctLocation = BlockUtils.getCorrectLocation(driver, type, location, stand.getSettings());
-            if (stand.getLocation().equals(correctLocation)) continue;
+        // Handle stands.
+        handleLocations(
+                model.getStands(),
+                location,
+                PacketStand::getSettings,
+                PacketStand::getLocation,
+                PacketStand::teleport);
 
-            // No need to send packets if the stand is in the same location.
-            stand.teleport(correctLocation);
-        }
+        // Handle locations.
+        handleLocations(
+                model.getLocations(),
+                location,
+                ModelLocation::getSettings,
+                ModelLocation::getLocation,
+                ModelLocation::setLocation);
 
+        // Handle chairs.
         for (Pair<ArmorStand, StandSettings> chair : chairs) {
             if (chair != null) teleportChair(location, chair);
+        }
+    }
+
+    private <T> void handleLocations(@NotNull Collection<T> list,
+                                     Location location,
+                                     Function<T, StandSettings> getSettings,
+                                     Function<T, Location> getLocation,
+                                     BiConsumer<T, Location> setLocation) {
+        for (T temp : list) {
+            Location correct = BlockUtils.getCorrectLocation(driver, type, location, getSettings.apply(temp));
+            if (getLocation.apply(temp).equals(correct)) continue;
+            setLocation.accept(temp, correct);
         }
     }
 
@@ -1014,7 +1060,7 @@ public abstract class Vehicle implements InventoryHolder {
     }
 
     public BoundingBox getBox() {
-        PacketStand center = model.getByName("CENTER");
+        PacketStand center = model.getStandByName("CENTER");
 
         Vector box = VEHICLE_BOX.get(type);
         double x = box.getX();
@@ -1043,28 +1089,42 @@ public abstract class Vehicle implements InventoryHolder {
     }
 
     public VehicleData createSaveData() {
-        return createSaveData(velocityStand.getLocation().clone());
+        return createSaveData(true);
     }
 
-    public VehicleData createSaveData(Location location) {
-        Map<String, Material> customizationChanges = new HashMap<>();
-        for (Customization customization : customizations) {
-            Material newType = customization.getNewType();
-            if (newType != null && newType != customization.getDefaultType()) {
-                customizationChanges.put(customization.getCustomizationName(), newType);
-            }
-        }
-
+    public VehicleData createSaveData(boolean inventory) {
         return new VehicleData(
                 owner,
                 fuel,
                 locked,
                 getModelUUID(),
-                location,
+                velocityStand.getLocation().clone(),
                 type,
-                base64Storage,
+                inventory ? saveInventory() : base64Storage,
                 shopDisplayName,
-                customizationChanges);
+                getCustomizationChanges(),
+                this instanceof Generic generic ?
+                        generic.getTractorMode() :
+                        null);
+    }
+
+    public String saveInventory() {
+        return base64Storage = PluginUtils.itemStackArrayToBase64(inventory.getContents());
+    }
+
+    public ItemStack createVehicleItem() {
+        return plugin.createVehicleItem(type, createSaveData());
+    }
+
+    public Map<String, Material> getCustomizationChanges() {
+        Map<String, Material> changes = new HashMap<>();
+        for (Customization customization : customizations) {
+            Material newType = customization.getNewType();
+            if (newType != null && newType != customization.getDefaultType()) {
+                changes.put(customization.getCustomizationName(), newType);
+            }
+        }
+        return changes;
     }
 
     @Override

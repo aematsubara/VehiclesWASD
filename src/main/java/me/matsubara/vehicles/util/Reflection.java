@@ -36,7 +36,7 @@ public final class Reflection {
         return getField(clazz, name, false);
     }
 
-    public static @Nullable MethodHandle getField(@NotNull Class<?> clazz, String name, boolean isGetter) {
+    private static @Nullable MethodHandle getField(@NotNull Class<?> clazz, String name, boolean isGetter) {
         try {
             Field field = clazz.getDeclaredField(name);
             field.setAccessible(true);

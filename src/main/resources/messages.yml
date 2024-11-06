@@ -44,6 +44,14 @@ commands:
     specify-type: "&cYou must specify a vehicle type!"
     type-not-found: "&cThis type of vehicle doesn't exist!"
     shop-not-found: "&cThe shop version was not found, using the default one."
+  customization:
+    not-driving: "&cYou must be driving a vehicle to use this command!"
+    no-customizations: "&cThis vehicle has no customizations applied!"
+    click-to-copy:
+      - "&7-----------------------------"
+      - "&a&lClick to copy customizations!"
+      - "&7-----------------------------"
+    click-hover: "&7Click me!"
 
 vehicle:
   pick:
@@ -84,6 +92,7 @@ shop:
   successful-purchase: "&6Enjoy your new vehicle! &a%money% &6has been taken from your account."
 
 customization:
+  no-permission: "&cYou don't have permission to apply customizations to vehicles!"
   invalid-cursor: "&cYou must click with a valid item in your cursor!"
   already-in-use: "&cThis item is already in use!"
   different-amount: "&cThe amount must be the same as the original!"

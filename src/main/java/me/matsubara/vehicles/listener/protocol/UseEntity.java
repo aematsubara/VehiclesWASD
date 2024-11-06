@@ -12,6 +12,7 @@ import me.matsubara.vehicles.data.ActionKeybind;
 import me.matsubara.vehicles.files.Config;
 import me.matsubara.vehicles.files.Messages;
 import me.matsubara.vehicles.gui.VehicleGUI;
+import me.matsubara.vehicles.manager.VehicleManager;
 import me.matsubara.vehicles.model.Model;
 import me.matsubara.vehicles.model.stand.PacketStand;
 import me.matsubara.vehicles.model.stand.StandSettings;
@@ -116,7 +117,7 @@ public final class UseEntity extends SimplePacketListenerAbstract implements Lis
 
             Model model = vehicle.getModel();
             if (notChair(entityId, vehicle.getChairs())
-                    && (model.getById(entityId) == null)
+                    && (model.getStandById(entityId) == null)
                     && (vehicle.getVelocityStand() == null || vehicle.getVelocityStand().getEntityId() != entityId)) {
                 continue;
             }
@@ -155,8 +156,8 @@ public final class UseEntity extends SimplePacketListenerAbstract implements Lis
 
         Model model = vehicle.getModel();
 
-        PacketStand firstScope = model.getByName("FRONT_PART_5");
-        PacketStand secondScope = model.getByName("FRONT_PART_6");
+        PacketStand firstScope = model.getStandByName("FRONT_PART_5");
+        PacketStand secondScope = model.getStandByName("FRONT_PART_6");
         if (firstScope == null || secondScope == null) return true;
 
         runnable.run();
@@ -242,7 +243,7 @@ public final class UseEntity extends SimplePacketListenerAbstract implements Lis
         boolean plane = type == VehicleType.PLANE;
         if (!vehicle.canMove() || (plane && vehicle.isOnGround())) return true;
 
-        PacketStand scope = vehicle.getModel().getByName(weapon.getScope());
+        PacketStand scope = vehicle.getModel().getStandByName(weapon.getScope());
         if (scope == null) return true;
 
         runnable.run();
@@ -303,7 +304,7 @@ public final class UseEntity extends SimplePacketListenerAbstract implements Lis
         while (iterator.hasNext()) { // We use an iterator because, when doing PreviewTick#cancel, we're removing the preview from the map.
             PreviewTick preview = iterator.next();
 
-            PacketStand stand = preview.getModel().getById(entityId);
+            PacketStand stand = preview.getModel().getStandById(entityId);
             if (stand == null) continue;
 
             preview.cancel();
@@ -329,7 +330,17 @@ public final class UseEntity extends SimplePacketListenerAbstract implements Lis
                 return;
             }
 
-            plugin.getVehicleManager().removeVehicle(vehicle, player);
+            VehicleManager manager = plugin.getVehicleManager();
+            if (Config.PICK_UP_ON_REMOVE.asBool()) {
+                if (player.getInventory().firstEmpty() == -1) {
+                    plugin.getMessages().send(player, Messages.Message.PICK_NOT_ENOUGH_SPACE);
+                    return;
+                }
+                manager.removeVehicle(vehicle, null, true);
+                player.getInventory().addItem(vehicle.createVehicleItem());
+            } else {
+                manager.removeVehicle(vehicle, player);
+            }
 
             iterator.remove();
             return;

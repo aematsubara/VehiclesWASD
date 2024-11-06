@@ -31,13 +31,17 @@ public class Messages {
     }
 
     public void send(CommandSender sender, @NotNull Message message, @Nullable UnaryOperator<String> operator) {
-        for (String line : getMessages(message.getPath())) {
+        for (String line : getMessages(message)) {
             if (!line.isEmpty()) sender.sendMessage(operator != null ? operator.apply(line) : line);
         }
     }
 
+    public List<String> getMessages(@NotNull Message message) {
+        return getMessages(message.getPath());
+    }
+
     @SuppressWarnings("unchecked")
-    private List<String> getMessages(String path) {
+    public List<String> getMessages(String path) {
         if (!configuration.contains(path, true)) return Collections.emptyList();
 
         List<String> messages;
@@ -89,6 +93,10 @@ public class Messages {
         PREVIEW_SPECIFY_TYPE("commands.preview.specify-type"),
         PREVIEW_TYPE_NOT_FOUND("commands.preview.type-not-found"),
         PREVIEW_SHOP_NOT_FOUND("commands.preview.shop-not-found"),
+        CUSTOMIZATION_NOT_DRIVING("commands.customization.not-driving"),
+        CUSTOMIZATION_NO_CUSTOMIZATIONS("commands.customization.no-customizations"),
+        CUSTOMIZATION_CLICK_TO_COPY("commands.customization.click-to-copy"),
+        CUSTOMIZATION_CLICK_HOVER("commands.customization.click-hover"),
         PICK_SAVED_IN_INVENTORY("vehicle.pick.saved-in-inventory"),
         PICK_NOT_ENOUGH_SPACE("vehicle.pick.not-enough-space"),
         PICK_NOT_FOUND("vehicle.pick.not-found"),
@@ -116,6 +124,7 @@ public class Messages {
         TRANSFER_OFFLINE_PLAYER("vehicle.transfer-ownership.offline-player"),
         SHOP_NOT_ENOUGH_MONEY("shop.not-enough-money"),
         SHOP_SUCCESSFUL_PURCHASE("shop.successful-purchase"),
+        CUSTOMIZATION_NO_PERMISSION("customization.no-permission"),
         CUSTOMIZATION_INVALID_CURSOR("customization.invalid-cursor"),
         CUSTOMIZATION_ALREADY_IN_USE("customization.already-in-use"),
         CUSTOMIZATION_DIFFERENT_AMOUNT("customization.different-amount");

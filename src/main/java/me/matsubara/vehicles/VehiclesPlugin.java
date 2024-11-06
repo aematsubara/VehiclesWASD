@@ -32,9 +32,11 @@ import me.matsubara.vehicles.util.Shape;
 import me.matsubara.vehicles.vehicle.Vehicle;
 import me.matsubara.vehicles.vehicle.VehicleData;
 import me.matsubara.vehicles.vehicle.VehicleType;
+import org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.*;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -74,7 +76,7 @@ public final class VehiclesPlugin extends JavaPlugin {
 
     private final Map<VehicleType, ItemStack> typeCategoryItem = new EnumMap<>(VehicleType.class);
     private final Map<VehicleType, List<ShopVehicle>> typeVehicles = new EnumMap<>(VehicleType.class);
-    private final Map<VehicleType, Shape> vehicleCrafting = new EnumMap<>(VehicleType.class);
+    private final Map<VehicleType, Shape> recipes = new EnumMap<>(VehicleType.class);
     private final Set<TypeTarget> fuelItems = new HashSet<>();
     private final Set<TypeTarget> breakBlocks = new HashSet<>();
     private final Multimap<String, Material> extraTags = MultimapBuilder.hashKeys().hashSetValues().build();
@@ -95,7 +97,7 @@ public final class VehiclesPlugin extends JavaPlugin {
     boolean patheticEnabled;
 
     private static final List<String> GUI_TYPES = List.of("vehicle", "shop", "shop-confirm", "customizations");
-    private static final Set<String> SPECIAL_SECTIONS = Sets.newHashSet("extra-tags");
+    private static final Set<String> SPECIAL_SECTIONS = Sets.newHashSet("extra-tags", "shop");
     private static final Set<String> ECONOMY_PROVIDER = Set.of("Vault", "PlayerPoints");
 
     static {
@@ -126,7 +128,7 @@ public final class VehiclesPlugin extends JavaPlugin {
             return;
         }
 
-        // Disable the plugin if ProtocolLib isn't installed.
+        // Disable the plugin if PacketEvents isn't installed.
         if (pluginManager.getPlugin("packetevents") == null) {
             logger.severe("This plugin depends on PacketEvents, disabling...");
             pluginManager.disablePlugin(this);
@@ -165,7 +167,7 @@ public final class VehiclesPlugin extends JavaPlugin {
         reloadExtraTags();
         reloadFuelItems();
         reloadBreakBlocks();
-        reloadCraftings();
+        reloadRecipes();
 
         VehiclesCommands vehiclesCommands = new VehiclesCommands(this);
 
@@ -238,7 +240,8 @@ public final class VehiclesPlugin extends JavaPlugin {
                 config -> {
                     fillIgnoredSections(config);
                     return SPECIAL_SECTIONS.stream().filter(config::contains).toList();
-                }, Collections.emptyList());
+                },
+                Collections.emptyList());
 
         updateConfig(
                 pluginFolder,
@@ -355,10 +358,29 @@ public final class VehiclesPlugin extends JavaPlugin {
                         "&7");
             }
 
-            builder.setData(saveDataKey, Vehicle.VEHICLE_DATA, data);
+            String lock = getConfig().getString("translations.lock." + (data.locked() ? "locked" : "unlocked"));
+
+            UUID ownerUUID = data.owner();
+
+            String owner;
+            if (ownerUUID != null) {
+                OfflinePlayer offline = Bukkit.getOfflinePlayer(ownerUUID);
+                owner = Objects.requireNonNullElse(offline.getName(), "???");
+            } else owner = "???";
+
+            Float fuel = Objects.requireNonNullElse(data.fuel(), 0.0f);
+
+            //noinspection DataFlowIssue
+            builder
+                    .replace("%owner%", owner)
+                    .replace("%type%", getVehicleTypeFormatted(type))
+                    .replace("%fuel%", PluginUtils.fixedDouble(fuel))
+                    .replace("%max-fuel%", PluginUtils.fixedDouble(getMaxFuel(type)))
+                    .replace("%lock%", lock)
+                    .setData(saveDataKey, Vehicle.VEHICLE_DATA, data);
         }
 
-        return builder.build();
+        return builder.setAmount(1).build();
     }
 
     @SuppressWarnings("unchecked")
@@ -461,7 +483,7 @@ public final class VehiclesPlugin extends JavaPlugin {
                     }
                 } else finalCustomizations = Collections.emptyList();
 
-                VehicleData data = new VehicleData(null, null, true, null, null, type, null, null, customizationChanges);
+                VehicleData data = new VehicleData(null, null, true, null, null, type, null, null, customizationChanges, null);
 
                 ItemBuilder builder = new ItemBuilder(vehicleItem);
                 if (displayName != null) builder.setDisplayName(displayName);
@@ -480,6 +502,14 @@ public final class VehiclesPlugin extends JavaPlugin {
                 typeVehicles.put(type, itemList);
             }
         }
+    }
+
+    @Override
+    public void reloadConfig() {
+        super.reloadConfig();
+
+        // We don't want to use default values.
+        getConfig().setDefaults(new MemoryConfiguration());
     }
 
     public void reloadFuelItems() {
@@ -505,21 +535,27 @@ public final class VehiclesPlugin extends JavaPlugin {
         }
     }
 
-    public void reloadCraftings() {
-        for (Shape shape : vehicleCrafting.values()) {
+    public void reloadRecipes() {
+        for (Shape shape : recipes.values()) {
             Bukkit.removeRecipe(shape.getKey());
         }
-        vehicleCrafting.clear();
+        recipes.clear();
 
         for (VehicleType type : VehicleType.values()) {
-            String pathName = type.toPath();
-            String path = "vehicles." + pathName + ".item";
-            vehicleCrafting.put(type, new Shape(
+            String name = type.toPath();
+            String path = "vehicles." + name + ".item.crafting.";
+
+            FileConfiguration config = getConfig();
+            boolean shaped = config.getBoolean(path + "shaped");
+            List<String> ingredients = config.getStringList(path + "ingredients");
+            List<String> shape = config.getStringList(path + "shape");
+
+            recipes.put(type, new Shape(
                     this,
-                    pathName,
-                    getConfig().getBoolean(path + ".crafting.shaped"),
-                    getConfig().getStringList(path + ".crafting.ingredients"),
-                    getConfig().getStringList(path + ".crafting.shape"),
+                    name,
+                    shaped,
+                    ingredients,
+                    shape,
                     createVehicleItem(type, null)));
         }
     }
@@ -677,12 +713,10 @@ public final class VehiclesPlugin extends JavaPlugin {
         for (TypeTarget fuelItem : typeTargets) {
             if (fuelItem instanceof TypeTarget.TargetWithCondition condition && !condition.test(type)) continue;
 
-            String typeName;
-            if (fuelItem.getFromTag() != null) {
-                typeName = getMaterialOrTagName(fuelItem.getFromTag().toLowerCase(Locale.ROOT).replace("_", "-"), true);
-            } else {
-                typeName = getMaterialOrTagName(fuelItem.getType().name().toLowerCase(Locale.ROOT).replace("_", "-"), false);
-            }
+            String fromTag = fuelItem.getFromTag();
+            String typeName = getMaterialOrTagName(fromTag != null ?
+                    fromTag :
+                    fuelItem.getType().name(), fromTag != null);
 
             list.add(typeName + (isFuel ? " +" + fuelItem.getAmount() : ""));
         }
@@ -690,12 +724,18 @@ public final class VehiclesPlugin extends JavaPlugin {
         return list.stream().sorted().toList();
     }
 
-    private String getMaterialOrTagName(String string, boolean isTag) {
-        String fromTranslations = getConfig().getString("translations." + (isTag ? "tag" : "material") + "." + string);
-        return fromTranslations != null ? fromTranslations : string;
+    @SuppressWarnings("deprecation")
+    public @NotNull String getMaterialOrTagName(@NotNull String string, boolean isTag) {
+        String formatted = string.toLowerCase(Locale.ROOT).replace("_", "-");
+        String fromTranslations = getConfig().getString("translations." + (isTag ? "tag" : "material") + "." + formatted);
+        return fromTranslations != null ? fromTranslations : WordUtils.capitalizeFully(formatted.replace("-", " "));
     }
 
     public String getVehicleTypeFormatted(@NotNull VehicleType type) {
         return getConfig().getString("translations.vehicle." + type.toPath(), type.name());
+    }
+
+    public double getMaxFuel(@NotNull VehicleType type) {
+        return getConfig().getDouble("vehicles." + type.toPath() + ".fuel.max-fuel", 0.0d);
     }
 }

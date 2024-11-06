@@ -1,6 +1,9 @@
 package me.matsubara.vehicles.util;
 
 import com.cryptomorin.xseries.reflection.XReflection;
+import com.github.retrooper.packetevents.protocol.item.ItemStack;
+import com.github.retrooper.packetevents.protocol.player.EquipmentSlot;
+import io.github.retrooper.packetevents.util.SpigotConversionUtil;
 import me.matsubara.vehicles.model.stand.StandSettings;
 import me.matsubara.vehicles.vehicle.VehicleType;
 import org.apache.commons.lang3.ArrayUtils;
@@ -36,13 +39,27 @@ public class BlockUtils {
             .add(Material.BUBBLE_COLUMN)
             .get();
 
+    @SuppressWarnings("deprecation")
+    public static final Set<Material> HEIGHT_FIX = builder()
+            .add(Tag.STAIRS)
+            .add(Tag.CARPETS)
+            .add(Tag.SLABS)
+            .add(Material.WOODEN_SHOVEL)
+            .add(Material.STONE_SHOVEL)
+            .add(Material.IRON_SHOVEL)
+            .add(Material.GOLDEN_SHOVEL)
+            .add(Material.DIAMOND_SHOVEL)
+            .add(Material.NETHERITE_SHOVEL)
+            .get();
+
     public static final Set<Material> BUGGY_HEIGHTS = builder()
             .add(Material.HOPPER, Material.CAULDRON, Material.COMPOSTER, Material.POINTED_DRIPSTONE, Material.CHORUS_PLANT)
             .add(Tag.DOORS)
             .get();
 
     public static final Set<Material> HEADS = builder()
-            .add(Material.SKELETON_SKULL,
+            .add(
+                    Material.SKELETON_SKULL,
                     Material.WITHER_SKELETON_SKULL,
                     Material.PLAYER_HEAD,
                     Material.ZOMBIE_HEAD,
@@ -75,8 +92,8 @@ public class BlockUtils {
     private static final MethodHandle CLIP = Reflection.getMethod(BLOCK_ACCESS, "a", MethodType.methodType(MOVING_OBJECT_POSITION_BLOCK, RAY_TRACE), "rayTrace");
     private static final MethodHandle GET_WORLD_HANDLE = Reflection.getMethod(CRAFT_WORLD, "getHandle");
     private static final MethodHandle GET_PLAYER_HANDLE = Reflection.getMethod(CRAFT_PLAYER, "getHandle");
-    private static final MethodHandle GET_LOCATION = Reflection.getMethod(MOVING_OBJECT_POSITION, "e", MethodType.methodType(VEC_3D), "getPos");
-    private static final MethodHandle GET_BLOCK_POS = Reflection.getMethod(MOVING_OBJECT_POSITION_BLOCK, "a", MethodType.methodType(BLOCK_POSITION), "getBlockPosition");
+    private static final MethodHandle GET_LOCATION = Reflection.getMethod(MOVING_OBJECT_POSITION, "e", MethodType.methodType(VEC_3D), "g", "getPos");
+    private static final MethodHandle GET_BLOCK_POS = Reflection.getMethod(MOVING_OBJECT_POSITION_BLOCK, "a", MethodType.methodType(BLOCK_POSITION), "b", "getBlockPosition");
     private static final MethodHandle GET_POS_X = Reflection.getMethod(BASE_BLOCK_POSITION, "u", MethodType.methodType(int.class), "getX");
     private static final MethodHandle GET_POS_Y = Reflection.getMethod(BASE_BLOCK_POSITION, "v", MethodType.methodType(int.class), "getY");
     private static final MethodHandle GET_POS_Z = Reflection.getMethod(BASE_BLOCK_POSITION, "w", MethodType.methodType(int.class), "getZ");
@@ -88,6 +105,7 @@ public class BlockUtils {
             true,
             true,
             "i",
+            "j",
             "getCombinedId");
 
     // Constructors.
@@ -274,6 +292,18 @@ public class BlockUtils {
         float extraYaw = settings.getExtraYaw();
         if (extraYaw != 0.0f) location.setYaw(yaw(location.getYaw() + extraYaw));
 
+        //For some reason, these items appear lower than they should.
+        ItemStack item;
+        if (XReflection.supports(21, 2)
+                && settings.isSmall()
+                && (item = settings.getEquipment().get(EquipmentSlot.HELMET)) != null
+                && !item.isEmpty()) {
+            Material material = SpigotConversionUtil.toBukkitItemMaterial(item.getType());
+            if (HEIGHT_FIX.contains(material)) {
+                location.add(0.0d, 0.02125d, 0.0d);
+            }
+        }
+
         return location;
     }
 
@@ -414,7 +444,7 @@ public class BlockUtils {
         return yaw < 0.0f ? temp + 360.0f : temp;
     }
 
-    private static @NotNull MaterialBuilder builder() {
+    public static @NotNull MaterialBuilder builder() {
         return new MaterialBuilder();
     }
 

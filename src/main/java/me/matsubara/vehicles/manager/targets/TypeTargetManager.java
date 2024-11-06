@@ -11,10 +11,7 @@ import org.bukkit.Tag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
 public final class TypeTargetManager {
 
@@ -25,8 +22,12 @@ public final class TypeTargetManager {
     }
 
     public @NotNull Set<TypeTarget> getTargetsFromConfig(String path) {
+        return getTargets(path, plugin.getConfig().getStringList(path));
+    }
+
+    public @NotNull Set<TypeTarget> getTargets(String path, @NotNull List<String> list) {
         Set<TypeTarget> tags = new HashSet<>();
-        for (String materialOrTag : plugin.getConfig().getStringList(path)) {
+        for (String materialOrTag : list) {
             fillTargets(path, tags, materialOrTag);
         }
         return tags;

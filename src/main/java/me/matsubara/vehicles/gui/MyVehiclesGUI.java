@@ -19,8 +19,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.jetbrains.annotations.NotNull;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -58,7 +56,10 @@ public final class MyVehiclesGUI implements InventoryHolder {
     private void initVehicles() {
         // Get data from existing vehicles.
         for (Vehicle vehicle : plugin.getVehicleManager().getVehicles()) {
-            if (vehicle.isOwner(player)) vehicles.add(vehicle.createSaveData());
+            if (vehicle.isOwner(player)) {
+                // There's no need to save inventory since we don't use it here.
+                vehicles.add(vehicle.createSaveData(false));
+            }
         }
 
         for (World world : Bukkit.getWorlds()) {
@@ -136,7 +137,6 @@ public final class MyVehiclesGUI implements InventoryHolder {
             if (world == null) continue;
 
             VehicleType type = data.type();
-            double maxFuel = config.getDouble("vehicles." + type.toPath() + ".fuel.max-fuel", 0.0d);
 
             String lock = config.getString("translations.lock." + (data.locked() ? "locked" : "unlocked"));
 
@@ -145,21 +145,17 @@ public final class MyVehiclesGUI implements InventoryHolder {
                     .setLore(config.getStringList(path + "vehicle.lore"))
                     .replace("%type%", plugin.getVehicleTypeFormatted(type))
                     .replace("%world%", world.getName())
-                    .replace("%x%", fixedDouble(location.getX()))
-                    .replace("%y%", fixedDouble(location.getY()))
-                    .replace("%z%", fixedDouble(location.getZ()))
-                    .replace("%fuel%", fixedDouble(data.fuel()))
-                    .replace("%max-fuel%", fixedDouble(maxFuel))
+                    .replace("%x%", PluginUtils.fixedDouble(location.getX()))
+                    .replace("%y%", PluginUtils.fixedDouble(location.getY()))
+                    .replace("%z%", PluginUtils.fixedDouble(location.getZ()))
+                    .replace("%fuel%", PluginUtils.fixedDouble(data.fuel()))
+                    .replace("%max-fuel%", PluginUtils.fixedDouble(plugin.getMaxFuel(type)))
                     .replace("%lock%", lock)
                     .setData(plugin.getSaveDataKey(), Vehicle.VEHICLE_DATA, data)
                     .build());
         }
 
         InventoryUpdate.updateInventory(player, getTitle());
-    }
-
-    private double fixedDouble(double value) {
-        return new BigDecimal(value).setScale(1, RoundingMode.HALF_UP).doubleValue();
     }
 
     private @NotNull String getTitle() {

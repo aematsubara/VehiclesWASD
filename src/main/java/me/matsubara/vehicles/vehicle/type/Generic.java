@@ -10,40 +10,72 @@ import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.data.PlayerInput;
 import me.matsubara.vehicles.event.protocol.WrapperPlayServerEffect;
 import me.matsubara.vehicles.files.Config;
-import me.matsubara.vehicles.manager.targets.TypeTarget;
 import me.matsubara.vehicles.model.Model;
+import me.matsubara.vehicles.model.stand.ModelLocation;
 import me.matsubara.vehicles.util.BlockUtils;
+import me.matsubara.vehicles.util.Crop;
 import me.matsubara.vehicles.util.PluginUtils;
+import me.matsubara.vehicles.vehicle.TractorMode;
 import me.matsubara.vehicles.vehicle.Vehicle;
 import me.matsubara.vehicles.vehicle.VehicleData;
 import me.matsubara.vehicles.vehicle.VehicleType;
 import me.matsubara.vehicles.vehicle.gps.GPSTick;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Tag;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Function;
+import java.util.stream.IntStream;
 
 @Getter
 public class Generic extends Vehicle {
 
+    private final Set<Material> farmlandTopRemove;
     private float previousForward;
     private @Setter int previousDistance = Integer.MIN_VALUE;
     private @Setter int currentDistance = Integer.MIN_VALUE;
     private GPSTick gpsTick;
+    private @Setter TractorMode tractorMode;
 
     private static final float UP_EXTRA_PITCH = 5.0f;
+    private static final int[] HARVESTER = IntStream.rangeClosed(1, 3).toArray();
 
     public Generic(@NotNull VehiclesPlugin plugin, VehicleData data, @NotNull Model model) {
         super(plugin, data, model);
+        this.farmlandTopRemove = BlockUtils.builder()
+                .add(Tag.LEAVES)
+                .add(Tag.SAPLINGS)
+                .add(Tag.FLOWERS)
+                .addString(
+                        "GRASS",
+                        "FERN",
+                        "DEAD_BUSH",
+                        "VINE",
+                        "GLOW_LICHEN",
+                        "SUNFLOWER",
+                        "LILAC",
+                        "ROSE_BUSH",
+                        "PEONY",
+                        "TALL_GRASS",
+                        "LARGE_FERN",
+                        "HANGING_ROOTS",
+                        "PITCHER_PLANT",
+                        "WATER",
+                        "SEAGRASS",
+                        "TALL_SEAGRASS",
+                        "WARPED_ROOTS",
+                        "NETHER_SPROUTS",
+                        "CRIMSON_ROOTS")
+                .get();
+        this.tractorMode = data.tractorMode();
     }
 
     public Generic setGPSTick(GPSTick gpsTick) {
@@ -83,7 +115,10 @@ public class Generic extends Vehicle {
         boolean backwards = (hasZMovement ? forward : previousForward) < 0.0f;
         boolean hasSpeed = currentSpeed != 0.0f;
 
-        if (!hasZMovement && !hasSpeed && onGround) return;
+        if (!hasZMovement && !hasSpeed && onGround) {
+            if (input.sideways() != 0.0f) handleTractor();
+            return;
+        }
 
         if (hasZMovement) {
             if (!backwards) {
@@ -156,20 +191,16 @@ public class Generic extends Vehicle {
     }
 
     private boolean breakBlock(@NotNull Block block) {
-        TypeTarget target = plugin.getTypeTargetManager().applies(plugin.getBreakBlocks(), type, block.getType());
-        return target != null || breakCrop(block);
+        if (is(VehicleType.TRACTOR)) return false;
+        return plugin.getTypeTargetManager().applies(plugin.getBreakBlocks(), type, block.getType()) != null;
     }
 
-    private boolean breakCrop(Block block) {
-        return Config.BREAK_BLOCKS_CROPS.asBool() && block.getBlockData() instanceof Ageable;
-    }
-
-    private void breakAndPlaySound(@NotNull Block block) {
+    private void breakAndPlaySound(@NotNull Block block, boolean breakBlock) {
         // Get id before breaking the block.
         int id = BlockUtils.getBlockStateId(block);
 
         // If the block was destroyed and the id is valid, then proceed.
-        if (!block.breakNaturally() || id == -1) return;
+        if ((breakBlock && !block.breakNaturally()) || id == -1) return;
 
         // Send particles and sound.
         ProtocolManager manager = PacketEvents.getAPI().getProtocolManager();
@@ -181,6 +212,178 @@ public class Generic extends Vehicle {
 
         for (Player player : block.getWorld().getPlayers()) {
             manager.sendPacket(SpigotReflectionUtil.getChannel(player), wrapper);
+        }
+    }
+
+    private void handleTractor() {
+        if (tractorMode == null || tick % 2 != 0) return;
+
+        handleTractor(0);
+        handleTractor(1);
+
+        if (Config.TRACTOR_STACK_WHEAT.asBool()) {
+            stackWheat();
+        }
+    }
+
+    private void handleTractor(int step) {
+        if (!is(VehicleType.TRACTOR) || storageRows <= 0 || !hasFuel()) return;
+
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+
+        // The location of these parts is where we want to break the crops.
+        List<Block> checked = new ArrayList<>();
+        for (int i : HARVESTER) {
+            ModelLocation location = model.getLocationByName("TRACTOR_CHECK_" + i);
+            if (location == null) continue;
+
+            Location clone = location.getLocation().clone();
+            clone.setY(velocityStand.getLocation().getY());
+
+            for (int j = 0; j < step; j++) {
+                clone.setY(clone.getY() - 1);
+            }
+
+            Block block = clone.getBlock();
+            if (checked.contains(block)) continue;
+
+            checked.add(block);
+
+            Block up = block.getRelative(BlockFace.UP);
+
+            Material blockType = block.getType();
+            Material upType = up.getType();
+
+            if (!(up.getBlockData() instanceof Ageable ageable)) {
+                // Handle DIRT_PATH & FARMLAND below.
+                if (tractorMode == TractorMode.DIRT_PATH || tractorMode == TractorMode.FARMLAND) {
+                    if (!upType.isAir() && !up.isPassable()) continue;
+                    if (!tractorMode.getFrom().contains(blockType)) continue;
+
+                    block.setType(tractorMode.getTo());
+                    playBlockSound(block, group -> tractorMode.getConvertSound());
+
+                    // Remove block on top (only passable grass/flowers) when creating a farmland.
+                    if (tractorMode == TractorMode.FARMLAND
+                            && !up.getType().isAir()
+                            && farmlandTopRemove.contains(upType)) {
+                        breakAndPlaySound(up, true);
+                    }
+                    continue;
+                }
+
+                // Handle PLANT below.
+                if (tractorMode != TractorMode.PLANT) continue;
+
+                if (!upType.isAir()) continue;
+
+                Crop crop = Crop.getBySeeds(blockType, inventory);
+                if (crop == null) continue;
+
+                up.setType(crop.getPlace());
+                playBlockSound(up, SoundGroup::getPlaceSound);
+
+                inventory.removeItem(new ItemStack(crop.getSeeds()));
+                continue;
+            }
+
+            // PLANT is handled above, no need to do the other checks.
+            if (tractorMode == TractorMode.PLANT) continue;
+
+            Crop crop = Crop.getByPlaceType(upType);
+            if (crop == null || !crop.getOn().contains(blockType)) continue;
+
+            if (ageable.getAge() != ageable.getMaximumAge()) {
+                // Handle BONE_MEAL below.
+                if (tractorMode != TractorMode.BONE_MEAL) continue;
+
+                // Try to apply bone meal.
+                if (tick % 4 == 0 && crop != Crop.WART) {
+                    boolean hasBoneMeal = inventory.contains(Material.BONE_MEAL);
+                    if (!hasBoneMeal && (!Config.TRACTOR_BLOCK_TO_BONE_MEAL.asBool()
+                            || !inventory.contains(Material.BONE_BLOCK)
+                            || inventory.firstEmpty() == -1))
+                        continue;
+
+                    if (!hasBoneMeal) { // Convert BONE_BLOCK (1) to BONE_MEAL (9).
+                        inventory.removeItem(new ItemStack(Material.BONE_BLOCK));
+                        inventory.addItem(new ItemStack(Material.BONE_MEAL, 9));
+                    }
+
+                    if (up.applyBoneMeal(BlockFace.UP)) {
+                        inventory.removeItem(new ItemStack(Material.BONE_MEAL));
+                    }
+                }
+                continue;
+            }
+
+            // BONE_MEAL is handled above, no need to do the other checks.
+            if (tractorMode == TractorMode.BONE_MEAL) continue;
+
+            // Handle HARVEST below.
+            if (tractorMode != TractorMode.HARVEST) continue;
+
+            ageable.setAge(0);
+            up.setBlockData(ageable);
+
+            int minSeedAmount = crop.getMinSeedAmount();
+            int maxSeedAmount = crop.getMaxSeedAmount();
+            int seedAmount = minSeedAmount == 0 && maxSeedAmount == 0 ?
+                    0 :
+                    random.nextInt(minSeedAmount, maxSeedAmount + 1);
+
+            // Save items to the inventory.
+
+            int dropAmount = random.nextInt(crop.getMinDropAmount(), crop.getMaxDropAmount() + 1);
+            saveToInventoryOrDrop(up, crop.getDrop(), dropAmount);
+
+            if (seedAmount - 1 > 0) { // We remove a seed since when we break it we replant it.
+                saveToInventoryOrDrop(up, crop.getSeeds(), seedAmount);
+            }
+
+            // Small chance of getting a poisoned potato.
+            if (crop == Crop.POTATO && random.nextFloat() <= 0.02d) {
+                saveToInventoryOrDrop(up, Material.POISONOUS_POTATO, 1);
+            }
+
+            breakAndPlaySound(up, false);
+        }
+    }
+
+    public void stackWheat() {
+        int count = inventory.all(Material.WHEAT).values().stream()
+                .mapToInt(ItemStack::getAmount)
+                .sum(), hay;
+
+        if (count == 0 || (hay = count / 9) == 0) return;
+
+        int remaining = count % 9;
+
+        // Remove all wheat and add hay blocks.
+        inventory.remove(Material.WHEAT);
+        inventory.addItem(new ItemStack(Material.HAY_BLOCK, hay));
+
+        // Save remaining wheat.
+        if (remaining > 0) inventory.addItem(new ItemStack(Material.WHEAT, remaining));
+    }
+
+    private void playBlockSound(@NotNull Block block, @NotNull Function<SoundGroup, Sound> getter) {
+        SoundGroup group = block.getBlockData().getSoundGroup();
+        velocityStand.getWorld().playSound(
+                block.getLocation().add(0.5d, 0.5d, 0.5d),
+                getter.apply(group),
+                SoundCategory.BLOCKS,
+                1.0f,
+                group.getPitch());
+    }
+
+    private void saveToInventoryOrDrop(@NotNull Block block, Material drop, int amount) {
+        HashMap<Integer, ItemStack> left = inventory.addItem(new ItemStack(drop, amount));
+        if (left.isEmpty()) return;
+
+        Location at = block.getLocation().add(0.5d, 0.5d, 0.5d);
+        for (ItemStack item : left.values()) {
+            velocityStand.getWorld().dropItemNaturally(at, item);
         }
     }
 
@@ -198,14 +401,11 @@ public class Generic extends Vehicle {
         Block top = block.getRelative(BlockFace.UP);
 
         if (breakBlock(block)) {
-            breakAndPlaySound(block);
+            breakAndPlaySound(block, true);
             return;
         }
 
-        if (blockType == Material.FARMLAND && breakCrop(top)) {
-            breakAndPlaySound(top);
-            return;
-        }
+        handleTractor();
 
         BlockCollisionResult blockResult = isPassable(block);
         BlockCollisionResult topResult = isPassable(top);

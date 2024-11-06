@@ -2,6 +2,7 @@ package me.matsubara.vehicles.manager;
 
 import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.files.Config;
+import me.matsubara.vehicles.model.Model;
 import me.matsubara.vehicles.model.stand.PacketStand;
 import me.matsubara.vehicles.vehicle.Vehicle;
 import org.bukkit.Bukkit;
@@ -16,8 +17,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Collection;
 
 public final class StandManager implements Listener {
 
@@ -83,20 +82,22 @@ public final class StandManager implements Listener {
             if (vehicle.isDriver(player) || vehicle.isPassenger(player)) continue;
 
             boolean show = isInRange(vehicle.getVelocityStand().getLocation(), location);
-            handleStandRender(player, vehicle.getModel().getStands(), show, spawn);
+            handleStandRender(player, vehicle.getModel(), show, spawn);
         }
     }
 
-    private void handleStandRender(Player player, @NotNull Collection<PacketStand> stands, boolean show, boolean spawn) {
-        for (PacketStand stand : stands) {
+    private void handleStandRender(@NotNull Player player, @NotNull Model model, boolean show, boolean spawn) {
+        boolean ignored = model.getIgnored().contains(player.getUniqueId());
+
+        for (PacketStand stand : model.getStands()) {
             if (show) {
-                if (stand.isIgnored(player) || spawn) {
+                if (ignored || spawn) {
                     stand.spawn(player, true);
                 }
                 continue;
             }
 
-            if (!stand.isIgnored(player)) {
+            if (!ignored) {
                 stand.destroy(player);
             }
         }

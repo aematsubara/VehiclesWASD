@@ -1,10 +1,12 @@
 package me.matsubara.vehicles.manager;
 
+import com.cryptomorin.xseries.reflection.XReflection;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import com.github.retrooper.packetevents.event.SimplePacketListenerAbstract;
 import com.github.retrooper.packetevents.event.simple.PacketPlayReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerInput;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientSteerVehicle;
 import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.data.PlayerInput;
@@ -34,18 +36,30 @@ public class InputManager extends SimplePacketListenerAbstract implements Listen
 
     @Override
     public void onPacketPlayReceive(@NotNull PacketPlayReceiveEvent event) {
-        if (event.getPacketType() != PacketType.Play.Client.STEER_VEHICLE) return;
+        PacketType.Play.Client type = event.getPacketType();
+
+        if (type != PacketType.Play.Client.STEER_VEHICLE
+                && (!XReflection.supports(21, 2) || type != PacketType.Play.Client.PLAYER_INPUT)) return;
+
         if (!(event.getPlayer() instanceof Player player)) return;
 
-        WrapperPlayClientSteerVehicle wrapper = new WrapperPlayClientSteerVehicle(event);
+        PlayerInput input;
+        if (type == PacketType.Play.Client.STEER_VEHICLE) {
+            WrapperPlayClientSteerVehicle wrapper = new WrapperPlayClientSteerVehicle(event);
+            input = new PlayerInput(
+                    wrapper.getSideways(),
+                    wrapper.getForward(),
+                    wrapper.isJump(),
+                    wrapper.isUnmount());
+        } else {
+            WrapperPlayClientPlayerInput wrapper = new WrapperPlayClientPlayerInput(event);
+            input = new PlayerInput(
+                    wrapper.isLeft() ? 0.98f : wrapper.isRight() ? -0.98f : 0.0f,
+                    wrapper.isForward() ? 0.98f : wrapper.isBackward() ? -0.98f : 0.0f,
+                    wrapper.isJump(),
+                    wrapper.isShift());
+        }
 
-        float sideways = wrapper.getSideways();
-        float forward = wrapper.getForward();
-
-        boolean jump = wrapper.isJump();
-        boolean dismount = wrapper.isUnmount();
-
-        PlayerInput input = new PlayerInput(sideways, forward, jump, dismount);
         inputs.put(player.getUniqueId(), input);
     }
 

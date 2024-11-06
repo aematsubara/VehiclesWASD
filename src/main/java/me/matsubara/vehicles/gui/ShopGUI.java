@@ -16,6 +16,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +55,18 @@ public class ShopGUI implements InventoryHolder {
     public void updateInventory() {
         inventory.clear();
 
-        this.items = plugin.getTypeVehicles().get(currentType);
+        String path = "gui.shop.items.";
+
+        items = plugin.getTypeVehicles().get(currentType);
+
+        // There are no models available yet.
+        if (items == null) {
+            ItemStack nothing = plugin.getItem(path + "nothing").build();
+            items = new ArrayList<>();
+            for (int i = 0; i < 7; i++) {
+                items.add(new ShopVehicle(null, nothing, null));
+            }
+        }
 
         pages = (int) (Math.ceil((double) items.size() / SLOTS.length));
 
@@ -72,8 +84,6 @@ public class ShopGUI implements InventoryHolder {
         ItemStack selected = new ItemBuilder(Material.BLACK_STAINED_GLASS_PANE)
                 .setDisplayName("&7")
                 .build();
-
-        String path = "gui.shop.items.";
 
         inventory.setItem(4, selected);
         inventory.setItem(22, selected);

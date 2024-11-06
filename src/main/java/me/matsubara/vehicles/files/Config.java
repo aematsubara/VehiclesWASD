@@ -18,6 +18,7 @@ public enum Config {
     ECONOMY_PROVIDER,
     CLOSE_CUSTOMIZATION_GUI_IF_SUCCESSFUL,
     PICK_UP_ON_DISMOUNT,
+    PICK_UP_ON_REMOVE,
     PICK_UP_NEARBY_ENTITIES,
     ENTITIES_FILTER_TYPE("entities-filter.type"),
     ENTITIES_FILTER_WORLDS("entities-filter.entities"),
@@ -48,6 +49,10 @@ public enum Config {
     // Transfership.
     TRANSFER_SEARCH_TITLE("input-gui.transfer-search.title"),
     TRANSFER_SEARCH_TEXT("input-gui.transfer-search.text"),
+
+    // Tractor.
+    TRACTOR_STACK_WHEAT("vehicles.tractor.settings.stack-wheat"),
+    TRACTOR_BLOCK_TO_BONE_MEAL("vehicles.tractor.settings.block-to-bone-meal"),
 
     // Gps.
     GPS_ENABLED("gps.enabled"),
@@ -112,7 +117,9 @@ public enum Config {
     TANK_FIRE_FIREBALL_ITEM("tank-fire.fireball-item"),
 
     BREAK_BLOCKS_CROPS("break-blocks.crops"),
-    PREMIUM_FUEL("premium-fuel");
+    PREMIUM_FUEL("premium-fuel"),
+
+    CUSTOMIZATIONS_REQUIRE_PERMISSION("customizations.require-permission");
 
     private final String path;
     private final VehiclesPlugin plugin = JavaPlugin.getPlugin(VehiclesPlugin.class);

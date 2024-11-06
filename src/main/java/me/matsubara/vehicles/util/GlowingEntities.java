@@ -1065,7 +1065,23 @@ public class GlowingEntities implements Listener {
                     null,
                     null,
                     null
-            );
+            ),
+            V1_21_2(
+                    21,
+                    2,
+                    false,
+                    "am",
+                    "aD",
+                    "au",
+                    null,
+                    "f",
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null);
 
             private final int major, minor;
             private final boolean remapped;

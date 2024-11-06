@@ -13,11 +13,11 @@ import org.bukkit.inventory.ShapelessRecipe;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 public final class Shape {
 
     private final VehiclesPlugin plugin;
-    private final String name;
     private final boolean shaped;
     private final List<String> ingredients;
     private final List<String> shape;
@@ -26,7 +26,6 @@ public final class Shape {
 
     public Shape(VehiclesPlugin plugin, String name, boolean shaped, @NotNull List<String> ingredients, List<String> shape, ItemStack result) {
         this.plugin = plugin;
-        this.name = name;
         this.shaped = shaped;
         this.ingredients = ingredients;
         this.shape = shape;
@@ -59,8 +58,11 @@ public final class Shape {
             }
         }
 
-        if (!Bukkit.addRecipe(recipe)) {
-            plugin.getLogger().warning("The recipe couldn't be created for {" + name + "}!");
+        Logger logger = plugin.getLogger();
+        if (Bukkit.addRecipe(recipe)) {
+            logger.info("The recipe for {" + key + "} was created!");
+        } else {
+            logger.warning("The recipe for {" + key + "} couldn't be created!");
         }
     }
 }

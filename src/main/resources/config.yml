@@ -65,6 +65,10 @@ close-customization-gui-if-successful: false
 # If true, the vehicle will be saved in the player's inventory when they exit the vehicle.
 pick-up-on-dismount: false
 
+# If true, the vehicle will be saved in the player's inventory.
+# If false, the vehicle will be thrown to the ground.
+pick-up-on-remove: false
+
 # If true, nearby entities will be added to the vehicle seats.
 # This function follows the same rules as boats and minecarts.
 # Ignored: non-living entities, water entities, bosses and players.
@@ -265,8 +269,6 @@ tank-fire:
 # For example,
 # * ?TANK:GRASS - The grass will be broken ONLY by the tanks.
 break-blocks:
-  # Whether to break crops.
-  crops: true
   # List of materials and tags (as explained above).
   blocks:
     - CACTUS
@@ -359,7 +361,7 @@ extra-tags:
 # For example,
 # * ?TANK:NETHERITE_INGOT(30) - Each netherite ingot will add 30 of fuel ONLY to the tanks.
 #
-# Types of vehicles: BIKE, BOAT, CYBERCAR, HELICOPTER, KART, PLANE, QUAD, TANK.
+# Types of vehicles: BIKE, BOAT, CYBERCAR, HELICOPTER, KART, PLANE, QUAD, TANK, TRACTOR.
 fuel-items:
   - COAL(3)
   - LAVA_BUCKET(10)
@@ -386,6 +388,7 @@ translations:
     plane: "Plane"
     quad: "Quad"
     tank: "Tank"
+    tractor: "Tractor"
   material:
     coal: "Coal"
     lava-bucket: "Lava Bucket"
@@ -614,6 +617,42 @@ shop:
         changes:
           - COLOR:GREEN_TERRACOTTA
         price: 8000
+    tractor:
+      '1':
+        display-name: "&#383838&lGray Tractor"
+        changes:
+          - CHAIR:BLACKSTONE_STAIRS
+          - CARPET:LIGHT_GRAY_CARPET
+          - COLOR:GRAY_CONCRETE
+          - FENDER:GRAY_CARPET
+          - MUFFLER:POLISHED_BLACKSTONE_BRICK_WALL
+          - LIGHT:SOUL_LANTERN
+          - BUTTON:POLISHED_BLACKSTONE_BUTTON
+          - FENCE:WARPED_FENCE
+        price: 10000
+      '2':
+        display-name: "&#43803c&lGreen Tractor"
+        changes:
+          - CHAIR:BAMBOO_STAIRS
+          - CARPET:GREEN_CARPET
+          - COLOR:GREEN_CONCRETE
+          - FENDER:GREEN_CARPET
+          - MUFFLER:DIORITE_WALL
+          - FENCE:BAMBOO_FENCE
+          - TRAPDOOR:BAMBOO_TRAPDOOR
+        price: 10000
+      '3':
+        display-name: "&#643c80&lPurple Tractor"
+        changes:
+          - CHAIR:CRIMSON_STAIRS
+          - CARPET:MAGENTA_CARPET
+          - COLOR:PURPLE_TERRACOTTA
+          - FENDER:PURPLE_CARPET
+          - MUFFLER:NETHER_BRICK_WALL
+          - BUTTON:CRIMSON_BUTTON
+          - FENCE:CRIMSON_FENCE
+          - TRAPDOOR:CRIMSON_TRAPDOOR
+        price: 10000
 
 # Here you can specify the valid materials for each vehicle customization
 # (which can be applied in the customization menu).
@@ -625,6 +664,8 @@ shop:
 # NOTE: $CARPETS and $WOOL_CARPETS are the same tag but the first was renamed to the second since 1.19.
 # NOTE 2: Priority is only used to sort them in the GUI, you can ignore them.
 customizations:
+  # If true, only players who have the "vehicleswasd.customization" permission will be able to apply customizations to vehicles.
+  require-permission: false
   bike:
     chair:
       priority: 1
@@ -792,6 +833,56 @@ customizations:
         - $TERRACOTTA
         - $CONCRETE
         - $WOOL
+  tractor:
+    color:
+      priority: 1
+      name: "Color"
+      items:
+        - $TERRACOTTA
+        - $CONCRETE
+        - $WOOL
+    light:
+      priority: 2
+      name: "Light"
+      items:
+        - $LANTERN
+    fender:
+      priority: 3
+      name: "Fender"
+      items:
+        - $CARPETS
+        - $WOOL_CARPETS
+    muffler:
+      priority: 4
+      name: "Muffler"
+      items:
+        - $WALLS
+    trapdoor:
+      priority: 5
+      name: "Trapdoor"
+      items:
+        - $TRAPDOORS
+    chair:
+      priority: 6
+      name: "Chair"
+      items:
+        - $STAIRS
+    carpet:
+      priority: 7
+      name: "Carpet"
+      items:
+        - $CARPETS
+        - $WOOL_CARPETS
+    fence:
+      priority: 8
+      name: "Fence"
+      items:
+        - $FENCES
+    button:
+      priority: 9
+      name: "Button"
+      items:
+        - $BUTTONS
 
 # Here you can modify the vehicle item obtained by using {/vwasd give} and the characteristics of each vehicle.
 #
@@ -983,6 +1074,31 @@ vehicles:
       refuel: ITEM_BUCKET_FILL, 1.0, 1.0
       turn-on: BLOCK_PISTON_EXTEND, 0.7725, 0.75
       turn-off: BLOCK_PISTON_CONTRACT, 0.7725, 0.75
+  tractor:
+    item:
+      url: b485b3360cfba9d90fc0ba18aa9bc7d90a05d62f05cbd3821330632f3c74b06c
+      material: PLAYER_HEAD
+      display-name: "&#ff6e52&lTractor"
+      lore:
+        - "&7Right click to place it!"
+    min-speed: -25.0
+    max-speed: 25.0
+    acceleration: 0.25
+    storage-rows: 6
+    fuel:
+      max-fuel: 2000.0
+      reduction-per-second: 2.5
+    sounds:
+      engine: ENTITY_ENDER_DRAGON_FLAP, 0.475, 1.5
+      refuel: ITEM_BUCKET_FILL, 1.0, 1.0
+      turn-on: BLOCK_PISTON_EXTEND, 0.7725, 0.75
+      turn-off: BLOCK_PISTON_CONTRACT, 0.7725, 0.75
+    # Here you can modify some features of the tractor.
+    settings:
+      # If true, 9 WHEAT will be converted to 1 HAY_BLOCK to save space in the vehicle inventory.
+      stack-wheat: true
+      # If true, 1 BONE_BLOCK will be converted into 9 BONE_MEAL, which can be used to fertilize crops.
+      block-to-bone-meal: true
 
 gui:
   vehicle:
@@ -1077,12 +1193,71 @@ gui:
           - POWER
         flags:
           - HIDE_ENCHANTS
+      harvest:
+        material: WOODEN_HOE
+        display-name: "&aHoe"
+        lore:
+          - "&7This tool is used to harvest all"
+          - "&7crops that are fully mature."
+        flags:
+          - HIDE_ATTRIBUTES
+      plant:
+        material: WHEAT_SEEDS
+        display-name: "&aSeeds"
+        # %seed% - the seeds that the tractor can plant.
+        lore:
+          - "&7This tool is used to plant seeds in"
+          - "&7the vehicle's inventory on farmland"
+          - "&7or soul sand (for nether warts)."
+          - "&7"
+          - "&7The order of seeds to place is based on the"
+          - "&7seed's position in the vehicle's inventory."
+          - "&7"
+          - "&7Seeds:"
+          - "&8* &e%seed%"
+      bone-meal:
+        material: BONE_MEAL
+        display-name: "&aBone Meal"
+        lore:
+          - "&7This tool is used to fertilize crops that"
+          - "&7are not mature (except nether warts)."
+          - "&7"
+          - "&cRequires bone meal!"
+      dirt-path:
+        material: DIRT_PATH
+        display-name: "&aPath"
+        # %block% - the blocks that will be converted into a dirt path.
+        lore:
+          - "&7This tool is used to create dirt paths."
+          - "&7"
+          - "&7Affected blocks:"
+          - "&8* &e%block%"
+      farmland:
+        material: FARMLAND
+        display-name: "&aFarmland"
+        # %block% - the blocks that will be converted into a farmland.
+        lore:
+          - "&7This tool is used to create farmlands."
+          - "&7"
+          - "&7Affected blocks:"
+          - "&8* &e%block%"
+      enabled:
+        material: LIME_DYE
+        display-name: "&aEnabled"
+      disabled:
+        material: GRAY_DYE
+        display-name: "&cDisabled"
   shop:
     # %type% - the type of vehicle selected in the shop.
     # %page% - current page.
     # %max-page% - amount of pages
     title: "%type% (%page%/%max-page%)"
     items:
+      nothing:
+        material: BARRIER
+        display-name: "&cNothing!"
+        lore:
+          - "&7This type of vehicle has no models available!"
       previous-type:
         url: bd69e06e5dadfd84e5f3d1c21063f2553b2fa945ee1d4d7152fdc5425bc12a9
         material: PLAYER_HEAD

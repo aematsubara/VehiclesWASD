@@ -1,9 +1,9 @@
 package me.matsubara.vehicles.vehicle;
 
+import com.github.retrooper.packetevents.protocol.player.EquipmentSlot;
 import lombok.Getter;
 import lombok.Setter;
 import me.matsubara.vehicles.manager.targets.TypeTarget;
-import me.matsubara.vehicles.model.stand.PacketStand;
 import org.bukkit.Material;
 
 import java.util.LinkedHashMap;
@@ -14,7 +14,7 @@ import java.util.Set;
 @Setter
 public class Customization {
 
-    private final Map<String, PacketStand.ItemSlot> stands = new LinkedHashMap<>();
+    private final Map<String, EquipmentSlot> stands = new LinkedHashMap<>();
     private final String customizationName;
     private final String customizationNameFromConfig;
     private final Material defaultType;
@@ -34,7 +34,7 @@ public class Customization {
     }
 
     public int size() {
-        return stands.size();
+        return Math.min(stands.size(), defaultType.getMaxStackSize());
     }
 
     public boolean isTagged(Material material) {
