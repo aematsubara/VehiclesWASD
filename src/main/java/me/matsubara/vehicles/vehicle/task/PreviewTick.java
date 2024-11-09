@@ -1,5 +1,8 @@
 package me.matsubara.vehicles.vehicle.task;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import lombok.Getter;
 import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.files.Config;
@@ -13,10 +16,9 @@ import me.matsubara.vehicles.vehicle.Customization;
 import me.matsubara.vehicles.vehicle.Vehicle;
 import me.matsubara.vehicles.vehicle.VehicleData;
 import me.matsubara.vehicles.vehicle.VehicleType;
-import net.md_5.bungee.api.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
@@ -29,11 +31,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
-
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class PreviewTick extends BukkitRunnable {
 
@@ -54,7 +51,7 @@ public class PreviewTick extends BukkitRunnable {
     public PreviewTick(VehiclesPlugin plugin, Player player, @NotNull VehicleData data) {
         this.plugin = plugin;
         this.player = player;
-        this.seconds = Config.SHOP_PREVIEW_SECONDS.asInt();
+        this.seconds = Config.SHOP_PREVIEW_SECONDS.getValue(int.class);
 
         VehicleType type = data.type();
 
@@ -111,17 +108,13 @@ public class PreviewTick extends BukkitRunnable {
 
         model.setLocation(location);
 
-        boolean rainbow = Config.SHOP_PREVIEW_RAINBOW_MESSAGE.asBool();
+        boolean rainbow = Config.SHOP_PREVIEW_RAINBOW_MESSAGE.getValue(Boolean.class);
         if (rainbow || tick % 20 == 0) {
-            String message = Config.SHOP_PREVIEW_MESSAGE.asStringTranslated().replace("%remaining%", String.valueOf(seconds - tick / 20));
+            Component message = Config.SHOP_PREVIEW_MESSAGE.asComponentTranslated().replaceText(builder -> builder.matchLiteral("%remaining%").replacement(String.valueOf(seconds - tick / 20)));
 
-            BaseComponent[] components = rainbow ?
-                    new BaseComponent[]{new TextComponent(ChatColor.stripColor(message))} :
-                    TextComponent.fromLegacyText(message);
+            if (rainbow) message = message.color(TextColor.color(hue / 360.0f, 1.0f, 1.0f));
 
-            if (rainbow) components[0].setColor(ChatColor.of(Color.getHSBColor(hue / 360.0f, 1.0f, 1.0f)));
-
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);
+            player.sendActionBar(message);
             hue += 6;
         }
 

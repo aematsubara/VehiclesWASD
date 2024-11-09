@@ -1,10 +1,10 @@
 package me.matsubara.vehicles.vehicle;
 
+import java.util.function.Function;
 import lombok.Getter;
 import me.matsubara.vehicles.data.SoundWrapper;
 import me.matsubara.vehicles.files.Config;
-
-import java.util.function.Function;
+import me.matsubara.vehicles.files.config.ConfigValue;
 
 @Getter
 public enum FireballWeapon {
@@ -36,25 +36,25 @@ public enum FireballWeapon {
     private final VehicleType type;
     private final double yOffset;
     private final String scope;
-    private final Config enabled;
-    private final Config speedMultiplier;
-    private final Config incendiary;
-    private final Config radius;
-    private final Config cooldown;
-    private final Config sendCooldownMessage;
-    private final Config fireballItem;
+    private final ConfigValue enabled;
+    private final ConfigValue speedMultiplier;
+    private final ConfigValue incendiary;
+    private final ConfigValue radius;
+    private final ConfigValue cooldown;
+    private final ConfigValue sendCooldownMessage;
+    private final ConfigValue fireballItem;
     private final Function<Vehicle, SoundWrapper> soundGetter;
 
     FireballWeapon(VehicleType type,
                    double yOffset,
                    String scope,
-                   Config enabled,
-                   Config speedMultiplier,
-                   Config incendiary,
-                   Config radius,
-                   Config cooldown,
-                   Config sendCooldownMessage,
-                   Config fireballItem,
+                   ConfigValue enabled,
+            ConfigValue speedMultiplier,
+            ConfigValue incendiary,
+            ConfigValue radius,
+            ConfigValue cooldown,
+            ConfigValue sendCooldownMessage,
+            ConfigValue fireballItem,
                    Function<Vehicle, SoundWrapper> soundGetter) {
         this.type = type;
         this.yOffset = yOffset;

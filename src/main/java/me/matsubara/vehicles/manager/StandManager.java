@@ -67,7 +67,7 @@ public final class StandManager implements Listener {
     }
 
     public boolean isInRange(@NotNull Location location, Location check) {
-        double distance = Config.RENDER_DISTANCE.asDouble();
+        double distance = Config.RENDER_DISTANCE.getValue(Double.class);
         double distanceSquared = Math.min(distance * distance, BUKKIT_VIEW_DISTANCE);
 
         World world = location.getWorld();

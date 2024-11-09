@@ -1,20 +1,40 @@
 package me.matsubara.vehicles.listener;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.Consumer;
 import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.files.Config;
 import me.matsubara.vehicles.files.Messages;
-import me.matsubara.vehicles.gui.*;
+import me.matsubara.vehicles.gui.ConfirmShopGUI;
+import me.matsubara.vehicles.gui.CustomizationGUI;
+import me.matsubara.vehicles.gui.MyVehiclesGUI;
+import me.matsubara.vehicles.gui.ShopGUI;
+import me.matsubara.vehicles.gui.VehicleGUI;
 import me.matsubara.vehicles.hook.EconomyExtension;
 import me.matsubara.vehicles.manager.VehicleManager;
 import me.matsubara.vehicles.manager.targets.TypeTarget;
 import me.matsubara.vehicles.model.stand.StandSettings;
 import me.matsubara.vehicles.util.PluginUtils;
-import me.matsubara.vehicles.vehicle.*;
+import me.matsubara.vehicles.vehicle.Customization;
+import me.matsubara.vehicles.vehicle.TractorMode;
+import me.matsubara.vehicles.vehicle.Vehicle;
+import me.matsubara.vehicles.vehicle.VehicleData;
+import me.matsubara.vehicles.vehicle.VehicleType;
 import me.matsubara.vehicles.vehicle.type.Generic;
 import me.matsubara.vehicles.vehicle.type.Helicopter;
+import net.kyori.adventure.text.serializer.json.JSONComponentSerializer;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.apache.commons.lang3.tuple.Pair;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
@@ -33,9 +53,6 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.BoundingBox;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.*;
-import java.util.function.Consumer;
 
 public final class InventoryListener implements Listener {
 
@@ -250,12 +267,12 @@ public final class InventoryListener implements Listener {
 
                 EconomyExtension<?> economyExtension = plugin.getEconomyExtension();
                 if (!economyExtension.has(player, money)) {
-                    messages.send(player, Messages.Message.SHOP_NOT_ENOUGH_MONEY, string -> string.replace("%money%", economyExtension.format(money)));
+                    messages.send(player, Messages.Message.SHOP_NOT_ENOUGH_MONEY, string -> string.replaceText(builder -> builder.matchLiteral("%money%").replacement(economyExtension.format(money))));
                     closeInventory(player);
                     return;
                 }
 
-                if (Config.CONFIRM_SHOP.asBool()) {
+                if (Config.CONFIRM_SHOP.getValue(Boolean.class)) {
                     runTask(() -> new ConfirmShopGUI(plugin, player, current, data, money, shop.getCurrentPage()));
                 } else {
                     String shopDisplayName;
@@ -269,7 +286,7 @@ public final class InventoryListener implements Listener {
             }
 
             if (!event.getClick().isRightClick()) return;
-            if (!Config.SHOP_PREVIEW_ENABLED.asBool()) return;
+            if (!Config.SHOP_PREVIEW_ENABLED.getValue(Boolean.class)) return;
 
             manager.startPreview(player, data);
             closeInventory(player);
@@ -343,8 +360,8 @@ public final class InventoryListener implements Listener {
                         runTask(() -> new CustomizationGUI(plugin, customization.getVehicle(), snapshot.getPlayer(), snapshot.getText()));
                         return CLOSE_RESPONSE;
                     })
-                    .title(Config.CUSTOMIZATION_SEARCH_TITLE.asStringTranslated())
-                    .text(Config.CUSTOMIZATION_SEARCH_TEXT.asStringTranslated())
+                    .jsonTitle(JSONComponentSerializer.json().serialize(Config.CUSTOMIZATION_SEARCH_TITLE.asComponentTranslated()))
+                    .text(Config.CUSTOMIZATION_SEARCH_TEXT.getValue(String.class))
                     .itemLeft(new ItemStack(Material.PAPER))
                     .plugin(plugin)
                     .open(player);
@@ -396,7 +413,7 @@ public final class InventoryListener implements Listener {
                         event::setCursor,
                 requiredAmount);
 
-        if (Config.CLOSE_CUSTOMIZATION_GUI_IF_SUCCESSFUL.asBool()) {
+        if (Config.CLOSE_CUSTOMIZATION_GUI_IF_SUCCESSFUL.getValue(Boolean.class)) {
             closeInventory(player);
         } else {
             current.setType(newType);
@@ -426,7 +443,7 @@ public final class InventoryListener implements Listener {
             return;
         }
 
-        messages.send(player, Messages.Message.SHOP_SUCCESSFUL_PURCHASE, string -> string.replace("%money%", economyExtension.format(money)));
+        messages.send(player, Messages.Message.SHOP_SUCCESSFUL_PURCHASE, string -> string.replaceText(builder -> builder.matchLiteral("%money%").replacement(economyExtension.format(money))));
 
         VehicleData temp = new VehicleData(
                 player.getUniqueId(), // We need to assign the owner here, otherwise we won't be able to use the vehicle.
@@ -506,7 +523,7 @@ public final class InventoryListener implements Listener {
             if (!isOwner) return;
 
             if (!vehicle.getCustomizations().isEmpty()) {
-                if (Config.CUSTOMIZATIONS_REQUIRE_PERMISSION.asBool() && !player.hasPermission("vehicleswasd.customization")) {
+                if (Config.CUSTOMIZATIONS_REQUIRE_PERMISSION.getValue(Boolean.class) && !player.hasPermission("vehicleswasd.customization")) {
                     messages.send(player, Messages.Message.CUSTOMIZATION_NO_PERMISSION);
                     return;
                 }
@@ -549,7 +566,7 @@ public final class InventoryListener implements Listener {
                                 vehicle.setLocked(true);
                                 vehicle.setOwner(ownerUUID);
 
-                                messages.send(clicker, Messages.Message.TRANSFER_NEW_OWNER, string -> string.replace("%player%", newOwner.getName()));
+                                messages.send(clicker, Messages.Message.TRANSFER_NEW_OWNER, string -> string.replaceText(builder -> builder.matchLiteral("%player%").replacement(newOwner.getName())));
                             }
                         } else {
                             messages.send(clicker, Messages.Message.TRANSFER_OFFLINE_PLAYER);
@@ -557,8 +574,8 @@ public final class InventoryListener implements Listener {
 
                         return CLOSE_RESPONSE;
                     })
-                    .title(Config.TRANSFER_SEARCH_TITLE.asStringTranslated())
-                    .text(Config.TRANSFER_SEARCH_TEXT.asStringTranslated())
+                    .jsonTitle(JSONComponentSerializer.json().serialize(Config.TRANSFER_SEARCH_TITLE.asComponentTranslated()))
+                    .text(Config.TRANSFER_SEARCH_TEXT.getValue(String.class))
                     .itemLeft(new ItemStack(Material.PAPER))
                     .plugin(plugin)
                     .open(player);

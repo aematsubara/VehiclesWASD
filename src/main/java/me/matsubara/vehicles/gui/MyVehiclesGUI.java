@@ -1,16 +1,26 @@
 package me.matsubara.vehicles.gui;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.Getter;
 import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.files.Messages;
+import me.matsubara.vehicles.util.ComponentUtil;
 import me.matsubara.vehicles.util.InventoryUpdate;
 import me.matsubara.vehicles.util.ItemBuilder;
 import me.matsubara.vehicles.util.PluginUtils;
 import me.matsubara.vehicles.vehicle.Vehicle;
 import me.matsubara.vehicles.vehicle.VehicleData;
 import me.matsubara.vehicles.vehicle.VehicleType;
+import net.kyori.adventure.text.Component;
 import org.apache.commons.lang3.ArrayUtils;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -18,11 +28,6 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
 
 @Getter
 public final class MyVehiclesGUI implements InventoryHolder {
@@ -142,7 +147,7 @@ public final class MyVehiclesGUI implements InventoryHolder {
 
             //noinspection DataFlowIssue
             inventory.setItem(slotIndex.get(index), new ItemBuilder(plugin.getTypeCategoryItem().get(type))
-                    .setLore(config.getStringList(path + "vehicle.lore"))
+                    .setLore(ComponentUtil.deserialize(config.getStringList(path + "vehicle.lore")))
                     .replace("%type%", plugin.getVehicleTypeFormatted(type))
                     .replace("%world%", world.getName())
                     .replace("%x%", PluginUtils.fixedDouble(location.getX()))
@@ -158,13 +163,11 @@ public final class MyVehiclesGUI implements InventoryHolder {
         InventoryUpdate.updateInventory(player, getTitle());
     }
 
-    private @NotNull String getTitle() {
+    private @NotNull Component getTitle() {
         String title = plugin.getConfig().getString("gui.vehicles.title");
-        if (title == null) return "";
+        if (title == null) return Component.empty();
 
-        return PluginUtils.translate(title
-                .replace("%page%", String.valueOf(current + 1))
-                .replace("%max-page%", String.valueOf(pages == 0 ? 1 : pages)));
+        return ComponentUtil.deserialize(title, null, "%page%", String.valueOf(current + 1), "%max-page%", String.valueOf(pages == 0 ? 1 : pages));
     }
 
     public void previousPage(boolean isShiftClick) {

@@ -25,19 +25,19 @@ import com.cryptomorin.xseries.reflection.XReflection;
 import com.cryptomorin.xseries.reflection.minecraft.MinecraftConnection;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
-import lombok.Getter;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.InventoryView;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.Nullable;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.util.Locale;
 import java.util.Set;
+import lombok.Getter;
+import net.kyori.adventure.text.Component;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.InventoryView;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A utility class for update the inventory of a player.
@@ -116,19 +116,20 @@ public final class InventoryUpdate {
      * @param newTitle the new title for the inventory.
      */
     @SuppressWarnings("UnstableApiUsage")
-    public static void updateInventory(Player player, String newTitle) {
+    public static void updateInventory(Player player, Component newTitle) {
         Preconditions.checkArgument(player != null, "Cannot update inventory to null player.");
         Preconditions.checkArgument(newTitle != null, "The new title can't be null.");
 
         try {
-            if (newTitle.length() > 32) {
-                newTitle = newTitle.substring(0, 32);
+            String stringTitle = ComponentUtil.serialize(newTitle);
+            if (stringTitle.length() > 32) {
+                stringTitle = stringTitle.substring(0, 32);
             }
 
             if (XReflection.supports(20)) {
                 InventoryView open = player.getOpenInventory();
                 if (UNOPENABLES.contains(open.getType().name())) return;
-                open.setTitle(newTitle);
+                open.setTitle(stringTitle);
                 return;
             }
 
@@ -139,9 +140,9 @@ public final class InventoryUpdate {
             // Create a new title.
             Object title;
             if (XReflection.supports(19)) {
-                title = literal.invoke(newTitle);
+                title = literal.invoke(stringTitle);
             } else {
-                title = chatMessage.invoke(newTitle, DUMMY_COLOR_MODIFIERS);
+                title = chatMessage.invoke(stringTitle, DUMMY_COLOR_MODIFIERS);
             }
 
             // Get activeContainer from EntityPlayer.

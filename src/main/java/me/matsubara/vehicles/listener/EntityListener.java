@@ -44,7 +44,7 @@ public class EntityListener implements Listener {
         // Prevent damage by own vehicle weapon when driving.
         handleVehicleDamage(event.getEntity(), event.getDamager(), event);
 
-        if (!Config.PLANE_FIRE_CREEPER_EXPLODE.asBool()) return;
+        if (!Config.PLANE_FIRE_CREEPER_EXPLODE.getValue(Boolean.class)) return;
         if (!(event.getEntity() instanceof Creeper creeper)) return;
         if (!(event.getDamager() instanceof Projectile projectile)) return;
 

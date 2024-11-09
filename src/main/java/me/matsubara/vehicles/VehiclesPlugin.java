@@ -8,15 +8,48 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.tchristofferson.configupdater.ConfigUpdater;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
+import java.io.File;
+import java.io.IOException;
+import java.security.CodeSource;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import lombok.Getter;
 import me.matsubara.vehicles.command.VehiclesCommands;
 import me.matsubara.vehicles.data.ActionKeybind;
 import me.matsubara.vehicles.data.ShopVehicle;
 import me.matsubara.vehicles.files.Config;
 import me.matsubara.vehicles.files.Messages;
-import me.matsubara.vehicles.hook.*;
+import me.matsubara.vehicles.files.config.ConfigValue;
+import me.matsubara.vehicles.hook.AVExtension;
+import me.matsubara.vehicles.hook.EconomyExtension;
+import me.matsubara.vehicles.hook.EssentialsExtension;
+import me.matsubara.vehicles.hook.PlayerPointsExtension;
+import me.matsubara.vehicles.hook.VaultExtension;
+import me.matsubara.vehicles.hook.WGExtension;
 import me.matsubara.vehicles.listener.EntityListener;
 import me.matsubara.vehicles.listener.InventoryListener;
 import me.matsubara.vehicles.listener.protocol.UseEntity;
@@ -25,6 +58,7 @@ import me.matsubara.vehicles.manager.StandManager;
 import me.matsubara.vehicles.manager.VehicleManager;
 import me.matsubara.vehicles.manager.targets.TypeTarget;
 import me.matsubara.vehicles.manager.targets.TypeTargetManager;
+import me.matsubara.vehicles.util.ComponentUtil;
 import me.matsubara.vehicles.util.GlowingEntities;
 import me.matsubara.vehicles.util.ItemBuilder;
 import me.matsubara.vehicles.util.PluginUtils;
@@ -32,8 +66,15 @@ import me.matsubara.vehicles.util.Shape;
 import me.matsubara.vehicles.vehicle.Vehicle;
 import me.matsubara.vehicles.vehicle.VehicleData;
 import me.matsubara.vehicles.vehicle.VehicleType;
+import net.kyori.adventure.text.Component;
 import org.apache.commons.lang3.text.WordUtils;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
@@ -50,18 +91,6 @@ import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.patheloper.mapping.PatheticMapper;
-
-import java.io.File;
-import java.io.IOException;
-import java.security.CodeSource;
-import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 @Getter
 public final class VehiclesPlugin extends JavaPlugin {
@@ -81,7 +110,7 @@ public final class VehiclesPlugin extends JavaPlugin {
     private final Set<TypeTarget> breakBlocks = new HashSet<>();
     private final Multimap<String, Material> extraTags = MultimapBuilder.hashKeys().hashSetValues().build();
     private final Map<String, AVExtension<?>> extensions = new HashMap<>();
-
+    private final ExecutorService threadPool = new ThreadPoolExecutor(0, Integer.MAX_VALUE, 120L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setNameFormat("vehicleswasd-worker-thread-%d").build());
     private final NamespacedKey vehicleTypeKey = new NamespacedKey(this, "vehicle_type");
     private final NamespacedKey vehicleModelIdKey = new NamespacedKey(this, "vehicle_model_id");
     private final NamespacedKey customizationKey = new NamespacedKey(this, "customization");
@@ -193,6 +222,16 @@ public final class VehiclesPlugin extends JavaPlugin {
         for (Vehicle vehicle : vehicleManager.getVehicles()) {
             vehicle.saveToChunk();
         }
+
+        threadPool.shutdownNow();
+        try {
+            boolean completedShutdown = threadPool.awaitTermination(10, TimeUnit.SECONDS);
+            if(!completedShutdown) {
+                getLogger().warning("Thread pool did not shut down in time, unsaved vehicles may occur!");
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public ActionKeybind getOpenMenuKeybind() {
@@ -203,9 +242,9 @@ public final class VehiclesPlugin extends JavaPlugin {
         return getKeyOrDefault(Config.KEYBINDS_SHOOT_WEAPON, ActionKeybind.RIGHT_CLICK);
     }
 
-    private ActionKeybind getKeyOrDefault(@NotNull Config keybindConfig, ActionKeybind defaultKeybind) {
+    private ActionKeybind getKeyOrDefault(@NotNull ConfigValue keybindConfig, ActionKeybind defaultKeybind) {
         return PluginUtils.getOrDefault(ActionKeybind.class,
-                keybindConfig.asString(defaultKeybind.name()),
+                keybindConfig.getValue(String.class, defaultKeybind.name()),
                 defaultKeybind);
     }
 
@@ -213,7 +252,7 @@ public final class VehiclesPlugin extends JavaPlugin {
         // Invalidate before initializing.
         economyExtension = null;
 
-        String provider = Config.ECONOMY_PROVIDER.asString();
+        String provider = Config.ECONOMY_PROVIDER.getValue(String.class);
         if (provider == null || !ECONOMY_PROVIDER.contains(provider)) {
             getLogger().info("No economy provider found, disabling economy support...");
             return;
@@ -354,8 +393,8 @@ public final class VehiclesPlugin extends JavaPlugin {
                 String replace = shopDisplayName.replace(lastColors, lastColors + ChatColor.ITALIC);
                 builder.addLore(
                         false,
-                        getConfig().getString("translations.from-shop", replace).replace("%name%", replace),
-                        "&7");
+                        ComponentUtil.deserialize(getConfig().getString("translations.from-shop", replace), null, "%name%", replace),
+                        Component.text("&7"));
             }
 
             String lock = getConfig().getString("translations.lock." + (data.locked() ? "locked" : "unlocked"));
@@ -451,7 +490,7 @@ public final class VehiclesPlugin extends JavaPlugin {
 
             ItemStack vehicleItem = new ItemBuilder(createVehicleItem(type, null))
                     .removeData(vehicleTypeKey)
-                    .setLore(Config.SHOP_ITEM_LORE.asStringList())
+                    .setLore(ComponentUtil.deserialize(Config.SHOP_ITEM_LORE.getValue(List.class)))
                     .build();
 
             List<ShopVehicle> itemList = new ArrayList<>();
@@ -489,7 +528,7 @@ public final class VehiclesPlugin extends JavaPlugin {
                 if (displayName != null) builder.setDisplayName(displayName);
 
                 ItemStack item = builder
-                        .applyMultiLineLore(finalCustomizations, "%customization-on%", getConfig().getString("translations.no-customization"))
+                        .applyMultiLineLore(finalCustomizations, "%customization-on%", Component.text(getConfig().getString("translations.no-customization")))
                         .setData(saveDataKey, Vehicle.VEHICLE_DATA, data)
                         .setData(moneyKey, PersistentDataType.DOUBLE, price)
                         .replace("%money%", economyExtension != null && economyExtension.isEnabled() ? economyExtension.format(price) : price)
@@ -566,7 +605,7 @@ public final class VehiclesPlugin extends JavaPlugin {
         FileConfiguration config = getConfig();
 
         String name = config.getString(path + ".display-name");
-        List<String> lore = config.getStringList(path + ".lore");
+        List<Component> lore = ComponentUtil.deserialize(config.getStringList(path + ".lore"));
 
         String url = config.getString(path + ".url");
 

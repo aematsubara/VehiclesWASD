@@ -1,21 +1,37 @@
 package me.matsubara.vehicles.util;
 
 import com.cryptomorin.xseries.reflection.XReflection;
-import org.bukkit.*;
+import java.lang.invoke.MethodHandle;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+import java.util.function.UnaryOperator;
+import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.DyeColor;
+import org.bukkit.FireworkEffect;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.*;
+import org.bukkit.inventory.meta.BannerMeta;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.NotNull;
-
-import java.lang.invoke.MethodHandle;
-import java.util.*;
-import java.util.function.UnaryOperator;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public final class ItemBuilder {
@@ -96,7 +112,7 @@ public final class ItemBuilder {
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return this;
 
-        meta.setDisplayName(PluginUtils.translate(displayName));
+        meta.displayName(ComponentUtil.deserialize(displayName));
         item.setItemMeta(meta);
         return this;
     }
@@ -110,32 +126,32 @@ public final class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder setLore(String... lore) {
+    public ItemBuilder setLore(Component... lore) {
         return setLore(Arrays.asList(lore));
     }
 
-    public ItemBuilder setLore(List<String> lore) {
+    public ItemBuilder setLore(List<Component> lore) {
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return this;
 
-        meta.setLore(PluginUtils.translate(lore));
+        meta.lore(lore);
         item.setItemMeta(meta);
         return this;
     }
 
-    public ItemBuilder addLore(boolean end, String... lore) {
+    public ItemBuilder addLore(boolean end, Component... lore) {
         return addLore(end, Arrays.asList(lore));
     }
 
-    public ItemBuilder addLore(String... lore) {
+    public ItemBuilder addLore(Component... lore) {
         return addLore(true, Arrays.asList(lore));
     }
 
-    public ItemBuilder addLore(boolean end, List<String> lore) {
+    public ItemBuilder addLore(boolean end, List<Component> lore) {
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return this;
 
-        List<String> actual = meta.getLore();
+        List<Component> actual = meta.lore();
         if (actual == null) return setLore(lore);
 
         if (end) actual.addAll(lore);
@@ -144,14 +160,14 @@ public final class ItemBuilder {
         return setLore(actual);
     }
 
-    public ItemBuilder addLore(List<String> lore) {
+    public ItemBuilder addLore(List<Component> lore) {
         return addLore(true, lore);
     }
 
-    public List<String> getLore() {
+    public List<Component> getLore() {
         ItemMeta meta = item.getItemMeta();
-        List<String> lore;
-        return meta != null && (lore = meta.getLore()) != null ? lore : Collections.emptyList();
+        List<Component> lore;
+        return meta != null && (lore = meta.lore()) != null ? lore : Collections.emptyList();
     }
 
     public ItemBuilder setLeatherArmorMetaColor(Color color) {
@@ -271,42 +287,42 @@ public final class ItemBuilder {
     }
 
     public ItemBuilder replace(String target, @NotNull Object replace) {
-        String text = PluginUtils.translate((replace instanceof Double number ? PluginUtils.fixedDouble(number) : replace).toString());
+        Component text = ComponentUtil.deserialize((replace instanceof Double number ? PluginUtils.fixedDouble(number) : replace).toString());
         return replaceName(target, text).replaceLore(target, text);
     }
 
-    public ItemBuilder replace(UnaryOperator<String> operator) {
+    public ItemBuilder replace(UnaryOperator<Component> operator) {
         return replaceName(operator).replaceLore(operator);
     }
 
-    public ItemBuilder replaceName(String target, String replace) {
-        return replaceName(string -> string.replace(target, replace));
+    public ItemBuilder replaceName(String target, Component replace) {
+        return replaceName(string -> string.replaceText(builder -> builder.match(target).replacement(replace)));
     }
 
-    public ItemBuilder replaceName(UnaryOperator<String> operator) {
+    public ItemBuilder replaceName(UnaryOperator<Component> operator) {
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return this;
 
         if (meta.hasDisplayName()) {
-            meta.setDisplayName(operator.apply(meta.getDisplayName()));
+            meta.displayName(operator.apply(meta.displayName()));
         }
 
         item.setItemMeta(meta);
         return this;
     }
 
-    public ItemBuilder replaceLore(String target, String replace) {
-        return replaceLore(string -> string.replace(target, replace));
+    public ItemBuilder replaceLore(String target, Component replace) {
+        return replaceLore(string -> string.replaceText(builder -> builder.matchLiteral(target).replacement(replace)));
     }
 
-    public ItemBuilder replaceLore(UnaryOperator<String> operator) {
+    public ItemBuilder replaceLore(UnaryOperator<Component> operator) {
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return this;
 
-        List<String> lore;
-        if (meta.hasLore() && (lore = meta.getLore()) != null) {
+        List<Component> lore;
+        if (meta.hasLore() && (lore = meta.lore()) != null) {
             lore.replaceAll(operator);
-            meta.setLore(lore);
+            meta.lore(lore);
         }
 
         item.setItemMeta(meta);
@@ -316,32 +332,32 @@ public final class ItemBuilder {
     public ItemBuilder applyMultiLineLore(
             List<String> strings,
             String advancedPlaceholder,
-            String noResultLine) {
-        List<String> lore = getLore();
+            Component noResultLine) {
+        List<Component> lore = getLore();
         if (lore.isEmpty()) return this;
 
         int indexOf = -1;
         for (int i = 0; i < lore.size(); i++) {
-            if (lore.get(i).contains(advancedPlaceholder)) {
+            if (ComponentUtil.serialize(lore.get(i)).contains(advancedPlaceholder)) {
                 indexOf = i;
                 break;
             }
         }
 
         if (indexOf != -1) {
-            String toReplace = lore.get(indexOf);
+            Component toReplace = lore.get(indexOf);
 
-            List<String> newLore = new ArrayList<>();
+            List<Component> newLore = new ArrayList<>();
 
             if (indexOf > 0) {
                 newLore.addAll(lore.subList(0, indexOf));
             }
 
             if (strings.isEmpty()) {
-                newLore.add(toReplace.replace(advancedPlaceholder, noResultLine));
+                newLore.add(toReplace.replaceText(builder -> builder.matchLiteral(advancedPlaceholder).replacement(noResultLine)));
             } else {
                 for (String string : strings) {
-                    newLore.add(toReplace.replace(advancedPlaceholder, string));
+                    newLore.add(toReplace.replaceText(builder -> builder.matchLiteral(advancedPlaceholder).replacement(string)));
                 }
             }
 

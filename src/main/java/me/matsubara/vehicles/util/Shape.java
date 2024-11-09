@@ -1,6 +1,8 @@
 package me.matsubara.vehicles.util;
 
 import com.google.common.base.Strings;
+import java.util.List;
+import java.util.logging.Logger;
 import lombok.Getter;
 import me.matsubara.vehicles.VehiclesPlugin;
 import org.bukkit.Bukkit;
@@ -11,9 +13,6 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
-import java.util.logging.Logger;
 
 public final class Shape {
 
@@ -59,9 +58,13 @@ public final class Shape {
         }
 
         Logger logger = plugin.getLogger();
-        if (Bukkit.addRecipe(recipe)) {
-            logger.info("The recipe for {" + key + "} was created!");
-        } else {
+        try {
+            if (Bukkit.addRecipe(recipe)) {
+                logger.info("The recipe for {" + key + "} was created!");
+            } else {
+                logger.warning("The recipe for {" + key + "} couldn't be created!");
+            }
+        } catch (IllegalStateException ignored) {
             logger.warning("The recipe for {" + key + "} couldn't be created!");
         }
     }

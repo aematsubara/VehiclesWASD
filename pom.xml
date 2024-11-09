@@ -120,8 +120,8 @@
     <repositories>
         <!-- Spigot -->
         <repository>
-            <id>spigotmc-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+            <id>papermc-repo</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
         <!-- Spigot -->
         <repository>
@@ -155,8 +155,8 @@
         </repository>
         <!-- MorePersistentDataTypes -->
         <repository>
-            <id>jeff-media-public</id>
-            <url>https://hub.jeff-media.com/nexus/repository/jeff-media-public/</url>
+            <id>central</id>
+            <url>https://repo1.maven.org/maven2/</url>
         </repository>
         <!-- EssentialsX -->
         <repository>
@@ -174,9 +174,9 @@
         <!-- Spigot -->
         <!--suppress VulnerableLibrariesLocal -->
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.20.1-R0.1-SNAPSHOT</version>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>1.20.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <!-- AnvilGUI -->
@@ -257,7 +257,7 @@
         </dependency>
         <!-- MorePersistentDataTypes -->
         <dependency>
-            <groupId>com.jeff_media</groupId>
+            <groupId>com.jeff-media</groupId>
             <artifactId>MorePersistentDataTypes</artifactId>
             <version>2.4.0</version>
         </dependency>
@@ -299,6 +299,13 @@
             <artifactId>playerpoints</artifactId>
             <version>3.2.7</version>
             <scope>provided</scope>
+        </dependency>
+        <!-- PaperLib -->
+        <dependency>
+            <groupId>io.papermc</groupId>
+            <artifactId>paperlib</artifactId>
+            <version>1.0.7</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

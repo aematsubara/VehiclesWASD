@@ -1,5 +1,10 @@
 package me.matsubara.vehicles.manager.targets;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.util.PluginUtils;
 import me.matsubara.vehicles.vehicle.VehicleType;
@@ -10,8 +15,6 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.*;
 
 public final class TypeTargetManager {
 

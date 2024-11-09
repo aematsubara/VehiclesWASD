@@ -4,12 +4,27 @@ import com.cryptomorin.xseries.reflection.XReflection;
 import com.github.retrooper.packetevents.protocol.player.EquipmentSlot;
 import com.google.common.collect.Multimap;
 import io.github.retrooper.packetevents.util.SpigotConversionUtil;
+import java.awt.Color;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.Getter;
 import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.event.VehicleDespawnEvent;
 import me.matsubara.vehicles.event.VehicleSpawnEvent;
 import me.matsubara.vehicles.files.Config;
 import me.matsubara.vehicles.files.Messages;
+import me.matsubara.vehicles.files.config.ConfigValue;
 import me.matsubara.vehicles.manager.targets.TypeTarget;
 import me.matsubara.vehicles.model.Model;
 import me.matsubara.vehicles.model.stand.PacketStand;
@@ -25,10 +40,14 @@ import me.matsubara.vehicles.vehicle.task.KeybindTask;
 import me.matsubara.vehicles.vehicle.task.PreviewTick;
 import me.matsubara.vehicles.vehicle.task.VehicleTick;
 import me.matsubara.vehicles.vehicle.type.Helicopter;
-import net.md_5.bungee.api.ChatMessageType;
+import net.kyori.adventure.text.Component;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
-import org.bukkit.*;
+import org.bukkit.Chunk;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Tag;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.Gate;
@@ -45,6 +64,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDismountEvent;
 import org.bukkit.event.entity.EntityEvent;
 import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -62,13 +82,6 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.spigotmc.event.entity.EntityDismountEvent;
-
-import java.awt.Color;
-import java.io.File;
-import java.util.List;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
 public class VehicleManager implements Listener {
@@ -224,7 +237,7 @@ public class VehicleManager implements Listener {
         // This will only happen when a player spawns the vehicle with vehicle item that contains data.
         if (location.getYaw() == Float.MIN_VALUE && player != null) {
             BlockFace face = PluginUtils.getFace(player.getLocation().getYaw(), false);
-            location.setDirection(PluginUtils.getDirection(Config.OPPOSITE_FACE_SPAWN.asBool() ? face.getOppositeFace() : face));
+            location.setDirection(PluginUtils.getDirection(Config.OPPOSITE_FACE_SPAWN.getValue(Boolean.class) ? face.getOppositeFace() : face));
         }
 
         VehicleType type = data.type();
@@ -258,13 +271,12 @@ public class VehicleManager implements Listener {
     }
 
     private void handleKeybindMessage(Player player, Vehicle vehicle) {
-        if (!Config.KEYBINDS_ACTION_BAR_MESSAGE_ENABLED.asBool()) return;
+        if (!Config.KEYBINDS_ACTION_BAR_MESSAGE_ENABLED.getValue(Boolean.class)) return;
 
-        int ticks = (int) (Config.KEYBINDS_ACTION_BAR_MESSAGE_SECONDS.asDouble() * 20);
+        int ticks = (int) (Config.KEYBINDS_ACTION_BAR_MESSAGE_SECONDS.getValue(Double.class) * 20);
 
         // Cancel current task before starting a new one.
         cancelKeybindTask(player);
-
         keybindTasks.put(player.getUniqueId(), new KeybindTask(player, vehicle, ticks));
     }
 
@@ -281,11 +293,11 @@ public class VehicleManager implements Listener {
         return contains(Config.WORLDS_FILTER_TYPE, Config.WORLDS_FILTER_WORLDS, world.getName());
     }
 
-    private boolean contains(@NotNull Config filterConfig, Config listConfig, String check) {
-        String filter = filterConfig.asString();
+    private boolean contains(@NotNull ConfigValue filterConfig, ConfigValue listConfig, String check) {
+        String filter = filterConfig.getValue(String.class);
         if (filter == null || !FILTER_TYPES.contains(filter.toUpperCase(Locale.ROOT))) return true;
 
-        List<String> list = listConfig.asStringList();
+        List<String> list = listConfig.getValue(List.class);
         return filter.equalsIgnoreCase("WHITELIST") == list.contains(check);
     }
 
@@ -377,7 +389,7 @@ public class VehicleManager implements Listener {
         }
 
         // Remove speed and velocity.
-        if (Config.STOP_VEHICLE_ON_DISMOUNT.asBool()) {
+        if (Config.STOP_VEHICLE_ON_DISMOUNT.getValue(Boolean.class)) {
             vehicle.setCurrentSpeed(0.0f);
             vehicle.getVelocityStand().setVelocity(new Vector());
         }
@@ -389,11 +401,11 @@ public class VehicleManager implements Listener {
         removeCooldown(player, vehicle, Config.PLANE_FIRE_SECONDARY_ENABLED, Config.PLANE_FIRE_SECONDARY_COOLDOWN, Material.FIRE_CHARGE);
         removeCooldown(player, vehicle, Config.TANK_FIRE_ENABLED, Config.TANK_FIRE_COOLDOWN, Material.FIRE_CHARGE);
 
-        if (Config.ACTION_BAR_ENABLED.asBool()) {
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR); // Clear message.
+        if (Config.ACTION_BAR_ENABLED.getValue(Boolean.class)) {
+            player.sendActionBar(Component.empty()); // Clear message.
         }
 
-        if (!valid || !driver || !Config.PICK_UP_ON_DISMOUNT.asBool()) return;
+        if (!valid || !driver || !Config.PICK_UP_ON_DISMOUNT.getValue(Boolean.class)) return;
 
         saveVehicleOnInventory(player, vehicle);
     }
@@ -418,10 +430,10 @@ public class VehicleManager implements Listener {
 
     private void removeCooldown(Player player,
                                 Vehicle vehicle,
-                                @NotNull Config enabledConfig,
-                                Config cooldownConfig,
+                                @NotNull ConfigValue enabledConfig,
+                                ConfigValue cooldownConfig,
                                 Material... materials) {
-        if (!enabledConfig.asBool() || cooldownConfig.asDouble() <= 0.0d) return;
+        if (!enabledConfig.getValue(Boolean.class) || cooldownConfig.getValue(Double.class) <= 0.0d) return;
 
         UUID playerUUID = player.getUniqueId();
 
@@ -441,7 +453,7 @@ public class VehicleManager implements Listener {
     private void handleDismountLocation(@NotNull Entity entity, @NotNull Vehicle vehicle, boolean bypass) {
         Location entityLocation = entity.getLocation();
 
-        boolean useCurrent = !Config.SAFE_DISMOUNT_TELEPORT.asBool() && (vehicle.isOnGround() || (!bypass
+        boolean useCurrent = !Config.SAFE_DISMOUNT_TELEPORT.getValue(Boolean.class) && (vehicle.isOnGround() || (!bypass
                 && !vehicle.isRemoved()
                 && !vehicle.is(VehicleType.HELICOPTER)
                 && !vehicle.is(VehicleType.PLANE)));

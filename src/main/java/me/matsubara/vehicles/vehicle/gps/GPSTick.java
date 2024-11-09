@@ -1,5 +1,6 @@
 package me.matsubara.vehicles.vehicle.gps;
 
+import java.util.Iterator;
 import lombok.Getter;
 import me.matsubara.vehicles.files.Messages;
 import me.matsubara.vehicles.vehicle.type.Generic;
@@ -13,8 +14,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.patheloper.api.wrapper.PathPosition;
 import org.patheloper.mapping.bukkit.BukkitMapper;
-
-import java.util.Iterator;
 
 public class GPSTick extends BukkitRunnable {
 

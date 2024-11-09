@@ -1,10 +1,34 @@
 package me.matsubara.vehicles.util;
 
 import com.cryptomorin.xseries.reflection.XReflection;
-import com.google.common.base.Preconditions;
 import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodType;
+import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.text.SimpleDateFormat;
+import java.util.Base64;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import me.matsubara.vehicles.VehiclesPlugin;
 import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.io.FileUtils;
@@ -30,27 +54,6 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.scanner.ScannerException;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodType;
-import java.lang.reflect.Field;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Consumer;
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @SuppressWarnings("deprecation")
 public final class PluginUtils {
@@ -194,25 +197,6 @@ public final class PluginUtils {
                 .getAsJsonObject("SKIN")
                 .get("url")
                 .getAsString();
-    }
-
-    public static @NotNull String translate(String message) {
-        Preconditions.checkArgument(message != null, "Message can't be null.");
-
-        Matcher matcher = PATTERN.matcher(ChatColor.translateAlternateColorCodes('&', message));
-        StringBuilder buffer = new StringBuilder();
-
-        while (matcher.find()) {
-            matcher.appendReplacement(buffer, ChatColor.of(matcher.group(1)).toString());
-        }
-
-        return matcher.appendTail(buffer).toString();
-    }
-
-    @Contract("_ -> param1")
-    public static @NotNull List<String> translate(@NotNull List<String> messages) {
-        messages.replaceAll(PluginUtils::translate);
-        return messages;
     }
 
     public static String[] splitData(String string) {

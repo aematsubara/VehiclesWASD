@@ -7,10 +7,15 @@ import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.player.InteractionHand;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientInteractEntity;
 import com.google.common.collect.Multimap;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
 import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.data.ActionKeybind;
 import me.matsubara.vehicles.files.Config;
 import me.matsubara.vehicles.files.Messages;
+import me.matsubara.vehicles.files.config.ConfigValue;
 import me.matsubara.vehicles.gui.VehicleGUI;
 import me.matsubara.vehicles.manager.VehicleManager;
 import me.matsubara.vehicles.model.Model;
@@ -23,9 +28,21 @@ import me.matsubara.vehicles.vehicle.task.FireballTask;
 import me.matsubara.vehicles.vehicle.task.PreviewTick;
 import me.matsubara.vehicles.vehicle.type.Helicopter;
 import org.apache.commons.lang3.tuple.Pair;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Tag;
+import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.entity.*;
+import org.bukkit.entity.AbstractArrow;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Fireball;
+import org.bukkit.entity.LargeFireball;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.SpectralArrow;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
@@ -36,11 +53,6 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
 
 public final class UseEntity extends SimplePacketListenerAbstract implements Listener {
 
@@ -53,7 +65,7 @@ public final class UseEntity extends SimplePacketListenerAbstract implements Lis
 
     @EventHandler
     public void onProjectileLaunch(@NotNull ProjectileLaunchEvent event) {
-        if (!Config.PLANE_FIRE_SECONDARY_FOLLOW_TARGET_ENABLED.asBool()) return;
+        if (!Config.PLANE_FIRE_SECONDARY_FOLLOW_TARGET_ENABLED.getValue(Boolean.class)) return;
 
         if (!(event.getEntity() instanceof Fireball fireball)) return;
         if (!(fireball.getShooter() instanceof Player player)) return;
@@ -129,20 +141,20 @@ public final class UseEntity extends SimplePacketListenerAbstract implements Lis
         }
     }
 
-    private boolean hasCooldown(@NotNull Player player, Material type, Config sendCooldown) {
+    private boolean hasCooldown(@NotNull Player player, Material type, ConfigValue sendCooldown) {
         if (!player.hasCooldown(type)) return false;
-        if (!sendCooldown.asBool()) return true;
+        if (!sendCooldown.getValue(Boolean.class)) return true;
 
         double seconds = player.getCooldown(type) / 20.0d;
         plugin.getMessages().send(
                 player,
                 Messages.Message.WEAPON_COOLDOWN,
-                line -> line.replace("%seconds%", String.format("%.2f", seconds)));
+                line -> line.replaceText(builder -> builder.matchLiteral("%seconds%").replacement(String.format("%.2f", seconds))));
         return true;
     }
 
     private boolean handlePlanePrimary(Runnable runnable, Player player, Vehicle vehicle) {
-        if (!Config.PLANE_FIRE_PRIMARY_ENABLED.asBool()) return false;
+        if (!Config.PLANE_FIRE_PRIMARY_ENABLED.getValue(Boolean.class)) return false;
 
         PlayerInventory inventory = player.getInventory();
         ItemStack item = inventory.getItemInMainHand();
@@ -188,7 +200,7 @@ public final class UseEntity extends SimplePacketListenerAbstract implements Lis
         Material type = item.getType();
 
         if (!player.hasCooldown(type) && (item.getAmount() > 0 || player.getInventory().contains(type))) {
-            int cooldownTicks = (int) (Config.PLANE_FIRE_PRIMARY_COOLDOWN.asDouble() * 20);
+            int cooldownTicks = (int) (Config.PLANE_FIRE_PRIMARY_COOLDOWN.getValue(Double.class) * 20);
             player.setCooldown(type, cooldownTicks);
         }
 
@@ -196,7 +208,7 @@ public final class UseEntity extends SimplePacketListenerAbstract implements Lis
         spawnAt.setPitch(0.0f); // We want the plane bullets to go straight.
 
         Class<? extends AbstractArrow> clazz = type == Material.SPECTRAL_ARROW ? SpectralArrow.class : Arrow.class;
-        Vector direction = spawnAt.getDirection().multiply(Config.PLANE_FIRE_PRIMARY_SPEED_MULTIPLIER.asDouble());
+        Vector direction = spawnAt.getDirection().multiply(Config.PLANE_FIRE_PRIMARY_SPEED_MULTIPLIER.getValue(Double.class));
 
         AbstractArrow base = player.getWorld().spawnArrow(spawnAt, direction, 0.6f, 12.0f, clazz);
         base.setMetadata("VehicleSource", new FixedMetadataValue(plugin, vehicle));
@@ -212,11 +224,11 @@ public final class UseEntity extends SimplePacketListenerAbstract implements Lis
             if (meta.hasColor()) arrow.setColor(meta.getColor());
         }
 
-        int power = Math.max(0, Math.min(127, Config.PLANE_FIRE_PRIMARY_POWER_LEVEL.asInt()));
+        int power = Math.max(0, Math.min(127, Config.PLANE_FIRE_PRIMARY_POWER_LEVEL.getValue(int.class)));
         base.setDamage(power == 0 ? 2.0d : 2.0d + 0.5d * (1 + power));
-        base.setCritical(Config.PLANE_FIRE_PRIMARY_CRITICAL.asBool());
-        base.setPierceLevel(Math.max(0, Math.min(127, Config.PLANE_FIRE_PRIMARY_PIERCE_LEVEL.asInt())));
-        base.setFireTicks(Math.max(0, Config.PLANE_FIRE_PRIMARY_FIRE_TICKS.asInt()));
+        base.setCritical(Config.PLANE_FIRE_PRIMARY_CRITICAL.getValue(Boolean.class));
+        base.setPierceLevel(Math.max(0, Math.min(127, Config.PLANE_FIRE_PRIMARY_PIERCE_LEVEL.getValue(int.class))));
+        base.setFireTicks(Math.max(0, Config.PLANE_FIRE_PRIMARY_FIRE_TICKS.getValue(int.class)));
         base.setPickupStatus(AbstractArrow.PickupStatus.ALLOWED);
         base.setShooter(player);
 
@@ -231,7 +243,7 @@ public final class UseEntity extends SimplePacketListenerAbstract implements Lis
                                          Player player,
                                          Vehicle vehicle,
                                          @NotNull FireballWeapon weapon) {
-        if (!weapon.getEnabled().asBool()) return false;
+        if (!weapon.getEnabled().getValue(Boolean.class)) return false;
 
         PlayerInventory inventory = player.getInventory();
         ItemStack item = inventory.getItemInMainHand();
@@ -258,7 +270,7 @@ public final class UseEntity extends SimplePacketListenerAbstract implements Lis
         // We need to apply the cooldown and spawn the fireball SYNC.
         runTask(() -> {
             if (item.getAmount() > 0 || inventory.contains(Material.FIRE_CHARGE)) {
-                int cooldownTicks = (int) (weapon.getCooldown().asDouble() * 20);
+                int cooldownTicks = (int) (weapon.getCooldown().getValue(Double.class) * 20);
                 player.setCooldown(Material.FIRE_CHARGE, cooldownTicks);
             }
 
@@ -273,14 +285,14 @@ public final class UseEntity extends SimplePacketListenerAbstract implements Lis
                         // If it's a tank, we want it to go where the player is looking.
                         Vector direction = (plane ? spawnAt : player.getEyeLocation())
                                 .getDirection()
-                                .multiply(weapon.getSpeedMultiplier().asDouble());
+                                .multiply(weapon.getSpeedMultiplier().getValue(Double.class));
 
                         temp.setDirection(direction);
 
                         temp.setMetadata("VehicleSource", new FixedMetadataValue(plugin, vehicle));
                         temp.setDisplayItem(weapon.getFireballItem().asItem());
-                        temp.setIsIncendiary(weapon.getIncendiary().asBool());
-                        temp.setYield((float) weapon.getRadius().asDouble());
+                        temp.setIsIncendiary(weapon.getIncendiary().getValue(Boolean.class));
+                        temp.setYield(weapon.getRadius().getValue(float.class));
                         temp.setShooter(player);
 
                         Vehicle.LISTEN_MODE_IGNORE.accept(plugin, temp);
@@ -331,7 +343,7 @@ public final class UseEntity extends SimplePacketListenerAbstract implements Lis
             }
 
             VehicleManager manager = plugin.getVehicleManager();
-            if (Config.PICK_UP_ON_REMOVE.asBool()) {
+            if (Config.PICK_UP_ON_REMOVE.getValue(Boolean.class)) {
                 if (player.getInventory().firstEmpty() == -1) {
                     plugin.getMessages().send(player, Messages.Message.PICK_NOT_ENOUGH_SPACE);
                     return;

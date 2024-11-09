@@ -1,5 +1,9 @@
 package me.matsubara.vehicles.vehicle.type;
 
+import io.papermc.lib.PaperLib;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 import me.matsubara.vehicles.VehiclesPlugin;
@@ -15,10 +19,6 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -126,6 +126,7 @@ public class Helicopter extends Vehicle {
         Location target = temp.add(PluginUtils.offsetVector(offset, temp.getYaw(), temp.getPitch()));
         if (notAllowedHere(target)) return;
 
-        velocityStand.teleport(target);
+        PaperLib.teleportAsync(velocityStand, target);
+//        velocityStand.teleport(target);
     }
 }

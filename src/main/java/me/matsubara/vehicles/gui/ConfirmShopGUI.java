@@ -3,9 +3,10 @@ package me.matsubara.vehicles.gui;
 import lombok.Getter;
 import lombok.Setter;
 import me.matsubara.vehicles.VehiclesPlugin;
+import me.matsubara.vehicles.util.ComponentUtil;
 import me.matsubara.vehicles.util.ItemBuilder;
-import me.matsubara.vehicles.util.PluginUtils;
 import me.matsubara.vehicles.vehicle.VehicleData;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -33,8 +34,7 @@ public class ConfirmShopGUI implements InventoryHolder {
         else this.shopDisplayName = null;
 
         String title = plugin.getConfig().getString("gui.shop-confirm.title", shopDisplayName);
-        this.inventory = Bukkit.createInventory(this, 9, title != null && shopDisplayName != null ?
-                PluginUtils.translate(title.replace("%name%", shopDisplayName)) : "");
+        this.inventory = Bukkit.createInventory(this, 9, title != null && shopDisplayName != null ? ComponentUtil.deserialize(title.replace("%name%", shopDisplayName)) : Component.empty());
 
         this.data = data;
         this.money = money;

@@ -11,10 +11,21 @@ import com.github.retrooper.packetevents.protocol.player.EquipmentSlot;
 import com.github.retrooper.packetevents.util.Vector3d;
 import com.github.retrooper.packetevents.util.Vector3f;
 import com.github.retrooper.packetevents.wrapper.PacketWrapper;
-import com.github.retrooper.packetevents.wrapper.play.server.*;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerDestroyEntities;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityEquipment;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityHeadLook;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityMetadata;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityTeleport;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSpawnEntity;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSpawnLivingEntity;
 import com.google.common.base.Strings;
 import io.github.retrooper.packetevents.util.SpigotConversionUtil;
 import io.github.retrooper.packetevents.util.SpigotReflectionUtil;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 import me.matsubara.vehicles.manager.StandManager;
@@ -24,8 +35,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.*;
 
 @Getter
 public final class PacketStand {
@@ -67,10 +76,13 @@ public final class PacketStand {
 
         model.getIgnored().remove(player.getUniqueId());
 
-        sendSpawn(player);
-        sendLocation(player);
-        sendMetadata(player);
-        sendEquipment(player);
+
+        getModel().getPlugin().getThreadPool().execute(() -> {
+            sendSpawn(player);
+            sendLocation(player);
+            sendMetadata(player);
+            sendEquipment(player);
+        });
     }
 
     private @NotNull PacketWrapper<?> createSpawnPacket() {
@@ -220,6 +232,7 @@ public final class PacketStand {
     private void sendPacket(Player player, PacketWrapper<?> wrapper) {
         // We only need to know if the player is ignored when we send a spawn packet,
         // but the checking is done in StandManager.
+
         Object channel = SpigotReflectionUtil.getChannel(player);
         manager.sendPacketSilently(channel, wrapper);
     }

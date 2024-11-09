@@ -5,6 +5,12 @@ import com.github.retrooper.packetevents.protocol.item.type.ItemTypes;
 import com.github.retrooper.packetevents.util.Vector3f;
 import io.github.retrooper.packetevents.util.SpigotConversionUtil;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 import me.matsubara.vehicles.VehiclesPlugin;
@@ -21,9 +27,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.io.File;
-import java.util.*;
 
 @Getter
 @Setter
@@ -165,9 +168,11 @@ public final class Model {
             settings.setRightLegPose(loadAngle(path, "right-leg"));
 
             // Set equipment.
-            for (PacketStand.ItemSlot slot : PacketStand.ItemSlot.values()) {
-                settings.getEquipment().put(slot.getSlot(), loadEquipment(path, slot.getPath()));
-            }
+            plugin.getThreadPool().execute(() -> {
+                for (PacketStand.ItemSlot slot : PacketStand.ItemSlot.values()) {
+                    settings.getEquipment().put(slot.getSlot(), loadEquipment(path, slot.getPath()));
+                }
+            });
 
             settings.getTags().addAll(configuration.getStringList("parts." + path + ".tags"));
 
