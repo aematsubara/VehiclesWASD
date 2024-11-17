@@ -196,8 +196,12 @@ public final class PacketStand {
         return data;
     }
 
+    private WrapperPlayServerDestroyEntities destroyEntityPacket = null;
     private @NotNull WrapperPlayServerDestroyEntities createDestroyEntitiesPacket() {
-        return new WrapperPlayServerDestroyEntities(id);
+        if (this.destroyEntityPacket == null) {
+            this.destroyEntityPacket = new WrapperPlayServerDestroyEntities(id);
+        }
+        return this.destroyEntityPacket;
     }
 
     // This method should only be called when removing the vehicle.
