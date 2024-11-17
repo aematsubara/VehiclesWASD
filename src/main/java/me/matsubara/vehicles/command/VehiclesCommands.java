@@ -1,14 +1,30 @@
 package me.matsubara.vehicles.command;
 
 import com.google.common.collect.Lists;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.stream.Stream;
 import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.data.ShopVehicle;
 import me.matsubara.vehicles.files.Config;
 import me.matsubara.vehicles.files.Messages;
-import me.matsubara.vehicles.gui.*;
+import me.matsubara.vehicles.gui.ConfirmShopGUI;
+import me.matsubara.vehicles.gui.CustomizationGUI;
+import me.matsubara.vehicles.gui.MyVehiclesGUI;
+import me.matsubara.vehicles.gui.ShopGUI;
+import me.matsubara.vehicles.gui.VehicleGUI;
 import me.matsubara.vehicles.hook.EconomyExtension;
 import me.matsubara.vehicles.hook.EssentialsExtension;
 import me.matsubara.vehicles.manager.VehicleManager;
+import me.matsubara.vehicles.util.ComponentUtil;
+import me.matsubara.vehicles.util.ItemBuilder;
 import me.matsubara.vehicles.util.PluginUtils;
 import me.matsubara.vehicles.vehicle.Vehicle;
 import me.matsubara.vehicles.vehicle.VehicleData;
@@ -19,8 +35,7 @@ import me.matsubara.vehicles.vehicle.gps.filter.DangerousMaterialsFilter;
 import me.matsubara.vehicles.vehicle.gps.filter.WalkableFilter;
 import me.matsubara.vehicles.vehicle.gps.filter.WorldBorderFilter;
 import me.matsubara.vehicles.vehicle.type.Generic;
-import net.md_5.bungee.api.chat.*;
-import net.md_5.bungee.api.chat.hover.content.Text;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -44,11 +59,6 @@ import org.patheloper.api.pathing.result.PathfinderResult;
 import org.patheloper.mapping.PatheticMapper;
 import org.patheloper.mapping.bukkit.BukkitMapper;
 
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.stream.Stream;
-
 public class VehiclesCommands implements CommandExecutor, TabCompleter {
 
     private final VehiclesPlugin plugin;
@@ -61,7 +71,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
     private static final List<String> NONE = List.of("none");
     private static final List<String> VALID_TYPES = Stream.of(VehicleType.values()).map(VehicleType::toPath).toList();
     private static final List<String> COMMAND_ARGS = List.of("reload", "shop", "give", "gps", "fuel", "preview", "vehicles", "customization");
-    private static final List<String> HELP = Stream.of(
+    private static final List<Component> HELP = Stream.of(
             "&8----------------------------------------",
             "&9&lVehiclesWASD &f&oCommands &c<required> | [optional]",
             "&e/vwasd reload &f- &7Reload configuration files.",
@@ -74,7 +84,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             "&8(requires EssentialsX)",
             "&e/vwasd fuel [player] &f- &7Gives a fuel can.",
             "&e/vswad customization &f- &7Copy customizations from the current vehicle.",
-            "&8----------------------------------------").map(PluginUtils::translate).toList();
+            "&8----------------------------------------").map(ComponentUtil::deserialize).toList();
     private static final Set<String> TYPE_LIST_USER = Set.of("give", "preview");
 
     public VehiclesCommands(@NotNull VehiclesPlugin plugin) {
@@ -99,7 +109,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
 
         if (empty || args.length > 4 || !COMMAND_ARGS.contains((sub = args[0]).toLowerCase(Locale.ROOT))) {
             if (empty) HELP.forEach(sender::sendMessage);
-            else messages.send(sender, Messages.Message.INVALID_COMMAND, line -> line.replace("%alias%", label));
+            else messages.send(sender, Messages.Message.INVALID_COMMAND, line -> line.replaceText(builder -> builder.matchLiteral("%alias%").replacement(label)));
             return true;
         }
 
@@ -130,16 +140,20 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
                     .map(object -> "  - " + object)
                     .toArray(String[]::new)));
 
-            String hover = String.join("\n", messages.getMessages(Messages.Message.CUSTOMIZATION_CLICK_HOVER));
+            plugin.getLogger().info(click);
 
-            Player.Spigot spigot = player.spigot();
-            for (String line : messages.getMessages(Messages.Message.CUSTOMIZATION_CLICK_TO_COPY)) {
-                BaseComponent[] message = new ComponentBuilder()
-                        .append(TextComponent.fromLegacyText(PluginUtils.translate(line)))
-                        .event(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, click))
-                        .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(hover)))
-                        .create();
-                spigot.sendMessage(message);
+            List<Component> hoverMessages = messages.getMessages(Messages.Message.CUSTOMIZATION_CLICK_HOVER);
+
+            Component hover = Component.empty();
+
+            for(final Component component : hoverMessages) {
+                hover = hover.append(component);
+            }
+
+            for (Component line : messages.getMessages(Messages.Message.CUSTOMIZATION_CLICK_TO_COPY)) {
+                Component message = ComponentUtil.deserialize("<hover:show_text:\"" + ComponentUtil.serialize(hover) + "\"><click:copy_to_clipboard:\"" + click + "\">" + ComponentUtil.serialize(line) + "</click>");
+
+                player.sendMessage(message);
             }
 
             return true;
@@ -162,7 +176,9 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
                     continue;
                 }
 
-                plugin.getServer().getScheduler().runTask(plugin, online::closeInventory);
+                plugin.getServer().getScheduler().runTask(plugin, () -> {
+                    online.closeInventory();
+                });
             }
 
             CompletableFuture.runAsync(plugin::updateConfigs).thenRun(() -> plugin.getServer().getScheduler().runTask(plugin, () -> {
@@ -202,7 +218,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
 
             EconomyExtension<?> economyExtension = plugin.getEconomyExtension();
             if (economyExtension == null || !economyExtension.isEnabled()) {
-                messages.send(player, Messages.Message.SHOP_ECONOMY_DISABLED, line -> line.replace("%alias%", label));
+                messages.send(player, Messages.Message.SHOP_ECONOMY_DISABLED, line -> line.replaceText(builder -> builder.matchLiteral("%alias%").replacement(label)));
                 return true;
             }
 
@@ -225,7 +241,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
                 return true;
             }
 
-            if (!Config.GPS_ENABLED.asBool()) {
+            if (!Config.GPS_ENABLED.getValue(Boolean.class)) {
                 messages.send(player, Messages.Message.GPS_DISABLED);
                 return true;
             }
@@ -261,8 +277,8 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
 
             Location start = generic.getVelocityStand().getLocation().clone();
 
-            int maxDistance = Config.GPS_MAX_DISTANCE.asInt();
-            int minDistance = Config.GPS_MIN_DISTANCE.asInt();
+            int maxDistance = Config.GPS_MAX_DISTANCE.getValue(int.class);
+            int minDistance = Config.GPS_MIN_DISTANCE.getValue(int.class);
 
             if (start.getWorld() != null && !start.getWorld().equals(home.getWorld())) {
                 messages.send(player, Messages.Message.GPS_DIFFERENT_WORLD);
@@ -278,12 +294,12 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             if (distance > maxDistance) {
                 messages.send(player,
                         Messages.Message.GPS_TOO_FAR,
-                        string -> string.replace("%max-distance%", String.valueOf(maxDistance)));
+                        string -> string.replaceText(builder -> builder.matchLiteral("%max-distance%").replacement(String.valueOf(maxDistance))));
                 return true;
             } else if (distance < minDistance) {
                 messages.send(player,
                         Messages.Message.GPS_TOO_CLOSE,
-                        string -> string.replace("%min-distance%", String.valueOf(minDistance)));
+                        string -> string.replaceText(builder -> builder.matchLiteral("%min-distance%").replacement(String.valueOf(minDistance))));
                 return true;
             }
 
@@ -314,7 +330,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             Player target = getTargetPlayer(sender, args, 2, "fuel");
             if (target == null) return true;
 
-            target.getInventory().addItem(Config.PREMIUM_FUEL.asItemBuilder()
+            target.getInventory().addItem(Config.PREMIUM_FUEL.getValue(ItemBuilder.class)
                     .setData(plugin.getFuelItemKey(), PersistentDataType.INTEGER, 1)
                     .build());
             return true;
@@ -447,7 +463,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
         plugin.getMessages().send(
                 sender,
                 Messages.Message.NO_PERMISSION,
-                line -> line.replace("%permission%", permission));
+                line -> line.replaceText(builder -> builder.matchLiteral("%permission%").replacement(permission)));
         return true;
     }
 
@@ -490,7 +506,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
                 && args[0].equalsIgnoreCase("gps")
                 && sender instanceof Player player
                 && plugin.getVehicleManager().getVehicleByEntity(player) != null
-                && Config.GPS_ENABLED.asBool()) {
+                && Config.GPS_ENABLED.getValue(Boolean.class)) {
             EssentialsExtension essentials = plugin.getEssentialsExtension();
 
             List<String> homes;

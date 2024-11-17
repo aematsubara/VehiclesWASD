@@ -1,16 +1,21 @@
 package me.matsubara.vehicles.gui;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.Getter;
 import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.model.stand.StandSettings;
+import me.matsubara.vehicles.util.ComponentUtil;
 import me.matsubara.vehicles.util.Crop;
 import me.matsubara.vehicles.util.ItemBuilder;
-import me.matsubara.vehicles.util.PluginUtils;
 import me.matsubara.vehicles.vehicle.TractorMode;
 import me.matsubara.vehicles.vehicle.Vehicle;
 import me.matsubara.vehicles.vehicle.VehicleType;
 import me.matsubara.vehicles.vehicle.type.Generic;
 import me.matsubara.vehicles.vehicle.type.Helicopter;
+import net.kyori.adventure.text.Component;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -24,11 +29,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 public class VehicleGUI implements InventoryHolder {
 
@@ -116,13 +116,13 @@ public class VehicleGUI implements InventoryHolder {
                     List<String> seeds = Arrays.stream(Crop.values())
                             .map(crop -> plugin.getMaterialOrTagName(crop.getSeeds().name(), false))
                             .toList();
-                    builder.applyMultiLineLore(seeds, "%seed%", null);
+                    builder.applyMultiLineLore(seeds, "%seed%", Component.empty());
                 }
             } else {
                 List<String> blocks = from.stream()
                         .map(material -> plugin.getMaterialOrTagName(material.name(), false))
                         .toList();
-                builder.applyMultiLineLore(blocks, "%block%", null);
+                builder.applyMultiLineLore(blocks, "%block%",  Component.empty());
             }
             inventory.setItem(MODE_START + i, builder.build());
             inventory.setItem(STATE_START + i, getItem(player, generic.getTractorMode() == mode ?
@@ -159,7 +159,7 @@ public class VehicleGUI implements InventoryHolder {
         ItemBuilder builder = plugin.getItem("gui.vehicle.items." + itemName);
 
         if (!vehicle.isOwner(player)) {
-            builder.addLore(plugin.getConfig().getString("translations.only-owner"));
+            builder.addLore(ComponentUtil.deserialize(plugin.getConfig().getString("translations.only-owner")));
         }
 
         return builder;
@@ -167,7 +167,7 @@ public class VehicleGUI implements InventoryHolder {
 
     private ItemStack createFuelItem(String itemName, List<String> fuelItems) {
         return plugin.getItem("gui.vehicle.items." + itemName)
-                .applyMultiLineLore(fuelItems, "%fuel%", PluginUtils.translate(plugin.getConfig().getString("translations.no-fuel")))
+                .applyMultiLineLore(fuelItems, "%fuel%", ComponentUtil.deserialize(plugin.getConfig().getString("translations.no-fuel")))
                 .build();
     }
 

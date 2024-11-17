@@ -50,7 +50,7 @@
 config-version: 1
 
 # The rendering distance of the vehicles.
-render-distance: 80
+render-distance: 80.0
 
 # Which economy provider to use (Vault / PlayerPoints).
 economy-provider: Vault

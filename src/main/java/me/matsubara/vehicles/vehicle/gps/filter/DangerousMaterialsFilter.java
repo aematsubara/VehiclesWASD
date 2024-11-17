@@ -1,5 +1,6 @@
 package me.matsubara.vehicles.vehicle.gps.filter;
 
+import java.util.EnumSet;
 import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
 import org.patheloper.api.pathing.filter.PathFilter;
@@ -7,8 +8,6 @@ import org.patheloper.api.pathing.filter.PathValidationContext;
 import org.patheloper.api.snapshot.SnapshotManager;
 import org.patheloper.api.wrapper.PathBlock;
 import org.patheloper.api.wrapper.PathPosition;
-
-import java.util.EnumSet;
 
 /**
  * A PathFilter that excludes nodes which are located on or near dangerous materials like lava.

@@ -1,13 +1,12 @@
 package me.matsubara.vehicles.vehicle;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
 
 @Getter
 public enum TractorMode {

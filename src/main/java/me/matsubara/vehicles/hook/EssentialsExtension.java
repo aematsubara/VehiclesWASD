@@ -1,11 +1,10 @@
 package me.matsubara.vehicles.hook;
 
+import java.util.List;
 import me.matsubara.vehicles.VehiclesPlugin;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 public class EssentialsExtension implements AVExtension<EssentialsExtension> {
 

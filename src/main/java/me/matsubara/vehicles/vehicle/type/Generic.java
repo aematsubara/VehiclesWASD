@@ -4,6 +4,15 @@ import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.manager.protocol.ProtocolManager;
 import com.github.retrooper.packetevents.util.Vector3i;
 import io.github.retrooper.packetevents.util.SpigotReflectionUtil;
+import io.papermc.lib.PaperLib;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Function;
+import java.util.stream.IntStream;
 import lombok.Getter;
 import lombok.Setter;
 import me.matsubara.vehicles.VehiclesPlugin;
@@ -20,7 +29,13 @@ import me.matsubara.vehicles.vehicle.Vehicle;
 import me.matsubara.vehicles.vehicle.VehicleData;
 import me.matsubara.vehicles.vehicle.VehicleType;
 import me.matsubara.vehicles.vehicle.gps.GPSTick;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
+import org.bukkit.SoundGroup;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Ageable;
@@ -29,11 +44,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Function;
-import java.util.stream.IntStream;
 
 @Getter
 public class Generic extends Vehicle {
@@ -221,7 +231,7 @@ public class Generic extends Vehicle {
         handleTractor(0);
         handleTractor(1);
 
-        if (Config.TRACTOR_STACK_WHEAT.asBool()) {
+        if (Config.TRACTOR_STACK_WHEAT.getValue(Boolean.class)) {
             stackWheat();
         }
     }
@@ -300,7 +310,7 @@ public class Generic extends Vehicle {
                 // Try to apply bone meal.
                 if (tick % 4 == 0 && crop != Crop.WART) {
                     boolean hasBoneMeal = inventory.contains(Material.BONE_MEAL);
-                    if (!hasBoneMeal && (!Config.TRACTOR_BLOCK_TO_BONE_MEAL.asBool()
+                    if (!hasBoneMeal && (!Config.TRACTOR_BLOCK_TO_BONE_MEAL.getValue(Boolean.class)
                             || !inventory.contains(Material.BONE_BLOCK)
                             || inventory.firstEmpty() == -1))
                         continue;
@@ -495,7 +505,7 @@ public class Generic extends Vehicle {
 
         if (notAllowedHere(frontOrBack)) return;
 
-        velocityStand.teleport(frontOrBack);
+        PaperLib.teleportAsync(velocityStand, frontOrBack);
     }
 
     private boolean collides(@NotNull Block block, @NotNull Location location) {

@@ -1,6 +1,7 @@
 package me.matsubara.vehicles.vehicle;
 
 
+import java.util.Locale;
 import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.model.Model;
 import me.matsubara.vehicles.vehicle.type.Boat;
@@ -8,8 +9,6 @@ import me.matsubara.vehicles.vehicle.type.Generic;
 import me.matsubara.vehicles.vehicle.type.Helicopter;
 import org.apache.commons.lang3.function.TriFunction;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Locale;
 
 public enum VehicleType {
     BIKE,

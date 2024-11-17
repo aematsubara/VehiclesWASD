@@ -1,5 +1,7 @@
 package me.matsubara.vehicles.vehicle.gps;
 
+import java.util.Iterator;
+import java.util.function.Consumer;
 import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.files.Messages;
 import me.matsubara.vehicles.vehicle.type.Generic;
@@ -11,9 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import org.patheloper.api.pathing.result.PathfinderResult;
 import org.patheloper.api.wrapper.PathPosition;
 import org.patheloper.mapping.bukkit.BukkitMapper;
-
-import java.util.Iterator;
-import java.util.function.Consumer;
 
 public class GPSResultHandler implements Consumer<PathfinderResult> {
 

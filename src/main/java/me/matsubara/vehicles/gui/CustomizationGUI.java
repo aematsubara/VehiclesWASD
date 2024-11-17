@@ -1,12 +1,18 @@
 package me.matsubara.vehicles.gui;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import lombok.Getter;
 import me.matsubara.vehicles.VehiclesPlugin;
+import me.matsubara.vehicles.util.ComponentUtil;
 import me.matsubara.vehicles.util.InventoryUpdate;
 import me.matsubara.vehicles.util.ItemBuilder;
-import me.matsubara.vehicles.util.PluginUtils;
 import me.matsubara.vehicles.vehicle.Customization;
 import me.matsubara.vehicles.vehicle.Vehicle;
+import net.kyori.adventure.text.Component;
 import org.apache.commons.lang3.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -17,8 +23,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.*;
 
 @Getter
 public final class CustomizationGUI implements InventoryHolder {
@@ -100,7 +104,7 @@ public final class CustomizationGUI implements InventoryHolder {
                     .setAmount(customization.size())
                     .setData(plugin.getCustomizationKey(), PersistentDataType.STRING, name)
                     .replace("%customization%", nameFromConfig != null ? nameFromConfig : name)
-                    .applyMultiLineLore(validMaterialNames, "%material%", plugin.getConfig().getString("translations.no-types"))
+                    .applyMultiLineLore(validMaterialNames, "%material%", Component.text(plugin.getConfig().getString("translations.no-types")))
                     .build());
         }
 
@@ -111,13 +115,11 @@ public final class CustomizationGUI implements InventoryHolder {
         return keyword != null ? plugin.getItem(path + "clear-search").replace("%keyword%", keyword).build() : plugin.getItem(path + "search").build();
     }
 
-    private @NotNull String getTitle() {
+    private @NotNull Component getTitle() {
         String title = plugin.getConfig().getString("gui.customizations.title");
-        if (title == null) return "";
+        if (title == null) return Component.empty();
 
-        return PluginUtils.translate(title
-                .replace("%page%", String.valueOf(current + 1))
-                .replace("%max-page%", String.valueOf(pages == 0 ? 1 : pages)));
+        return ComponentUtil.deserialize(title, null, "%page%", current + 1, "%max-page%", pages == 0 ? 1 : pages);
     }
 
     public void previousPage(boolean isShiftClick) {

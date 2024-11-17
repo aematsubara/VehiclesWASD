@@ -1,14 +1,13 @@
 package me.matsubara.vehicles.vehicle;
 
 import com.github.retrooper.packetevents.protocol.player.EquipmentSlot;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 import me.matsubara.vehicles.manager.targets.TypeTarget;
 import org.bukkit.Material;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
 
 @Getter
 @Setter

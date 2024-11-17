@@ -1,5 +1,7 @@
 package me.matsubara.vehicles.util;
 
+import java.util.HashSet;
+import java.util.Set;
 import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
@@ -7,9 +9,6 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Getter
 public enum Crop {

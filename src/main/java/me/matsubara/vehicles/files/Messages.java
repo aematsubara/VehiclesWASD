@@ -1,19 +1,19 @@
 package me.matsubara.vehicles.files;
 
 import com.google.common.collect.Lists;
-import lombok.Getter;
-import lombok.Setter;
-import me.matsubara.vehicles.VehiclesPlugin;
-import me.matsubara.vehicles.util.PluginUtils;
-import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.UnaryOperator;
+import lombok.Getter;
+import lombok.Setter;
+import me.matsubara.vehicles.VehiclesPlugin;
+import me.matsubara.vehicles.util.ComponentUtil;
+import net.kyori.adventure.text.Component;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @Getter
 public class Messages {
@@ -30,18 +30,18 @@ public class Messages {
         send(sender, message, null);
     }
 
-    public void send(CommandSender sender, @NotNull Message message, @Nullable UnaryOperator<String> operator) {
-        for (String line : getMessages(message)) {
-            if (!line.isEmpty()) sender.sendMessage(operator != null ? operator.apply(line) : line);
+    public void send(CommandSender sender, @NotNull Message message, @Nullable UnaryOperator<Component> operator) {
+        for (Component line : getMessages(message)) {
+            sender.sendMessage(operator != null ? operator.apply(line) : line);
         }
     }
 
-    public List<String> getMessages(@NotNull Message message) {
+    public List<Component> getMessages(@NotNull Message message) {
         return getMessages(message.getPath());
     }
 
     @SuppressWarnings("unchecked")
-    public List<String> getMessages(String path) {
+    public List<Component> getMessages(String path) {
         if (!configuration.contains(path, true)) return Collections.emptyList();
 
         List<String> messages;
@@ -57,7 +57,7 @@ public class Messages {
             }
         } else return Collections.emptyList();
 
-        return PluginUtils.translate(messages);
+        return ComponentUtil.deserialize(messages);
     }
 
     @Getter

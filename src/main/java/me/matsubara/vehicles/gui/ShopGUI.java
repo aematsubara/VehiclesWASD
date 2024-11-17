@@ -1,12 +1,17 @@
 package me.matsubara.vehicles.gui;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.Getter;
 import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.data.ShopVehicle;
+import me.matsubara.vehicles.util.ComponentUtil;
 import me.matsubara.vehicles.util.InventoryUpdate;
 import me.matsubara.vehicles.util.ItemBuilder;
-import me.matsubara.vehicles.util.PluginUtils;
 import me.matsubara.vehicles.vehicle.VehicleType;
+import net.kyori.adventure.text.Component;
 import org.apache.commons.lang3.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -15,11 +20,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Getter
 public class ShopGUI implements InventoryHolder {
@@ -127,14 +127,11 @@ public class ShopGUI implements InventoryHolder {
         InventoryUpdate.updateInventory(player, getTitle());
     }
 
-    private @NotNull String getTitle() {
+    private @NotNull Component getTitle() {
         String title = plugin.getConfig().getString("gui.shop.title");
-        if (title == null) return "";
+        if (title == null) return Component.empty();
 
-        return PluginUtils.translate(title
-                .replace("%type%", plugin.getVehicleTypeFormatted(currentType))
-                .replace("%page%", String.valueOf(currentPage + 1))
-                .replace("%max-page%", String.valueOf(pages == 0 ? 1 : pages)));
+        return ComponentUtil.deserialize(title, null, "%type%", plugin.getVehicleTypeFormatted(currentType), "%page%", String.valueOf(currentPage + 1), "%max-page%", String.valueOf(pages == 0 ? 1 : pages));
     }
 
     public void previousPage(boolean isShiftClick) {
