@@ -5,6 +5,7 @@ import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.data.ShopVehicle;
 import me.matsubara.vehicles.files.Config;
 import me.matsubara.vehicles.files.Messages;
+import me.matsubara.vehicles.files.config.ConfigValue;
 import me.matsubara.vehicles.gui.*;
 import me.matsubara.vehicles.hook.EconomyExtension;
 import me.matsubara.vehicles.hook.EssentialsExtension;
@@ -166,6 +167,8 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             }
 
             CompletableFuture.runAsync(plugin::updateConfigs).thenRun(() -> plugin.getServer().getScheduler().runTask(plugin, () -> {
+                ConfigValue.ALL_VALUES.forEach(ConfigValue::reloadValue);
+
                 plugin.resetEconomyProvider();
 
                 plugin.reloadShopItems();
@@ -261,8 +264,8 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
 
             Location start = generic.getVelocityStand().getLocation().clone();
 
-            int maxDistance = Config.GPS_MAX_DISTANCE.asInt();
-            int minDistance = Config.GPS_MIN_DISTANCE.asInt();
+            double maxDistance = Config.GPS_MAX_DISTANCE.asDouble();
+            double minDistance = Config.GPS_MIN_DISTANCE.asDouble();
 
             if (start.getWorld() != null && !start.getWorld().equals(home.getWorld())) {
                 messages.send(player, Messages.Message.GPS_DIFFERENT_WORLD);

@@ -7,7 +7,6 @@ import me.matsubara.vehicles.model.stand.PacketStand;
 import me.matsubara.vehicles.vehicle.Vehicle;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -17,6 +16,10 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 
 public final class StandManager implements Listener {
 
@@ -32,21 +35,21 @@ public final class StandManager implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(@NotNull PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        handleStandRender(player, player.getLocation(), true);
+        handleStandRender(player, player.getLocation(), HandleCause.SPAWN);
     }
 
     @EventHandler
     public void onPlayerTeleport(@NotNull PlayerTeleportEvent event) {
         if (event.getCause() == VehicleManager.CONFLICT_CAUSE) return; // Ignore dismount teleport?
-        handleMovement(event, true);
+        handleMovementEvent(event, HandleCause.TELEPORT);
     }
 
     @EventHandler
     public void onPlayerMove(@NotNull PlayerMoveEvent event) {
-        handleMovement(event, false);
+        handleMovementEvent(event, HandleCause.MOVE);
     }
 
-    private void handleMovement(@NotNull PlayerMoveEvent event, boolean isSpawn) {
+    private void handleMovementEvent(@NotNull PlayerMoveEvent event, HandleCause cause) {
         Location to = event.getTo();
         if (to == null) return;
 
@@ -57,49 +60,62 @@ public final class StandManager implements Listener {
                 && to.getBlockZ() == from.getBlockZ()) return;
 
         Player player = event.getPlayer();
-        handleStandRender(player, to, isSpawn);
+        handleStandRender(player, to, cause);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerChangedWorld(@NotNull PlayerChangedWorldEvent event) {
         Player player = event.getPlayer();
-        handleStandRender(player, player.getLocation(), true);
+        handleStandRender(player, player.getLocation(), HandleCause.SPAWN);
     }
 
-    public boolean isInRange(@NotNull Location location, Location check) {
+    public boolean isInRange(@NotNull Location location, @NotNull Location check) {
         double distance = Config.RENDER_DISTANCE.asDouble();
         double distanceSquared = Math.min(distance * distance, BUKKIT_VIEW_DISTANCE);
 
-        World world = location.getWorld();
-        if (world == null) return false;
-
-        return world.equals(check.getWorld())
+        return Objects.equals(location.getWorld(), check.getWorld())
                 && location.distanceSquared(check) <= distanceSquared;
     }
 
-    public void handleStandRender(@NotNull Player player, Location location, boolean spawn) {
+    public void handleStandRender(Player player, Location location, HandleCause cause) {
         for (Vehicle vehicle : plugin.getVehicleManager().getVehicles()) {
             if (vehicle.isDriver(player) || vehicle.isPassenger(player)) continue;
 
-            boolean show = isInRange(vehicle.getVelocityStand().getLocation(), location);
-            handleStandRender(player, vehicle.getModel(), show, spawn);
-        }
-    }
+            Model model = vehicle.getModel();
 
-    private void handleStandRender(@NotNull Player player, @NotNull Model model, boolean show, boolean spawn) {
-        boolean ignored = model.getIgnored().contains(player.getUniqueId());
-
-        for (PacketStand stand : model.getStands()) {
-            if (show) {
-                if (ignored || spawn) {
-                    stand.spawn(player, true);
-                }
+            // The vehicle is in another world, there is no need to send packets.
+            if (!Objects.equals(player.getWorld(), model.getLocation().getWorld())) {
                 continue;
             }
 
-            if (!ignored) {
-                stand.destroy(player);
+            Set<UUID> out = model.getOut();
+
+            boolean ignored = out.contains(player.getUniqueId());
+            boolean show = isInRange(vehicle.getVelocityStand().getLocation(), location);
+            boolean spawn = cause == HandleCause.SPAWN || (cause == HandleCause.TELEPORT && !show);
+
+            if (show && (ignored || spawn)) {
+                out.remove(player.getUniqueId());
+            } else if (!show) {
+                out.add(player.getUniqueId());
             }
+
+            // Spawn the entire model in another thread.
+            plugin.getPool().execute(() -> {
+                for (PacketStand stand : model.getStands()) {
+                    if (show && (ignored || spawn)) {
+                        stand.spawn(player);
+                    } else if (!show) {
+                        stand.destroy(player);
+                    }
+                }
+            });
         }
+    }
+
+    public enum HandleCause {
+        SPAWN,
+        TELEPORT,
+        MOVE
     }
 }

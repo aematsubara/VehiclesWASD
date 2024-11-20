@@ -6,7 +6,7 @@
 
     <groupId>me.matsubara</groupId>
     <artifactId>VehiclesWASD</artifactId>
-    <version>1.2.3</version>
+    <version>1.2.4</version>
     <packaging>jar</packaging>
 
     <name>VehiclesWASD</name>
@@ -65,6 +65,10 @@
                         <relocation>
                             <pattern>org.patheloper</pattern>
                             <shadedPattern>me.matsubara.vehicles.util.pathetic</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>io.papermc.lib</pattern>
+                            <shadedPattern>me.matsubara.vehicles.util.paperlib</shadedPattern>
                         </relocation>
                     </relocations>
                     <filters>
@@ -184,12 +188,14 @@
             <groupId>net.wesjd</groupId>
             <artifactId>anvilgui</artifactId>
             <version>1.10.3-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
         <!-- XSeries -->
         <dependency>
             <groupId>com.github.cryptomorin</groupId>
             <artifactId>XSeries</artifactId>
             <version>11.3.0</version>
+            <scope>compile</scope>
         </dependency>
         <!-- Annotations -->
         <dependency>
@@ -209,14 +215,14 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.13.0</version>
+            <version>3.14.0</version>
             <scope>provided</scope>
         </dependency>
         <!--  commons-io  -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.13.0</version>
+            <version>2.16.1</version>
             <scope>provided</scope>
         </dependency>
         <!-- AuthLib -->
@@ -227,7 +233,6 @@
             <scope>provided</scope>
         </dependency>
         <!-- netty -->
-        <!--suppress VulnerableLibrariesLocal -->
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
@@ -235,7 +240,6 @@
             <scope>provided</scope>
         </dependency>
         <!-- WorldGuard -->
-        <!--suppress VulnerableLibrariesLocal -->
         <dependency>
             <groupId>com.sk89q.worldguard</groupId>
             <artifactId>worldguard-bukkit</artifactId>
@@ -257,15 +261,17 @@
         </dependency>
         <!-- MorePersistentDataTypes -->
         <dependency>
-            <groupId>com.jeff_media</groupId>
+            <groupId>com.jeff-media</groupId>
             <artifactId>MorePersistentDataTypes</artifactId>
             <version>2.4.0</version>
+            <scope>compile</scope>
         </dependency>
         <!-- pathetic -->
         <dependency>
             <groupId>com.github.patheloper.pathetic</groupId>
             <artifactId>pathetic-mapping</artifactId>
             <version>3.2.2</version>
+            <scope>compile</scope>
         </dependency>
         <!--  EssentialsX  -->
         <dependency>
@@ -285,6 +291,7 @@
             <groupId>com.tchristofferson</groupId>
             <artifactId>ConfigUpdater</artifactId>
             <version>2.0-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
         <!-- PacketEvents -->
         <dependency>
@@ -299,6 +306,13 @@
             <artifactId>playerpoints</artifactId>
             <version>3.2.7</version>
             <scope>provided</scope>
+        </dependency>
+        <!-- PaperLib -->
+        <dependency>
+            <groupId>io.papermc</groupId>
+            <artifactId>paperlib</artifactId>
+            <version>1.0.7</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

@@ -3,6 +3,8 @@ package me.matsubara.vehicles.model;
 import com.github.retrooper.packetevents.protocol.item.ItemStack;
 import com.github.retrooper.packetevents.protocol.item.type.ItemTypes;
 import com.github.retrooper.packetevents.util.Vector3f;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
 import io.github.retrooper.packetevents.util.SpigotConversionUtil;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.Getter;
@@ -12,6 +14,7 @@ import me.matsubara.vehicles.model.stand.ModelLocation;
 import me.matsubara.vehicles.model.stand.PacketStand;
 import me.matsubara.vehicles.model.stand.StandSettings;
 import me.matsubara.vehicles.util.PluginUtils;
+import me.matsubara.vehicles.vehicle.VehicleType;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -24,6 +27,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.*;
+import java.util.stream.Stream;
 
 @Getter
 @Setter
@@ -48,24 +52,48 @@ public final class Model {
     private final List<ModelLocation> locations = new ArrayList<>();
 
     // Set with the unique id of the players who aren't seeing the entity due to the distance.
-    private final Set<UUID> ignored = new ObjectOpenHashSet<>();
+    private final Set<UUID> out = new ObjectOpenHashSet<>();
+
+    // Cached model parts.
+    private static final Multimap<VehicleType, StandSettings> MODEL_CACHE = MultimapBuilder
+            .hashKeys()
+            .arrayListValues()
+            .build();
 
     // File and configuration.
     private File file;
     private FileConfiguration configuration;
 
-    public Model(VehiclesPlugin plugin, String name, @Nullable UUID oldUniqueId, Location location) {
+    public Model(VehiclesPlugin plugin, @NotNull VehicleType type, @Nullable UUID oldUniqueId, Location location) {
         this.plugin = plugin;
         this.modelUniqueId = (oldUniqueId != null) ? oldUniqueId : UUID.randomUUID();
-        this.name = name;
+        this.name = type.toPath();
         this.location = location;
 
         loadFile();
-        loadModel();
+        handleModel(type);
 
         // After loading the model, we want to add another stand which will be used for interactions.
         // The INTERACTIONS armor stand will be on the same location of the main chair.
         spawnInteractions();
+    }
+
+    private void handleModel(VehicleType type) {
+        Collection<StandSettings> settings = MODEL_CACHE.get(type);
+        if (settings.isEmpty()) {
+            loadModel();
+            MODEL_CACHE.putAll(type, Stream.concat(
+                            stands.stream().map(PacketStand::getSettings),
+                            locations.stream().map(ModelLocation::getSettings))
+                    .map(StandSettings::clone)
+                    .toList());
+            return;
+        }
+
+        for (StandSettings setting : settings) {
+            Location copy = location.clone().add(PluginUtils.offsetVector(setting.getOffset(), location.getYaw(), location.getPitch()));
+            addNew(setting.getPartName(), setting.clone(), copy, setting.getExtraYaw());
+        }
     }
 
     private void spawnInteractions() {
@@ -115,7 +143,7 @@ public final class Model {
         }
 
         // Spawn model but don't show it to anyone, we want to apply customizations first.
-        stands.add(new PacketStand(this, finalLocation, settings));
+        stands.add(new PacketStand(plugin, finalLocation, settings));
     }
 
     public void kill() {

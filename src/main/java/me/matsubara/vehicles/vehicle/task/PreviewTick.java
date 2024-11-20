@@ -39,13 +39,16 @@ public class PreviewTick extends BukkitRunnable {
 
     private final VehiclesPlugin plugin;
     private final Player player;
-    private final int seconds;
     private final @Getter Model model;
     private final VehicleData data;
     private final PacketStand center;
     private final List<Customization> customizations = new ArrayList<>();
 
-    private int tick;
+    private final int seconds = (int) (Config.SHOP_PREVIEW_SECONDS.asDouble() * 20);
+    private final boolean rainbow = Config.SHOP_PREVIEW_RAINBOW_MESSAGE.asBool();
+    private final String shopPreviewMessage = Config.SHOP_PREVIEW_MESSAGE.asStringTranslated();
+
+    private int ticks;
     private int hue;
     private float yaw;
 
@@ -54,12 +57,11 @@ public class PreviewTick extends BukkitRunnable {
     public PreviewTick(VehiclesPlugin plugin, Player player, @NotNull VehicleData data) {
         this.plugin = plugin;
         this.player = player;
-        this.seconds = Config.SHOP_PREVIEW_SECONDS.asInt();
 
         VehicleType type = data.type();
 
         Location targetLocation = getPlayerTargetLocation(player);
-        this.model = new Model(plugin, type.toPath(), null, targetLocation);
+        this.model = new Model(plugin, type, null, targetLocation);
         this.data = data;
         this.center = model.getStandByName("CENTER");
 
@@ -84,7 +86,7 @@ public class PreviewTick extends BukkitRunnable {
 
         this.yaw = targetLocation.getYaw();
 
-        plugin.getVehicleManager().getPreviews().put(player.getUniqueId(), this);
+        runTaskTimerAsynchronously(plugin, 1L, 1L);
     }
 
     private void centerStands(Location location, Vector offset) {
@@ -101,7 +103,11 @@ public class PreviewTick extends BukkitRunnable {
 
     @Override
     public void run() {
-        if (tick == seconds * 20 || !player.isValid()) {
+        if (++ticks == Integer.MAX_VALUE) ticks = 0;
+
+        if (ticks == seconds
+                || !player.isValid()
+                || !player.getWorld().equals(model.getLocation().getWorld())) {
             cancel();
             return;
         }
@@ -111,9 +117,9 @@ public class PreviewTick extends BukkitRunnable {
 
         model.setLocation(location);
 
-        boolean rainbow = Config.SHOP_PREVIEW_RAINBOW_MESSAGE.asBool();
-        if (rainbow || tick % 20 == 0) {
-            String message = Config.SHOP_PREVIEW_MESSAGE.asStringTranslated().replace("%remaining%", String.valueOf(seconds - tick / 20));
+        if (rainbow || ticks % 20 == 0) {
+            int remaining = (int) Math.ceil((double) (seconds - ticks) / 20);
+            String message = shopPreviewMessage.replace("%remaining%", String.valueOf(remaining));
 
             BaseComponent[] components = rainbow ?
                     new BaseComponent[]{new TextComponent(ChatColor.stripColor(message))} :
@@ -125,18 +131,16 @@ public class PreviewTick extends BukkitRunnable {
             hue += 6;
         }
 
-        if (tick % 20 == 0) spawnParticles();
+        if (ticks % 20 == 0) spawnParticles();
 
         for (PacketStand stand : model.getStands()) {
             Location correctLocation = BlockUtils.getCorrectLocation(null, data.type(), location, stand.getSettings());
             stand.teleport(player, correctLocation);
         }
-
-        tick++;
     }
 
     @Override
-    public synchronized void cancel() throws IllegalStateException {
+    public void cancel() throws IllegalStateException {
         super.cancel();
         model.kill();
         customizations.clear();

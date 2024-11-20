@@ -10,6 +10,7 @@ import me.matsubara.vehicles.event.VehicleDespawnEvent;
 import me.matsubara.vehicles.event.VehicleSpawnEvent;
 import me.matsubara.vehicles.files.Config;
 import me.matsubara.vehicles.files.Messages;
+import me.matsubara.vehicles.files.config.ConfigValue;
 import me.matsubara.vehicles.manager.targets.TypeTarget;
 import me.matsubara.vehicles.model.Model;
 import me.matsubara.vehicles.model.stand.PacketStand;
@@ -228,7 +229,6 @@ public class VehicleManager implements Listener {
         }
 
         VehicleType type = data.type();
-        String modelName = type.name().toLowerCase(Locale.ROOT);
 
         VehicleSpawnEvent spawnEvent = new VehicleSpawnEvent(player, location, type);
         plugin.getServer().getPluginManager().callEvent(spawnEvent);
@@ -237,7 +237,7 @@ public class VehicleManager implements Listener {
         // This may be null if it's a new vehicle.
         UUID modelUniqueId = data.modelUniqueId();
 
-        Model model = new Model(plugin, modelName, modelUniqueId, location);
+        Model model = new Model(plugin, type, modelUniqueId, location);
         Vehicle vehicle = type.create(plugin, data, model);
 
         // Start after 10 ticks to add small velocity to the helicopter ONLY if the chunk is loaded.
@@ -260,17 +260,21 @@ public class VehicleManager implements Listener {
     private void handleKeybindMessage(Player player, Vehicle vehicle) {
         if (!Config.KEYBINDS_ACTION_BAR_MESSAGE_ENABLED.asBool()) return;
 
-        int ticks = (int) (Config.KEYBINDS_ACTION_BAR_MESSAGE_SECONDS.asDouble() * 20);
-
         // Cancel current task before starting a new one.
         cancelKeybindTask(player);
 
-        keybindTasks.put(player.getUniqueId(), new KeybindTask(player, vehicle, ticks));
+        keybindTasks.put(player.getUniqueId(), new KeybindTask(player, vehicle));
     }
 
-    public void cancelKeybindTask(@NotNull Entity entity) {
-        KeybindTask task = keybindTasks.get(entity.getUniqueId());
-        if (task != null && !task.isCancelled()) task.cancel();
+    public void cancelKeybindTask(@NotNull Player player) {
+        cancelKeybindTask(player, null);
+    }
+
+    public void cancelKeybindTask(@NotNull Player player, @Nullable Vehicle vehicle) {
+        KeybindTask task = keybindTasks.get(player.getUniqueId());
+        if (task == null || task.isCancelled()) return;
+        if (vehicle != null && !vehicle.equals(task.getVehicle())) return;
+        task.cancel();
     }
 
     public boolean canBePickedUp(@NotNull Entity entity) {
@@ -281,12 +285,10 @@ public class VehicleManager implements Listener {
         return contains(Config.WORLDS_FILTER_TYPE, Config.WORLDS_FILTER_WORLDS, world.getName());
     }
 
-    private boolean contains(@NotNull Config filterConfig, Config listConfig, String check) {
+    private boolean contains(@NotNull ConfigValue filterConfig, ConfigValue listConfig, String check) {
         String filter = filterConfig.asString();
         if (filter == null || !FILTER_TYPES.contains(filter.toUpperCase(Locale.ROOT))) return true;
-
-        List<String> list = listConfig.asStringList();
-        return filter.equalsIgnoreCase("WHITELIST") == list.contains(check);
+        return filter.equalsIgnoreCase("WHITELIST") == listConfig.getValue(List.class).contains(check);
     }
 
     @EventHandler
@@ -418,8 +420,8 @@ public class VehicleManager implements Listener {
 
     private void removeCooldown(Player player,
                                 Vehicle vehicle,
-                                @NotNull Config enabledConfig,
-                                Config cooldownConfig,
+                                @NotNull ConfigValue enabledConfig,
+                                ConfigValue cooldownConfig,
                                 Material... materials) {
         if (!enabledConfig.asBool() || cooldownConfig.asDouble() <= 0.0d) return;
 
@@ -809,9 +811,10 @@ public class VehicleManager implements Listener {
     }
 
     public void startPreview(@NotNull Player player, VehicleData data) {
+        // Cancel current task before starting a new one.
         PreviewTick current = previews.remove(player.getUniqueId());
         if (current != null && !current.isCancelled()) current.cancel();
 
-        new PreviewTick(plugin, player, data).runTaskTimer(plugin, 1L, 1L);
+        previews.put(player.getUniqueId(), new PreviewTick(plugin, player, data));
     }
 }

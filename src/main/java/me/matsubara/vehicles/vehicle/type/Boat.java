@@ -1,5 +1,6 @@
 package me.matsubara.vehicles.vehicle.type;
 
+import io.papermc.lib.PaperLib;
 import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.data.PlayerInput;
 import me.matsubara.vehicles.model.Model;
@@ -37,8 +38,8 @@ public class Boat extends Vehicle {
     }
 
     @Override
-    public boolean canPlaySound() {
-        return super.canPlaySound() && playEngineSound;
+    public boolean canPlayEngineSound() {
+        return super.canPlayEngineSound() && playEngineSound;
     }
 
     @Override
@@ -97,6 +98,6 @@ public class Boat extends Vehicle {
         Location target = temp.add(PluginUtils.offsetVector(offset, temp.getYaw(), temp.getPitch()));
         if (notAllowedHere(target)) return;
 
-        velocityStand.teleport(target);
+        PaperLib.teleportAsync(velocityStand, target);
     }
 }

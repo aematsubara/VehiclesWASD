@@ -58,6 +58,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -98,6 +99,7 @@ public abstract class Vehicle implements InventoryHolder {
     protected SoundWrapper planeFireSecondarySound;
     protected SoundWrapper tankFireSound;
 
+    private ModelLocation tractorMuffler;
     protected LivingEntity currentTarget;
     private int targetDistance = Integer.MIN_VALUE;
 
@@ -130,6 +132,29 @@ public abstract class Vehicle implements InventoryHolder {
 
     protected final List<Customization> customizations = new ArrayList<>();
 
+    private final boolean pickUpNearbyEntities = Config.PICK_UP_NEARBY_ENTITIES.asBool();
+
+    private final boolean planeTargetEnabled = Config.PLANE_FIRE_SECONDARY_FOLLOW_TARGET_ENABLED.asBool();
+    private final boolean planeTargetGlowing = Config.PLANE_FIRE_SECONDARY_FOLLOW_TARGET_GLOWING_ENABLED.asBool();
+    private final String planeTargetGlowingColor = Config.PLANE_FIRE_SECONDARY_FOLLOW_TARGET_GLOWING_COLOR.asString(TARGET_COLOR.name());
+    private final double planeTargetRange = Config.PLANE_FIRE_SECONDARY_FOLLOW_TARGET_RANGE.asDouble();
+    private final boolean planeTargetIgnoreWater = Config.PLANE_FIRE_SECONDARY_FOLLOW_TARGET_IGNORE_WATER.asBool();
+    private final boolean planeTargetIgnoreTamed = Config.PLANE_FIRE_SECONDARY_FOLLOW_TARGET_IGNORE_TAMED.asBool();
+    private final boolean planeTargetIgnoreInvisible = Config.PLANE_FIRE_SECONDARY_FOLLOW_TARGET_IGNORE_INVISIBLE.asBool();
+
+    private final boolean actionBarEnabled = Config.ACTION_BAR_ENABLED.asBool();
+    private final int actionBarwarningDelay = (int) (Config.ACTION_BAR_WARNING_DELAY.asDouble() * 20);
+    private final double actionBarfuelBelow = Config.ACTION_BAR_WARNING_FUEL_BELOW.asDouble();
+    private final String actionBarGPS = Config.ACTION_BAR_GPS.asString();
+    private final String actionBarPlaneTarget = Config.ACTION_BAR_PLANE_TARGET.asString();
+    private final String actionBarSeparator = Config.ACTION_BAR_SEPARATOR.asString();
+    private final String actionBarFuel = Config.ACTION_BAR_FUEL.asString();
+    private final String actionBarSpeed = Config.ACTION_BAR_SPEED.asString();
+    private final String actionBarSymbol = Config.ACTION_BAR_SYMBOL.asString();
+    private final String actionBarCompleted = Config.ACTION_BAR_COMPLETED.asString();
+    private final String actionBarEmpty = Config.ACTION_BAR_EMPTY.asString();
+    private final String actionBarWarning = Config.ACTION_BAR_WARNING.asString();
+
     private static final String[] VALID_REGISTRIES = {Tag.REGISTRY_ITEMS, Tag.REGISTRY_BLOCKS};
     private static final double WHEEL_ROTATION_SPEED_MULTIPLIER = 5.0d;
 
@@ -137,11 +162,14 @@ public abstract class Vehicle implements InventoryHolder {
     private static float VEHICLE_FOV = 85.0f;
     private static final ChatColor TARGET_COLOR = ChatColor.RED;
     private static final MethodHandle SET_CAN_TICK = Reflection.getMethod(ArmorStand.class, "setCanTick", MethodType.methodType(void.class, boolean.class), false, false);
-    private static final Multimap<String, Triple<String, ItemStack, ItemStack>> LIGHTS = MultimapBuilder.hashKeys().arrayListValues().build();
-    private static final Map<String, Float> MODEL_WHEEL_Y = Map.of(
-            "cybercar", 90.0f,
-            "quad", 90.0f,
-            "kart", 0.0f);
+    private static final Multimap<VehicleType, Triple<String, ItemStack, ItemStack>> LIGHTS = MultimapBuilder
+            .hashKeys()
+            .arrayListValues()
+            .build();
+    private static final Map<VehicleType, Float> MODEL_WHEEL_Y = Map.of(
+            VehicleType.CYBERCAR, 90.0f,
+            VehicleType.QUAD, 90.0f,
+            VehicleType.KART, 0.0f);
 
     public static boolean MY_VEHICLES_FEATURE_MODERN = XReflection.supports(18, 1);
     public static final Map<VehicleType, Vector> VEHICLE_BOX = Map.of(
@@ -162,14 +190,14 @@ public abstract class Vehicle implements InventoryHolder {
         ItemStack carLightsOn = new ItemStack(Material.LIGHT_WEIGHTED_PRESSURE_PLATE);
         ItemStack carLightsOff = new ItemStack(Material.HEAVY_WEIGHTED_PRESSURE_PLATE);
         for (int i = 1; i <= 2; i++) {
-            LIGHTS.put("cybercar", Triple.of("FRONT_LIGHTS_" + i, carLightsOn, carLightsOff));
-            LIGHTS.put("cybercar", Triple.of("BACK_LIGHTS_" + i, carLightsOn, carLightsOff));
+            LIGHTS.put(VehicleType.CYBERCAR, Triple.of("FRONT_LIGHTS_" + i, carLightsOn, carLightsOff));
+            LIGHTS.put(VehicleType.CYBERCAR, Triple.of("BACK_LIGHTS_" + i, carLightsOn, carLightsOff));
         }
 
         ItemStack frontBikeOn = PluginUtils.createHead("d9c394fd624e447d125ef3fb54d82a6fa4b0c6188e304d33352d13fbdb0c751b", true);
         ItemStack frontBikeOff = PluginUtils.createHead("933799ab30ca9b167c0ee5456c7b12b1247714ff29fb16a491e7d3a636a9aaa3", true);
 
-        LIGHTS.put("bike", Triple.of("FRONT_LIGHTS_1", frontBikeOn, frontBikeOff));
+        LIGHTS.put(VehicleType.BIKE, Triple.of("FRONT_LIGHTS_1", frontBikeOn, frontBikeOff));
     }
 
     public Vehicle(@NotNull VehiclesPlugin plugin, @NotNull VehicleData data, @NotNull Model model) {
@@ -180,6 +208,7 @@ public abstract class Vehicle implements InventoryHolder {
 
         this.plugin = plugin;
         this.model = model;
+        this.tractorMuffler = is(VehicleType.TRACTOR) ? model.getLocationByName("MUFFLER_PARTICLES") : null;
 
         initConfigValues();
 
@@ -204,7 +233,7 @@ public abstract class Vehicle implements InventoryHolder {
         }
 
         // AFTER finishing customizations, now we can spawn the model.
-        model.getStands().forEach(PacketStand::spawn);
+        plugin.getPool().execute(() -> model.getStands().forEach(stand -> stand.spawn(velocityStand.getLocation())));
 
         // Fill chairs and sort them by name.
         for (PacketStand stand : model.getStands()) {
@@ -266,7 +295,7 @@ public abstract class Vehicle implements InventoryHolder {
     private void initConfigValues() {
         FileConfiguration config = plugin.getConfig();
 
-        String configPath = "vehicles." + model.getName().replace("_", "-");
+        String configPath = "vehicles." + type.toPath();
         this.minSpeed = (float) config.getDouble(configPath + ".min-speed");
         this.maxSpeed = (float) config.getDouble(configPath + ".max-speed");
         this.acceleration = (float) config.getDouble(configPath + ".acceleration");
@@ -350,7 +379,7 @@ public abstract class Vehicle implements InventoryHolder {
         return !notAllowedHere(velocityStand.getLocation()) && hasFuel();
     }
 
-    public boolean canPlaySound() {
+    public boolean canPlayEngineSound() {
         return canMove() && driver != null;
     }
 
@@ -407,9 +436,9 @@ public abstract class Vehicle implements InventoryHolder {
         updateModelLocation(model, velocityStand.getLocation());
         postModelUpdate();
 
-        // Play sounds.
-        if (canPlaySound() && tick % 5 == 0) {
-            engineSound.playAt(model.getLocation());
+        // Play engine sound at the velocity stand eye location.
+        if (canPlayEngineSound() && tick % 5 == 0) {
+            engineSound.playAt(velocityStand.getEyeLocation());
         }
 
         // Save inventory.
@@ -418,18 +447,18 @@ public abstract class Vehicle implements InventoryHolder {
         }
 
         // Spawn particles.
-        if (driver != null && tick % 15 == 0 && hasFuel() && is(VehicleType.TRACTOR)) {
-            ModelLocation muffler = model.getLocationByName("MUFFLER_PARTICLES");
-            if (muffler != null) {
-                velocityStand.getWorld().spawnParticle(
-                        Particle.CAMPFIRE_COSY_SMOKE,
-                        muffler.getLocation(),
-                        0,
-                        (Math.random() * 0.15d) * (Math.random() < 0.5d ? 1 : -1),
-                        1.0d,
-                        (Math.random() * 0.15d) * (Math.random() < 0.5d ? 1 : -1),
-                        0.025d);
-            }
+        if (driver != null
+                && tractorMuffler != null
+                && tick % 20 == 0
+                && hasFuel()) {
+            velocityStand.getWorld().spawnParticle(
+                    Particle.CAMPFIRE_COSY_SMOKE,
+                    tractorMuffler.getLocation(),
+                    0,
+                    (Math.random() * 0.15d) * (Math.random() < 0.5d ? 1 : -1),
+                    1.0d,
+                    (Math.random() * 0.15d) * (Math.random() < 0.5d ? 1 : -1),
+                    0.025d);
         }
 
         handleCurrentTarget();
@@ -440,7 +469,9 @@ public abstract class Vehicle implements InventoryHolder {
             if (temp != targetDistance) forceActionBarMessage();
         }
 
-        if (Config.ACTION_BAR_ENABLED.asBool()) showSpeedAndFuel();
+        if (actionBarEnabled) {
+            plugin.getPool().execute(this::showSpeedAndFuel);
+        }
 
         Chunk temp = velocityStand.getLocation().getChunk();
         if (previousChunk != null && !previousChunk.equals(temp)) {
@@ -457,7 +488,7 @@ public abstract class Vehicle implements InventoryHolder {
         handleVehicleOnFire();
 
         // We want to make nearby entities ride the vehicle while no one is driving and the vehicle has extra seats.
-        if (locked || driver != null || !Config.PICK_UP_NEARBY_ENTITIES.asBool()) return;
+        if (locked || driver != null || !pickUpNearbyEntities) return;
 
         handleNearbyEntitiesRide();
     }
@@ -487,7 +518,7 @@ public abstract class Vehicle implements InventoryHolder {
     }
 
     private void handleCurrentTarget() {
-        if (!is(VehicleType.PLANE) || !Config.PLANE_FIRE_SECONDARY_FOLLOW_TARGET_ENABLED.asBool()) return;
+        if (!is(VehicleType.PLANE) || !planeTargetEnabled) return;
 
         Player player;
         if (!canMove()
@@ -518,12 +549,12 @@ public abstract class Vehicle implements InventoryHolder {
 
         currentTarget = closest;
 
-        if (!Config.PLANE_FIRE_SECONDARY_FOLLOW_TARGET_GLOWING_ENABLED.asBool()) return;
+        if (!planeTargetGlowing) return;
 
         try {
             ChatColor color = PluginUtils.getOrDefault(
                     ChatColor.class,
-                    Config.PLANE_FIRE_SECONDARY_FOLLOW_TARGET_GLOWING_COLOR.asString(TARGET_COLOR.name()),
+                    planeTargetGlowingColor,
                     TARGET_COLOR);
 
             plugin.getGlowingEntities().setGlowing(closest, player, color.isColor() ? color : TARGET_COLOR);
@@ -553,8 +584,8 @@ public abstract class Vehicle implements InventoryHolder {
         double minDot = Double.MIN_VALUE;
         LivingEntity target = null;
 
-        double range = Config.PLANE_FIRE_SECONDARY_FOLLOW_TARGET_RANGE.asDouble();
-        for (Entity nearby : player.getNearbyEntities(range, range, range)) {
+
+        for (Entity nearby : player.getNearbyEntities(planeTargetRange, planeTargetRange, planeTargetRange)) {
             // Ignore non-living entities.
             if (!(nearby instanceof LivingEntity living)) continue;
 
@@ -568,21 +599,20 @@ public abstract class Vehicle implements InventoryHolder {
             if (isDriver(living) || isPassenger(living)) continue;
 
             // Ignore water mobs?
-            if (living instanceof WaterMob
-                    && Config.PLANE_FIRE_SECONDARY_FOLLOW_TARGET_IGNORE_WATER.asBool()) {
+            if (living instanceof WaterMob && planeTargetIgnoreWater) {
                 continue;
             }
 
             // Ignore tamed entities?
             if (living instanceof Tameable tameable
                     && tameable.isTamed()
-                    && Config.PLANE_FIRE_SECONDARY_FOLLOW_TARGET_IGNORE_TAMED.asBool()) {
+                    && planeTargetIgnoreTamed) {
                 continue;
             }
 
             // Ignore invisible entities?
             if ((living.isInvisible() || living.hasPotionEffect(PotionEffectType.INVISIBILITY))
-                    && Config.PLANE_FIRE_SECONDARY_FOLLOW_TARGET_IGNORE_INVISIBLE.asBool()) {
+                    && planeTargetIgnoreInvisible) {
                 continue;
             }
 
@@ -702,7 +732,7 @@ public abstract class Vehicle implements InventoryHolder {
         if (player == null) return;
 
         StandManager manager = plugin.getStandManager();
-        manager.handleStandRender(player, player.getLocation(), false);
+        manager.handleStandRender(player, player.getLocation(), StandManager.HandleCause.MOVE);
     }
 
     public void saveToChunk() {
@@ -710,6 +740,16 @@ public abstract class Vehicle implements InventoryHolder {
     }
 
     public void saveToChunk(@NotNull Chunk chunk) {
+        plugin.getPool().execute(() -> saveToChunkInternal(chunk));
+    }
+
+    @ApiStatus.Internal
+    public void saveToChunkInternal() {
+        saveToChunkInternal(velocityStand.getLocation().getChunk());
+    }
+
+    @ApiStatus.Internal
+    public void saveToChunkInternal(@NotNull Chunk chunk) {
         saveToContainer(chunk.getPersistentDataContainer());
         if (!MY_VEHICLES_FEATURE_MODERN) return;
 
@@ -740,15 +780,17 @@ public abstract class Vehicle implements InventoryHolder {
     }
 
     private void removeFromContainer(@NotNull PersistentDataContainer container) {
-        NamespacedKey key = plugin.getSaveDataKey();
+        plugin.getPool().execute(() -> {
+            NamespacedKey key = plugin.getSaveDataKey();
 
-        ArrayList<VehicleData> datas = container.get(key, VEHICLE_DATA_LIST);
-        if (datas == null) return;
+            ArrayList<VehicleData> datas = container.get(key, VEHICLE_DATA_LIST);
+            if (datas == null) return;
 
-        if (!datas.removeIf(data -> data.modelUniqueId().equals(getModelUUID()))) return;
+            if (!datas.removeIf(data -> data.modelUniqueId().equals(getModelUUID()))) return;
 
-        if (datas.isEmpty()) container.remove(key);
-        else container.set(key, VEHICLE_DATA_LIST, datas);
+            if (datas.isEmpty()) container.remove(key);
+            else container.set(key, VEHICLE_DATA_LIST, datas);
+        });
     }
 
     private void handleFuel() {
@@ -782,9 +824,7 @@ public abstract class Vehicle implements InventoryHolder {
         int speedAsInt = (int) currentSpeed;
         boolean previousWarning = fuelWarning;
 
-        int warningDelay = (int) (Config.ACTION_BAR_WARNING_DELAY.asDouble() * 20);
-        double fuelBelowPercentage = Config.ACTION_BAR_WARNING_FUEL_BELOW.asDouble();
-        if (fuel < maxFuel * fuelBelowPercentage && tick % warningDelay == 0) {
+        if (fuel < maxFuel * actionBarfuelBelow && tick % actionBarwarningDelay == 0) {
             fuelWarning = !fuelWarning; // Alternate the color.
         }
 
@@ -805,19 +845,19 @@ public abstract class Vehicle implements InventoryHolder {
         previousSpeed = speedAsInt;
         previousProgressed = filled;
 
-        String speed = gpsRunning ? Config.ACTION_BAR_GPS.asString() : String.valueOf(speedAsInt);
+        String speed = gpsRunning ? actionBarGPS : String.valueOf(speedAsInt);
         String home = gpsRunning ? (((Generic) this).getGpsTick().getHomeName()) : "";
 
         String planeTarget;
         if (is(VehicleType.PLANE) && currentTarget != null) {
-            planeTarget = Config.ACTION_BAR_PLANE_TARGET.asString()
+            planeTarget = actionBarPlaneTarget
                     .replace("%name%", currentTarget.getName())
                     .replace("%distance%", String.valueOf(targetDistance));
         } else planeTarget = null;
 
-        String separator = Config.ACTION_BAR_SEPARATOR.asString();
-        String message = (fuelEnabled() ? Config.ACTION_BAR_FUEL.asString() + separator : "")
-                + Config.ACTION_BAR_SPEED.asString()
+        String separator = actionBarSeparator;
+        String message = (fuelEnabled() ? actionBarFuel + separator : "")
+                + actionBarSpeed
                 + (planeTarget != null ? separator + planeTarget : "");
 
         @SuppressWarnings("DataFlowIssue") Player driver = Bukkit.getPlayer(this.driver != null ?
@@ -826,13 +866,13 @@ public abstract class Vehicle implements InventoryHolder {
         if (driver == null) return;
 
         BaseComponent[] components = TextComponent.fromLegacyText(PluginUtils.translate(message
-                .replace("%bar%", getProgressBar(filled, bars, fuelBelowPercentage))
+                .replace("%bar%", getProgressBar(filled, bars, actionBarfuelBelow))
                 .replace("%speed%", speed)
                 .replace("%distance%", String.valueOf(distance))
                 .replace("%home%", home)));
 
-        VehicleManager vehicleManager = plugin.getVehicleManager();
-        vehicleManager.cancelKeybindTask(driver);
+        VehicleManager manager = plugin.getVehicleManager();
+        manager.cancelKeybindTask(driver);
 
         driver.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);
 
@@ -840,32 +880,27 @@ public abstract class Vehicle implements InventoryHolder {
             Player passenger = Bukkit.getPlayer(uuid);
             if (passenger == null) continue;
 
-            vehicleManager.cancelKeybindTask(passenger);
+            manager.cancelKeybindTask(passenger);
             passenger.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);
         }
     }
 
     public String getProgressBar(int filled, int bars, double fuelBelowPercentage) {
-        String symbol = Config.ACTION_BAR_SYMBOL.asString();
-        String completed = Config.ACTION_BAR_COMPLETED.asString();
-        String empty = Config.ACTION_BAR_EMPTY.asString();
-        String warning = Config.ACTION_BAR_WARNING.asString();
-
         String usedColor;
         if (fuel < maxFuel * fuelBelowPercentage) { // The remaining fuel is less than the X% of the total.
-            usedColor = fuelWarning ? warning : empty;
+            usedColor = fuelWarning ? actionBarWarning : actionBarEmpty;
         } else {
-            usedColor = empty;
+            usedColor = actionBarEmpty;
             fuelWarning = false;
         }
 
-        return Strings.repeat(completed + symbol, filled) + Strings.repeat(usedColor + symbol, bars - filled);
+        return Strings.repeat(actionBarCompleted + actionBarSymbol, filled) + Strings.repeat(usedColor + actionBarSymbol, bars - filled);
     }
 
     public void rotateWheels(float side) {
         if (model == null) return;
 
-        Float wheelY = MODEL_WHEEL_Y.get(model.getName());
+        Float wheelY = MODEL_WHEEL_Y.get(type);
         if (wheelY == null) return;
 
         float minWheelY = wheelY - 45.0f;
@@ -921,7 +956,7 @@ public abstract class Vehicle implements InventoryHolder {
     }
 
     public void toggleLights(boolean on) {
-        for (Triple<String, ItemStack, ItemStack> triple : LIGHTS.get(model.getName())) {
+        for (Triple<String, ItemStack, ItemStack> triple : LIGHTS.get(type)) {
             PacketStand stand = model.getStandByName(triple.getLeft());
             if (stand == null) continue;
 
@@ -1011,11 +1046,13 @@ public abstract class Vehicle implements InventoryHolder {
                                      Function<T, StandSettings> getSettings,
                                      Function<T, Location> getLocation,
                                      BiConsumer<T, Location> setLocation) {
-        for (T temp : list) {
-            Location correct = BlockUtils.getCorrectLocation(driver, type, location, getSettings.apply(temp));
-            if (getLocation.apply(temp).equals(correct)) continue;
-            setLocation.accept(temp, correct);
-        }
+        model.getPlugin().getPool().submit(() -> {
+            for (T temp : list) {
+                Location correct = BlockUtils.getCorrectLocation(driver, type, location, getSettings.apply(temp));
+                if (getLocation.apply(temp).equals(correct)) continue;
+                setLocation.accept(temp, correct);
+            }
+        });
     }
 
     public boolean hasWeapon() {

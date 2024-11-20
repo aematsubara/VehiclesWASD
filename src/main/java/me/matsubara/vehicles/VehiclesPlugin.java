@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import com.google.common.collect.Sets;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.tchristofferson.configupdater.ConfigUpdater;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import lombok.Getter;
@@ -16,6 +17,7 @@ import me.matsubara.vehicles.data.ActionKeybind;
 import me.matsubara.vehicles.data.ShopVehicle;
 import me.matsubara.vehicles.files.Config;
 import me.matsubara.vehicles.files.Messages;
+import me.matsubara.vehicles.files.config.ConfigValue;
 import me.matsubara.vehicles.hook.*;
 import me.matsubara.vehicles.listener.EntityListener;
 import me.matsubara.vehicles.listener.InventoryListener;
@@ -55,7 +57,7 @@ import java.io.File;
 import java.io.IOException;
 import java.security.CodeSource;
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -73,6 +75,14 @@ public final class VehiclesPlugin extends JavaPlugin {
 
     private Messages messages;
     private GlowingEntities glowingEntities;
+
+    private final ExecutorService pool = new ThreadPoolExecutor(
+            0,
+            Integer.MAX_VALUE,
+            120L,
+            TimeUnit.SECONDS,
+            new LinkedBlockingQueue<>(),
+            new ThreadFactoryBuilder().setNameFormat("vehicleswasd-worker-thread-%d").build());
 
     private final Map<VehicleType, ItemStack> typeCategoryItem = new EnumMap<>(VehicleType.class);
     private final Map<VehicleType, List<ShopVehicle>> typeVehicles = new EnumMap<>(VehicleType.class);
@@ -107,9 +117,6 @@ public final class VehiclesPlugin extends JavaPlugin {
     @Override
     public void onLoad() {
         PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this));
-        PacketEvents.getAPI().getSettings()
-                .reEncodeByDefault(true)
-                .checkForUpdates(false);
         PacketEvents.getAPI().load();
 
         // WG needs to be registered onLoad to be able to register the flags.
@@ -191,7 +198,16 @@ public final class VehiclesPlugin extends JavaPlugin {
         if (vehicleManager == null) return;
 
         for (Vehicle vehicle : vehicleManager.getVehicles()) {
-            vehicle.saveToChunk();
+            vehicle.saveToChunkInternal();
+        }
+
+        pool.shutdownNow();
+        try {
+            if (!pool.awaitTermination(10, TimeUnit.SECONDS)) {
+                getLogger().warning("Thread pool did not shut down in time, unsaved vehicles may occur!");
+            }
+        } catch (InterruptedException exception) {
+            throw new RuntimeException(exception);
         }
     }
 
@@ -203,7 +219,7 @@ public final class VehiclesPlugin extends JavaPlugin {
         return getKeyOrDefault(Config.KEYBINDS_SHOOT_WEAPON, ActionKeybind.RIGHT_CLICK);
     }
 
-    private ActionKeybind getKeyOrDefault(@NotNull Config keybindConfig, ActionKeybind defaultKeybind) {
+    private ActionKeybind getKeyOrDefault(@NotNull ConfigValue keybindConfig, ActionKeybind defaultKeybind) {
         return PluginUtils.getOrDefault(ActionKeybind.class,
                 keybindConfig.asString(defaultKeybind.name()),
                 defaultKeybind);
@@ -449,9 +465,9 @@ public final class VehiclesPlugin extends JavaPlugin {
             ConfigurationSection section = getConfig().getConfigurationSection("shop.vehicles." + pathName);
             if (section == null) continue;
 
-            ItemStack vehicleItem = new ItemBuilder(createVehicleItem(type, null))
+            @SuppressWarnings("unchecked") ItemStack vehicleItem = new ItemBuilder(createVehicleItem(type, null))
                     .removeData(vehicleTypeKey)
-                    .setLore(Config.SHOP_ITEM_LORE.asStringList())
+                    .setLore(Config.SHOP_ITEM_LORE.getValue(List.class))
                     .build();
 
             List<ShopVehicle> itemList = new ArrayList<>();

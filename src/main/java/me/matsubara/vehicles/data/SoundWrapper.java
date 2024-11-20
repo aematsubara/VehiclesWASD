@@ -22,8 +22,12 @@ public class SoundWrapper {
         String[] split = PluginUtils.splitData(soundName);
         if (split == null || split.length == 0) return;
 
-        Sound sound = PluginUtils.getOrNull(Sound.class, split[0]);
-        if (sound == null) return;
+        Sound sound;
+        try {
+            sound = Sound.valueOf(split[0]);
+        } catch (IllegalArgumentException exception) {
+            return;
+        }
 
         float volume = getValidFloat(split, 1);
         float pitch = getValidFloat(split, 2);

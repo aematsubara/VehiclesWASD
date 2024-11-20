@@ -11,6 +11,7 @@ import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.data.ActionKeybind;
 import me.matsubara.vehicles.files.Config;
 import me.matsubara.vehicles.files.Messages;
+import me.matsubara.vehicles.files.config.ConfigValue;
 import me.matsubara.vehicles.gui.VehicleGUI;
 import me.matsubara.vehicles.manager.VehicleManager;
 import me.matsubara.vehicles.model.Model;
@@ -129,7 +130,7 @@ public final class UseEntity extends SimplePacketListenerAbstract implements Lis
         }
     }
 
-    private boolean hasCooldown(@NotNull Player player, Material type, Config sendCooldown) {
+    private boolean hasCooldown(@NotNull Player player, Material type, ConfigValue sendCooldown) {
         if (!player.hasCooldown(type)) return false;
         if (!sendCooldown.asBool()) return true;
 
@@ -280,7 +281,7 @@ public final class UseEntity extends SimplePacketListenerAbstract implements Lis
                         temp.setMetadata("VehicleSource", new FixedMetadataValue(plugin, vehicle));
                         temp.setDisplayItem(weapon.getFireballItem().asItem());
                         temp.setIsIncendiary(weapon.getIncendiary().asBool());
-                        temp.setYield((float) weapon.getRadius().asDouble());
+                        temp.setYield(weapon.getRadius().asFloat());
                         temp.setShooter(player);
 
                         Vehicle.LISTEN_MODE_IGNORE.accept(plugin, temp);
@@ -342,6 +343,7 @@ public final class UseEntity extends SimplePacketListenerAbstract implements Lis
                 manager.removeVehicle(vehicle, player);
             }
 
+            manager.cancelKeybindTask(player, vehicle);
             iterator.remove();
             return;
         }

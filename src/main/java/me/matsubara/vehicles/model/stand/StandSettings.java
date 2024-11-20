@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 @Getter
@@ -22,7 +23,7 @@ public final class StandSettings implements Cloneable {
     private String partName;
     private Vector offset;
     private float extraYaw;
-    private final List<String> tags = new ArrayList<>();
+    private List<String> tags = new ArrayList<>();
 
     // Entity settings.
     private boolean invisible;
@@ -44,7 +45,7 @@ public final class StandSettings implements Cloneable {
     private Vector3f rightLegPose;
 
     // Entity equipment.
-    private final Map<EquipmentSlot, ItemStack> equipment = new HashMap<>();
+    private Map<EquipmentSlot, ItemStack> equipment = new HashMap<>();
 
     public StandSettings() {
         // Default settings.
@@ -60,39 +61,65 @@ public final class StandSettings implements Cloneable {
         this.customNameVisible = false;
 
         // Default poses.
-        this.headPose = Vector3f.zero();
-        this.bodyPose = Vector3f.zero();
-        this.leftArmPose = Vector3f.zero();
-        this.rightArmPose = Vector3f.zero();
-        this.leftLegPose = Vector3f.zero();
-        this.rightLegPose = Vector3f.zero();
+        for (Pose pose : Pose.values()) {
+            pose.setter.accept(this, Vector3f.zero());
+        }
     }
 
     @NotNull
     public StandSettings clone() {
         try {
             StandSettings copy = (StandSettings) super.clone();
-            copy.setCustomName(null);
+
+            // Clone tags list.
+            copy.setTags(new ArrayList<>(tags));
+
+            // Clone equipment map.
+            Map<EquipmentSlot, ItemStack> equipment = new HashMap<>();
+            for (Map.Entry<EquipmentSlot, ItemStack> entry : this.equipment.entrySet()) {
+                if (entry == null) continue;
+
+                EquipmentSlot slot = entry.getKey();
+                if (slot == null) continue;
+
+                ItemStack item = entry.getValue();
+                if (item == null) continue;
+
+                equipment.put(slot, item.copy());
+            }
+            copy.setEquipment(equipment);
+
+            // Clone angles.
+            for (Pose pose : Pose.values()) {
+                pose.setter.accept(copy, clonePose(pose.getter.apply(this)));
+            }
+
             return copy;
         } catch (CloneNotSupportedException exception) {
             throw new Error(exception);
         }
     }
 
+    private @NotNull Vector3f clonePose(@NotNull Vector3f pose) {
+        return new Vector3f(pose.getX(), pose.getY(), pose.getZ());
+    }
+
     public enum Pose {
-        HEAD(16, StandSettings::getHeadPose),
-        BODY(17, StandSettings::getBodyPose),
-        LEFT_ARM(18, StandSettings::getLeftArmPose),
-        RIGHT_ARM(19, StandSettings::getRightArmPose),
-        LEFT_LEG(20, StandSettings::getLeftLegPose),
-        RIGHT_LEG(21, StandSettings::getRightLegPose);
+        HEAD(16, StandSettings::getHeadPose, StandSettings::setHeadPose),
+        BODY(17, StandSettings::getBodyPose, StandSettings::setBodyPose),
+        LEFT_ARM(18, StandSettings::getLeftArmPose, StandSettings::setLeftArmPose),
+        RIGHT_ARM(19, StandSettings::getRightArmPose, StandSettings::setRightArmPose),
+        LEFT_LEG(20, StandSettings::getLeftLegPose, StandSettings::setLeftLegPose),
+        RIGHT_LEG(21, StandSettings::getRightLegPose, StandSettings::setRightLegPose);
 
         private final @Getter int index;
         private final Function<StandSettings, Vector3f> getter;
+        private final BiConsumer<StandSettings, Vector3f> setter;
 
-        Pose(int index, Function<StandSettings, Vector3f> getter) {
+        Pose(int index, Function<StandSettings, Vector3f> getter, BiConsumer<StandSettings, Vector3f> setter) {
             this.index = index;
             this.getter = getter;
+            this.setter = setter;
         }
 
         public Vector3f get(StandSettings settings) {

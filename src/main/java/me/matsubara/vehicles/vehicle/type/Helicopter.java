@@ -1,5 +1,6 @@
 package me.matsubara.vehicles.vehicle.type;
 
+import io.papermc.lib.PaperLib;
 import lombok.Getter;
 import lombok.Setter;
 import me.matsubara.vehicles.VehiclesPlugin;
@@ -43,7 +44,7 @@ public class Helicopter extends Vehicle {
     }
 
     @Override
-    public boolean canPlaySound() {
+    public boolean canPlayEngineSound() {
         return canMove() && (driver != null || outsideDriver != null);
     }
 
@@ -126,6 +127,6 @@ public class Helicopter extends Vehicle {
         Location target = temp.add(PluginUtils.offsetVector(offset, temp.getYaw(), temp.getPitch()));
         if (notAllowedHere(target)) return;
 
-        velocityStand.teleport(target);
+        PaperLib.teleportAsync(velocityStand, target);
     }
 }

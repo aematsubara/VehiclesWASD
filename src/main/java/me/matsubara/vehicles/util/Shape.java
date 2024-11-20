@@ -59,10 +59,14 @@ public final class Shape {
         }
 
         Logger logger = plugin.getLogger();
-        if (Bukkit.addRecipe(recipe)) {
-            logger.info("The recipe for {" + key + "} was created!");
-        } else {
-            logger.warning("The recipe for {" + key + "} couldn't be created!");
+        try {
+            if (Bukkit.addRecipe(recipe)) {
+                logger.info("The recipe for {" + key + "} was created!");
+                return;
+            }
+        } catch (IllegalStateException ignored) {
+
         }
+        logger.warning("The recipe for {" + key + "} couldn't be created!");
     }
 }

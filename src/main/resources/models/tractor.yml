@@ -1,4 +1,252 @@
 parts:
+  FENDER_KEEP_1:
+    offset:
+      x: -1.3904
+      y: -0.5751
+      z: -1.1208
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      marker: true
+    pose:
+      right-arm:
+        x: -60.0
+        y: 145.0
+        z: 150.0
+    equipment:
+      main-hand:
+        material: RED_CARPET
+    tags:
+      - CUSTOMIZABLE:FENDER:MAINHAND
+  FENDER_KEEP_2:
+    offset:
+      x: -1.3912
+      y: -0.7659
+      z: -1.1264
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      marker: true
+    pose:
+      right-arm:
+        x: 30.0
+        y: 145.0
+        z: 210.0
+    equipment:
+      main-hand:
+        material: RED_CARPET
+    tags:
+      - CUSTOMIZABLE:FENDER:MAINHAND
+  FENDER_KEEP_3:
+    offset:
+      x: -1.1077
+      y: -0.086
+      z: -1.377
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      right-arm:
+        x: -15.0
+        y: 45.0
+        z: 0.0
+    equipment:
+      main-hand:
+        material: RED_CARPET
+    tags:
+      - CUSTOMIZABLE:FENDER:MAINHAND
+  FENDER_KEEP_4:
+    offset:
+      x: 1.4393
+      y: -0.5751
+      z: -1.1208
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      marker: true
+    pose:
+      right-arm:
+        x: -60.0
+        y: 145.0
+        z: 150.0
+    equipment:
+      main-hand:
+        material: RED_CARPET
+    tags:
+      - CUSTOMIZABLE:FENDER:MAINHAND
+  FENDER_KEEP_5:
+    offset:
+      x: 1.4385
+      y: -0.7659
+      z: -1.1264
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      marker: true
+    pose:
+      right-arm:
+        x: 30.0
+        y: 145.0
+        z: 210.0
+    equipment:
+      main-hand:
+        material: RED_CARPET
+    tags:
+      - CUSTOMIZABLE:FENDER:MAINHAND
+  FENDER_KEEP_6:
+    offset:
+      x: 1.722
+      y: -0.086
+      z: -1.377
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      right-arm:
+        x: -15.0
+        y: 45.0
+        z: 0.0
+    equipment:
+      main-hand:
+        material: RED_CARPET
+    tags:
+      - CUSTOMIZABLE:FENDER:MAINHAND
+  FENDER_KEEP_13:
+    offset:
+      x: -0.3119
+      y: -0.5751
+      z: 1.4392
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      marker: true
+    pose:
+      right-arm:
+        x: -60.0
+        y: 145.0
+        z: 150.0
+    equipment:
+      main-hand:
+        material: RED_CARPET
+    tags:
+      - CUSTOMIZABLE:FENDER:MAINHAND
+  FENDER_KEEP_14:
+    offset:
+      x: -0.3127
+      y: -0.7659
+      z: 1.4336
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      marker: true
+    pose:
+      right-arm:
+        x: 30.0
+        y: 145.0
+        z: 210.0
+    equipment:
+      main-hand:
+        material: RED_CARPET
+    tags:
+      - CUSTOMIZABLE:FENDER:MAINHAND
+  FENDER_KEEP_15:
+    offset:
+      x: -0.0292
+      y: -0.086
+      z: 1.183
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      right-arm:
+        x: -15.0
+        y: 45.0
+        z: 0.0
+    equipment:
+      main-hand:
+        material: RED_CARPET
+    tags:
+      - CUSTOMIZABLE:FENDER:MAINHAND
+  FENDER_KEEP_16:
+    offset:
+      x: 0.383
+      y: -0.5751
+      z: 1.4392
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      marker: true
+    pose:
+      right-arm:
+        x: -60.0
+        y: 145.0
+        z: 150.0
+    equipment:
+      main-hand:
+        material: RED_CARPET
+    tags:
+      - CUSTOMIZABLE:FENDER:MAINHAND
+  FENDER_KEEP_17:
+    offset:
+      x: 0.3822
+      y: -0.7659
+      z: 1.4336
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      marker: true
+    pose:
+      right-arm:
+        x: 30.0
+        y: 145.0
+        z: 210.0
+    equipment:
+      main-hand:
+        material: RED_CARPET
+    tags:
+      - CUSTOMIZABLE:FENDER:MAINHAND
+  FENDER_KEEP_18:
+    offset:
+      x: 0.6657
+      y: -0.086
+      z: 1.183
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+    pose:
+      right-arm:
+        x: -15.0
+        y: 45.0
+        z: 0.0
+    equipment:
+      main-hand:
+        material: RED_CARPET
+    tags:
+      - CUSTOMIZABLE:FENDER:MAINHAND
   TRACTOR_CHECK_1:
     offset:
       x: 1.0
@@ -10,7 +258,7 @@ parts:
       invisible: true
       small: true
     tags:
-    - LOCATION
+      - LOCATION
   TRACTOR_CHECK_2:
     offset:
       x: 0.0
@@ -22,7 +270,7 @@ parts:
       invisible: true
       small: true
     tags:
-    - LOCATION
+      - LOCATION
   TRACTOR_CHECK_3:
     offset:
       x: -1.0
@@ -34,7 +282,7 @@ parts:
       invisible: true
       small: true
     tags:
-    - LOCATION
+      - LOCATION
   HARVESTER_1:
     offset:
       x: 0.0
@@ -216,7 +464,7 @@ parts:
       helmet:
         material: IRON_TRAPDOOR
     tags:
-    - CUSTOMIZABLE:TRAPDOOR:HEAD
+      - CUSTOMIZABLE:TRAPDOOR:HEAD
   HARVESTER_11:
     offset:
       x: 1.27
@@ -236,10 +484,10 @@ parts:
       helmet:
         material: IRON_TRAPDOOR
     tags:
-    - CUSTOMIZABLE:TRAPDOOR:HEAD
+      - CUSTOMIZABLE:TRAPDOOR:HEAD
   HARVESTER_12:
     offset:
-      x: 1.39
+      x: 1.2473
       y: -0.9
       z: -1.77
       yaw: 0.0
@@ -261,7 +509,7 @@ parts:
         url: 9ee9db5b7a107c09cac43bb63dff75b854ad2a9d2c603f345596b28dd779bd80
   HARVESTER_13:
     offset:
-      x: -1.62
+      x: -1.4985
       y: -0.9
       z: -1.77
       yaw: 0.0
@@ -527,1116 +775,6 @@ parts:
     equipment:
       helmet:
         material: IRON_BARS
-  HARVESTER_27:
-    offset:
-      x: -1.4319
-      y: -0.5751
-      z: -1.1208
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-      marker: true
-    pose:
-      right-arm:
-        x: -60.0
-        y: 145.0
-        z: 150.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_28:
-    offset:
-      x: -1.4327
-      y: -0.7659
-      z: -1.1264
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-      marker: true
-    pose:
-      right-arm:
-        x: 30.0
-        y: 145.0
-        z: 210.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_29:
-    offset:
-      x: -1.1492
-      y: -0.086
-      z: -1.377
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_30:
-    offset:
-      x: 1.493
-      y: -0.5751
-      z: -1.1208
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-      marker: true
-    pose:
-      right-arm:
-        x: -60.0
-        y: 145.0
-        z: 150.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_31:
-    offset:
-      x: 1.4922
-      y: -0.7659
-      z: -1.1264
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-      marker: true
-    pose:
-      right-arm:
-        x: 30.0
-        y: 145.0
-        z: 210.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_32:
-    offset:
-      x: 1.7757
-      y: -0.086
-      z: -1.377
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_33:
-    offset:
-      x: 1.8657
-      y: -0.086
-      z: -1.377
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_34:
-    offset:
-      x: 1.5822
-      y: -0.7659
-      z: -1.1264
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-      marker: true
-    pose:
-      right-arm:
-        x: 30.0
-        y: 145.0
-        z: 210.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_35:
-    offset:
-      x: 1.583
-      y: -0.5751
-      z: -1.1208
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-      marker: true
-    pose:
-      right-arm:
-        x: -60.0
-        y: 145.0
-        z: 150.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_36:
-    offset:
-      x: -1.2292
-      y: -0.086
-      z: -1.377
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_37:
-    offset:
-      x: -1.5127
-      y: -0.7659
-      z: -1.1264
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-      marker: true
-    pose:
-      right-arm:
-        x: 30.0
-        y: 145.0
-        z: 210.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_38:
-    offset:
-      x: -1.5119
-      y: -0.5751
-      z: -1.1208
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-      marker: true
-    pose:
-      right-arm:
-        x: -60.0
-        y: 145.0
-        z: 150.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_39:
-    offset:
-      x: 1.0561
-      y: 0.0049
-      z: -1.1208
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -60.0
-        y: 145.0
-        z: 150.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_40:
-    offset:
-      x: 1.0553
-      y: -0.1859
-      z: -1.1264
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: 30.0
-        y: 145.0
-        z: 210.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_41:
-    offset:
-      x: 1.3388
-      y: 0.494
-      z: -1.377
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_42:
-    offset:
-      x: 1.5258
-      y: 0.494
-      z: -1.377
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_43:
-    offset:
-      x: 1.2423
-      y: -0.1859
-      z: -1.1264
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: 30.0
-        y: 145.0
-        z: 210.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_44:
-    offset:
-      x: 1.2431
-      y: 0.0049
-      z: -1.1208
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -60.0
-        y: 145.0
-        z: 150.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_45:
-    offset:
-      x: 0.3081
-      y: 0.0049
-      z: -1.1208
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -60.0
-        y: 145.0
-        z: 150.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_46:
-    offset:
-      x: 0.3073
-      y: -0.1859
-      z: -1.1264
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: 30.0
-        y: 145.0
-        z: 210.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_47:
-    offset:
-      x: 0.5908
-      y: 0.494
-      z: -1.377
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_48:
-    offset:
-      x: 0.7778
-      y: 0.494
-      z: -1.377
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_49:
-    offset:
-      x: 0.8683
-      y: -0.1859
-      z: -1.1264
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: 30.0
-        y: 145.0
-        z: 210.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_50:
-    offset:
-      x: 0.8691
-      y: 0.0049
-      z: -1.1208
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -60.0
-        y: 145.0
-        z: 150.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_51:
-    offset:
-      x: 0.6813
-      y: -0.1859
-      z: -1.1264
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: 30.0
-        y: 145.0
-        z: 210.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_52:
-    offset:
-      x: 0.9648
-      y: 0.494
-      z: -1.377
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_53:
-    offset:
-      x: 0.6821
-      y: 0.0049
-      z: -1.1208
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -60.0
-        y: 145.0
-        z: 150.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_54:
-    offset:
-      x: 0.4951
-      y: 0.0049
-      z: -1.1208
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -60.0
-        y: 145.0
-        z: 150.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_55:
-    offset:
-      x: 0.4943
-      y: -0.1859
-      z: -1.1264
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: 30.0
-        y: 145.0
-        z: 210.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_56:
-    offset:
-      x: 1.1518
-      y: 0.494
-      z: -1.377
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_57:
-    offset:
-      x: -0.4399
-      y: 0.0049
-      z: -1.1208
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -60.0
-        y: 145.0
-        z: 150.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_58:
-    offset:
-      x: -0.4407
-      y: -0.1859
-      z: -1.1264
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: 30.0
-        y: 145.0
-        z: 210.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_59:
-    offset:
-      x: -0.1572
-      y: 0.494
-      z: -1.377
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_60:
-    offset:
-      x: 0.0298
-      y: 0.494
-      z: -1.377
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_61:
-    offset:
-      x: -0.2537
-      y: -0.1859
-      z: -1.1264
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: 30.0
-        y: 145.0
-        z: 210.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_62:
-    offset:
-      x: -0.2529
-      y: 0.0049
-      z: -1.1208
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -60.0
-        y: 145.0
-        z: 150.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_63:
-    offset:
-      x: -0.0659
-      y: 0.0049
-      z: -1.1208
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -60.0
-        y: 145.0
-        z: 150.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_64:
-    offset:
-      x: 0.2168
-      y: 0.494
-      z: -1.377
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_65:
-    offset:
-      x: 0.1211
-      y: 0.0049
-      z: -1.1208
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -60.0
-        y: 145.0
-        z: 150.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_66:
-    offset:
-      x: 0.4038
-      y: 0.494
-      z: -1.377
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_67:
-    offset:
-      x: -0.8139
-      y: 0.0049
-      z: -1.1208
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -60.0
-        y: 145.0
-        z: 150.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_68:
-    offset:
-      x: -0.8147
-      y: -0.1859
-      z: -1.1264
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: 30.0
-        y: 145.0
-        z: 210.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_69:
-    offset:
-      x: -0.5312
-      y: 0.494
-      z: -1.377
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_70:
-    offset:
-      x: -0.6269
-      y: 0.0049
-      z: -1.1208
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -60.0
-        y: 145.0
-        z: 150.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_71:
-    offset:
-      x: -0.6277
-      y: -0.1859
-      z: -1.1264
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: 30.0
-        y: 145.0
-        z: 210.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_72:
-    offset:
-      x: -0.3442
-      y: 0.494
-      z: -1.377
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_73:
-    offset:
-      x: -1.0009
-      y: 0.0049
-      z: -1.1208
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -60.0
-        y: 145.0
-        z: 150.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_74:
-    offset:
-      x: -1.0017
-      y: -0.1859
-      z: -1.1264
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: 30.0
-        y: 145.0
-        z: 210.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_75:
-    offset:
-      x: -0.7182
-      y: 0.494
-      z: -1.377
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_76:
-    offset:
-      x: -0.9052
-      y: 0.494
-      z: -1.377
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_77:
-    offset:
-      x: -1.1887
-      y: -0.1859
-      z: -1.1264
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: 30.0
-        y: 145.0
-        z: 210.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  HARVESTER_78:
-    offset:
-      x: -1.1879
-      y: 0.0049
-      z: -1.1208
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -60.0
-        y: 145.0
-        z: 150.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  RIGHT_FENDER_1:
-    offset:
-      x: -0.3119
-      y: -0.5751
-      z: 1.4392
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-      marker: true
-    pose:
-      right-arm:
-        x: -60.0
-        y: 145.0
-        z: 150.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  RIGHT_FENDER_2:
-    offset:
-      x: -0.3127
-      y: -0.7659
-      z: 1.4336
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-      marker: true
-    pose:
-      right-arm:
-        x: 30.0
-        y: 145.0
-        z: 210.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  RIGHT_FENDER_3:
-    offset:
-      x: -0.0292
-      y: -0.086
-      z: 1.183
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
   RIGHT_BIG_WHEEL_1:
     offset:
       x: -0.52
@@ -1898,7 +1036,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   MIDDLE_2:
     offset:
       x: 0.33
@@ -1918,7 +1056,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   MIDDLE_3:
     offset:
       x: 0.33
@@ -1938,7 +1076,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   MIDDLE_4:
     offset:
       x: 0.33
@@ -1958,7 +1096,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   MIDDLE_5:
     offset:
       x: 0.33
@@ -1978,7 +1116,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   MIDDLE_6:
     offset:
       x: 0.33
@@ -1998,7 +1136,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   MIDDLE_7:
     offset:
       x: 0.33
@@ -2018,7 +1156,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   MIDDLE_8:
     offset:
       x: 0.33
@@ -2038,7 +1176,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   MIDDLE_9:
     offset:
       x: 0.33
@@ -2058,7 +1196,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   MIDDLE_10:
     offset:
       x: 0.33
@@ -2078,7 +1216,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   MIDDLE_11:
     offset:
       x: 0.33
@@ -2098,7 +1236,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   MIDDLE_12:
     offset:
       x: 0.33
@@ -2118,7 +1256,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   MIDDLE_13:
     offset:
       x: 0.33
@@ -2138,7 +1276,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   MIDDLE_14:
     offset:
       x: -0.1108
@@ -2158,7 +1296,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   RIGHT_SIDE_1:
     offset:
       x: 0.49
@@ -2178,7 +1316,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   RIGHT_SIDE_2:
     offset:
       x: 0.49
@@ -2198,7 +1336,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   RIGHT_SIDE_3:
     offset:
       x: 0.49
@@ -2218,7 +1356,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   RIGHT_SIDE_4:
     offset:
       x: 0.49
@@ -2238,7 +1376,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   RIGHT_SIDE_5:
     offset:
       x: 0.49
@@ -2258,7 +1396,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   RIGHT_SIDE_6:
     offset:
       x: 0.49
@@ -2278,7 +1416,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   RIGHT_SIDE_7:
     offset:
       x: 0.49
@@ -2298,7 +1436,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   RIGHT_SIDE_8:
     offset:
       x: 0.0492
@@ -2318,7 +1456,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   RIGHT_SIDE_9:
     offset:
       x: 0.49
@@ -2338,7 +1476,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   RIGHT_SIDE_10:
     offset:
       x: 0.49
@@ -2358,7 +1496,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   RIGHT_SIDE_11:
     offset:
       x: 0.49
@@ -2378,7 +1516,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   RIGHT_SIDE_12:
     offset:
       x: 0.49
@@ -2398,7 +1536,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   RIGHT_SIDE_13:
     offset:
       x: 0.49
@@ -2418,7 +1556,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   RIGHT_SIDE_14:
     offset:
       x: 0.49
@@ -2438,7 +1576,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   LEFT_PART_1:
     offset:
       x: 0.17
@@ -2458,7 +1596,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   LEFT_PART_2:
     offset:
       x: 0.17
@@ -2478,7 +1616,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   LEFT_PART_3:
     offset:
       x: 0.17
@@ -2498,7 +1636,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   LEFT_PART_4:
     offset:
       x: 0.17
@@ -2518,7 +1656,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   LEFT_PART_5:
     offset:
       x: 0.17
@@ -2538,7 +1676,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   LEFT_PART_6:
     offset:
       x: 0.17
@@ -2558,7 +1696,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   LEFT_PART_7:
     offset:
       x: 0.17
@@ -2578,7 +1716,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   LEFT_PART_8:
     offset:
       x: 0.17
@@ -2598,7 +1736,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   LEFT_PART_9:
     offset:
       x: 0.17
@@ -2618,7 +1756,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   LEFT_PART_10:
     offset:
       x: 0.17
@@ -2638,7 +1776,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   LEFT_PART_11:
     offset:
       x: -0.2708
@@ -2658,7 +1796,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   LEFT_PART_12:
     offset:
       x: 0.17
@@ -2678,7 +1816,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   LEFT_PART_13:
     offset:
       x: 0.17
@@ -2698,7 +1836,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   LEFT_PART_14:
     offset:
       x: 0.17
@@ -2718,7 +1856,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   asd:
     offset:
       x: 0.0
@@ -2767,7 +1905,7 @@ parts:
       main-hand:
         material: DEEPSLATE_BRICK_WALL
     tags:
-    - CUSTOMIZABLE:MUFFLER:MAINHAND
+      - CUSTOMIZABLE:MUFFLER:MAINHAND
   cqwew_2:
     offset:
       x: 0.33
@@ -2787,7 +1925,7 @@ parts:
       main-hand:
         material: DEEPSLATE_BRICK_WALL
     tags:
-    - CUSTOMIZABLE:MUFFLER:MAINHAND
+      - CUSTOMIZABLE:MUFFLER:MAINHAND
   cqweqweqwe:
     offset:
       x: 0.0
@@ -2859,7 +1997,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   RIGHT_SIDE_13_2:
     offset:
       x: 0.49
@@ -2879,7 +2017,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   LEFT_PART_14_2:
     offset:
       x: 0.17
@@ -2899,7 +2037,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   MIDDLE_3_2_2:
     offset:
       x: 0.33
@@ -2919,7 +2057,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   RIGHT_SIDE_13_2_2:
     offset:
       x: 0.49
@@ -2939,7 +2077,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   LEFT_PART_14_2_2:
     offset:
       x: 0.17
@@ -2959,7 +2097,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   MIDDLE_3_2_2_2:
     offset:
       x: 0.33
@@ -2979,7 +2117,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   RIGHT_SIDE_13_2_2_2:
     offset:
       x: 0.49
@@ -2999,7 +2137,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   LEFT_PART_14_2_2_2:
     offset:
       x: 0.17
@@ -3019,7 +2157,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   MIDDLE_14_2:
     offset:
       x: -0.1108
@@ -3039,7 +2177,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   RIGHT_SIDE_8_2:
     offset:
       x: 0.0492
@@ -3059,7 +2197,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   LEFT_PART_11_2:
     offset:
       x: -0.2708
@@ -3079,7 +2217,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   vrih:
     offset:
       x: 0.0
@@ -3094,7 +2232,7 @@ parts:
       helmet:
         material: GRAY_CARPET
     tags:
-    - CUSTOMIZABLE:CARPET:HEAD
+      - CUSTOMIZABLE:CARPET:HEAD
   LEFT_PART_14_2_2_2_2:
     offset:
       x: 0.17
@@ -3114,7 +2252,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   RIGHT_SIDE_13_2_2_2_2:
     offset:
       x: 0.49
@@ -3134,7 +2272,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   MIDDLE_3_2_2_2_2:
     offset:
       x: 0.33
@@ -3154,7 +2292,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   chrrrr:
     offset:
       x: 0.0
@@ -3169,7 +2307,7 @@ parts:
       helmet:
         material: OAK_STAIRS
     tags:
-    - CUSTOMIZABLE:CHAIR:HEAD
+      - CUSTOMIZABLE:CHAIR:HEAD
   vrih_2:
     offset:
       x: 0.0
@@ -3184,7 +2322,7 @@ parts:
       helmet:
         material: GRAY_CARPET
     tags:
-    - CUSTOMIZABLE:CARPET:HEAD
+      - CUSTOMIZABLE:CARPET:HEAD
   vyyy:
     offset:
       x: -0.19
@@ -3199,7 +2337,7 @@ parts:
       helmet:
         material: OAK_FENCE
     tags:
-    - CUSTOMIZABLE:FENCE:HEAD
+      - CUSTOMIZABLE:FENCE:HEAD
   vyyy_2:
     offset:
       x: 0.187
@@ -3214,7 +2352,7 @@ parts:
       helmet:
         material: OAK_FENCE
     tags:
-    - CUSTOMIZABLE:FENCE:HEAD
+      - CUSTOMIZABLE:FENCE:HEAD
   berwerwe:
     offset:
       x: 0.06
@@ -3233,68 +2371,6 @@ parts:
     equipment:
       helmet:
         material: DIORITE_WALL
-  RIGHT_FENDER_1_2:
-    offset:
-      x: 0.383
-      y: -0.5751
-      z: 1.4392
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-      marker: true
-    pose:
-      right-arm:
-        x: -60.0
-        y: 145.0
-        z: 150.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  RIGHT_FENDER_2_2:
-    offset:
-      x: 0.3822
-      y: -0.7659
-      z: 1.4336
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-      marker: true
-    pose:
-      right-arm:
-        x: 30.0
-        y: 145.0
-        z: 210.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  RIGHT_FENDER_3_2:
-    offset:
-      x: 0.6657
-      y: -0.086
-      z: 1.183
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
   vrttrtrq:
     offset:
       x: 0.491
@@ -3314,7 +2390,7 @@ parts:
       main-hand:
         material: LANTERN
     tags:
-    - CUSTOMIZABLE:LIGHT:MAINHAND
+      - CUSTOMIZABLE:LIGHT:MAINHAND
   vrttrtrq_2:
     offset:
       x: -0.1819
@@ -3334,7 +2410,7 @@ parts:
       main-hand:
         material: LANTERN
     tags:
-    - CUSTOMIZABLE:LIGHT:MAINHAND
+      - CUSTOMIZABLE:LIGHT:MAINHAND
   vrttrtrq_2_2:
     offset:
       x: 0.1881
@@ -3354,7 +2430,7 @@ parts:
       main-hand:
         material: LANTERN
     tags:
-    - CUSTOMIZABLE:LIGHT:MAINHAND
+      - CUSTOMIZABLE:LIGHT:MAINHAND
   vrttrtrq_2_2_2:
     offset:
       x: 0.121
@@ -3374,7 +2450,7 @@ parts:
       main-hand:
         material: LANTERN
     tags:
-    - CUSTOMIZABLE:LIGHT:MAINHAND
+      - CUSTOMIZABLE:LIGHT:MAINHAND
   ladderrrrs:
     offset:
       x: -0.388
@@ -3411,7 +2487,7 @@ parts:
       helmet:
         material: STONE_BUTTON
     tags:
-    - CUSTOMIZABLE:BUTTON:HEAD
+      - CUSTOMIZABLE:BUTTON:HEAD
   berwerwe_2:
     offset:
       x: -0.06
@@ -3646,406 +2722,6 @@ parts:
     equipment:
       main-hand:
         material: LADDER
-  RIGHT_FENDER_3_2_2:
-    offset:
-      x: 0.6657
-      y: 0.414
-      z: -0.342
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  RIGHT_FENDER_2_2_2:
-    offset:
-      x: 0.3822
-      y: -0.2659
-      z: 0.2836
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: 30.0
-        y: 145.0
-        z: 210.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  RIGHT_FENDER_1_2_2:
-    offset:
-      x: 0.383
-      y: -0.0751
-      z: -0.0858
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -60.0
-        y: 145.0
-        z: 150.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  RIGHT_FENDER_3_2_2_2:
-    offset:
-      x: -0.0292
-      y: 0.414
-      z: -0.342
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  RIGHT_FENDER_2_2_2_2:
-    offset:
-      x: -0.3127
-      y: -0.2659
-      z: 0.2836
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: 30.0
-        y: 145.0
-        z: 210.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  RIGHT_FENDER_1_2_2_2:
-    offset:
-      x: -0.3119
-      y: -0.0751
-      z: -0.0858
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -60.0
-        y: 145.0
-        z: 150.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  RIGHT_FENDER_3_2_2_2_2:
-    offset:
-      x: 0.6657
-      y: 0.414
-      z: -0.1545
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  RIGHT_FENDER_3_2_2_2_2_2:
-    offset:
-      x: -0.0292
-      y: 0.414
-      z: -0.1545
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  RIGHT_FENDER_3_2_2_2_2_2_2:
-    offset:
-      x: -0.0292
-      y: 0.414
-      z: 0.0325
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  RIGHT_FENDER_3_2_2_2_2_2_2_2:
-    offset:
-      x: 0.6657
-      y: 0.414
-      z: 0.0325
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  RIGHT_FENDER_3_2_2_2_2_2_2_2_2:
-    offset:
-      x: 0.7727
-      y: 0.414
-      z: -0.342
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  RIGHT_FENDER_2_2_2_2_2:
-    offset:
-      x: 0.4892
-      y: -0.2659
-      z: 0.2836
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: 30.0
-        y: 145.0
-        z: 210.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  RIGHT_FENDER_1_2_2_2_2:
-    offset:
-      x: 0.49
-      y: -0.0751
-      z: -0.0858
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -60.0
-        y: 145.0
-        z: 150.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  RIGHT_FENDER_3_2_2_2_2_2_2_2_2_2:
-    offset:
-      x: 0.7727
-      y: 0.414
-      z: -0.1545
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  RIGHT_FENDER_3_2_2_2_2_2_2_2_2_2_2:
-    offset:
-      x: 0.7727
-      y: 0.414
-      z: 0.0325
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  RIGHT_FENDER_3_2_2_2_2_2_2_2_2_2_2_2:
-    offset:
-      x: -0.1262
-      y: 0.414
-      z: -0.342
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  RIGHT_FENDER_2_2_2_2_2_2:
-    offset:
-      x: -0.4097
-      y: -0.2659
-      z: 0.2836
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: 30.0
-        y: 145.0
-        z: 210.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  RIGHT_FENDER_1_2_2_2_2_2:
-    offset:
-      x: -0.4089
-      y: -0.0751
-      z: -0.0858
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -60.0
-        y: 145.0
-        z: 150.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  RIGHT_FENDER_3_2_2_2_2_2_2_2_2_2_2_2_2:
-    offset:
-      x: -0.1262
-      y: 0.414
-      z: -0.1545
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
-  RIGHT_FENDER_3_2_2_2_2_2_2_2_2_2_2_2_2_2:
-    offset:
-      x: -0.1262
-      y: 0.414
-      z: 0.0325
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    pose:
-      right-arm:
-        x: -15.0
-        y: 45.0
-        z: 0.0
-    equipment:
-      main-hand:
-        material: RED_CARPET
-    tags:
-    - CUSTOMIZABLE:FENDER:MAINHAND
   MIDDLE_5_2:
     offset:
       x: 0.33
@@ -4065,7 +2741,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   RIGHT_SIDE_5_2:
     offset:
       x: 0.49
@@ -4085,7 +2761,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   LEFT_PART_10_2:
     offset:
       x: 0.17
@@ -4105,7 +2781,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   MIDDLE_5_2_2_2:
     offset:
       x: 0.2122
@@ -4125,7 +2801,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   MIDDLE_5_2_2_2_2:
     offset:
       x: -0.0303
@@ -4145,7 +2821,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   MIDDLE_5_2_2:
     offset:
       x: 0.3577
@@ -4165,7 +2841,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   MIDDLE_5_2_2_2_2_2:
     offset:
       x: 0.3027
@@ -4185,7 +2861,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   LEFT_PART_10_2_2:
     offset:
       x: 0.17
@@ -4205,7 +2881,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   RIGHT_SIDE_5_2_2:
     offset:
       x: 0.49
@@ -4225,7 +2901,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   MIDDLE_5_2_2_2_2_2_2:
     offset:
       x: 0.33
@@ -4245,7 +2921,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   LEFT_PART_10_2_2_2:
     offset:
       x: 0.17
@@ -4265,7 +2941,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   RIGHT_SIDE_5_2_2_2:
     offset:
       x: 0.49
@@ -4285,7 +2961,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   MIDDLE_5_2_2_2_2_2_2_2:
     offset:
       x: 0.33
@@ -4305,7 +2981,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   LEFT_PART_10_2_2_2_2:
     offset:
       x: 0.17
@@ -4325,7 +3001,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   RIGHT_SIDE_5_2_2_2_2:
     offset:
       x: 0.49
@@ -4345,7 +3021,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
+      - CUSTOMIZABLE:COLOR:MAINHAND
   MIDDLE_5_2_2_2_2_2_2_2_2:
     offset:
       x: 0.33
@@ -4365,20 +3041,7 @@ parts:
       main-hand:
         material: RED_TERRACOTTA
     tags:
-    - CUSTOMIZABLE:COLOR:MAINHAND
-  testing:
-    offset:
-      x: 0.6
-      y: 0.416
-      z: -0.17
-      yaw: 0.0
-      pitch: 0.0
-    settings:
-      invisible: true
-      small: true
-    equipment:
-      main-hand:
-        material: WHEAT
+      - CUSTOMIZABLE:COLOR:MAINHAND
   asdasdasdqwe:
     offset:
       x: 0.0
@@ -4433,7 +3096,7 @@ parts:
       main-hand:
         material: LANTERN
     tags:
-    - CUSTOMIZABLE:LIGHT:MAINHAND
+      - CUSTOMIZABLE:LIGHT:MAINHAND
   vrttrtrq_2_2_2_2_2:
     offset:
       x: -0.1819
@@ -4454,7 +3117,7 @@ parts:
       main-hand:
         material: LANTERN
     tags:
-    - CUSTOMIZABLE:LIGHT:MAINHAND
+      - CUSTOMIZABLE:LIGHT:MAINHAND
   vrttrtrq_2_2_2_2_2_2:
     offset:
       x: 0.1881
@@ -4474,7 +3137,7 @@ parts:
       main-hand:
         material: LANTERN
     tags:
-    - CUSTOMIZABLE:LIGHT:MAINHAND
+      - CUSTOMIZABLE:LIGHT:MAINHAND
   vrttrtrq_2_2_2_2_2_2_2:
     offset:
       x: 0.121
@@ -4494,7 +3157,7 @@ parts:
       main-hand:
         material: LANTERN
     tags:
-    - CUSTOMIZABLE:LIGHT:MAINHAND
+      - CUSTOMIZABLE:LIGHT:MAINHAND
   CHAIR_1:
     offset:
       x: 0.0
@@ -4516,4 +3179,4 @@ parts:
       invisible: true
       small: true
     tags:
-    - LOCATION
+      - LOCATION

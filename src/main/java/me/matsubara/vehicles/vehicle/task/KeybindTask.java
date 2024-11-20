@@ -1,5 +1,6 @@
 package me.matsubara.vehicles.vehicle.task;
 
+import lombok.Getter;
 import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.data.ActionKeybind;
 import me.matsubara.vehicles.files.Config;
@@ -18,43 +19,45 @@ import org.jetbrains.annotations.Nullable;
 public class KeybindTask extends BukkitRunnable {
 
     private final Player player;
-    private final Vehicle vehicle;
+    private final @Getter Vehicle vehicle;
     private final VehiclesPlugin plugin;
     private final VehicleManager manager;
     private final BaseComponent[] components;
-
     private int ticks;
 
-    public KeybindTask(Player player, @NotNull Vehicle vehicle, int ticks) {
+    private final int seconds = (int) (Config.KEYBINDS_ACTION_BAR_MESSAGE_SECONDS.asDouble() * 20);
+    private final String separator = Config.KEYBINDS_ACTION_BAR_MESSAGE_SEPARATOR.asStringTranslated();
+
+    public KeybindTask(Player player, @NotNull Vehicle vehicle) {
         this.player = player;
         this.vehicle = vehicle;
         this.plugin = vehicle.getPlugin();
         this.manager = plugin.getVehicleManager();
-        this.ticks = ticks;
         this.components = createKeyControls();
-        runTaskTimer(plugin, 1L, 1L);
+        runTaskTimerAsynchronously(plugin, 1L, 1L);
     }
 
     @Override
     public void run() {
         // Stop sending keybinds if the player is invalid.
-        if (!player.isValid() || !player.isOnline()) {
+        if (ticks == seconds || !player.isValid() || !player.isOnline()) {
             cancel();
             return;
         }
 
         // Re-sends the messages every 2 seconds, so it doesn't go away from the player's screen.
-        if (ticks % 20 == 0) {
+        if (ticks % 40 == 0) {
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR, components);
         }
 
-        if (--ticks <= 0) cancel();
+        ticks++;
     }
 
     @Override
-    public synchronized void cancel() throws IllegalStateException {
-        manager.getKeybindTasks().remove(player.getUniqueId());
+    public void cancel() throws IllegalStateException {
         super.cancel();
+        manager.getKeybindTasks().remove(player.getUniqueId());
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR); // Clear message.
     }
 
     private BaseComponent[] createKeyControls() {
@@ -125,7 +128,6 @@ public class KeybindTask extends BukkitRunnable {
 
         if (!limiter) return;
 
-        String separator = Config.KEYBINDS_ACTION_BAR_MESSAGE_SEPARATOR.asStringTranslated();
         builder.append(TextComponent.fromLegacyText(separator), ComponentBuilder.FormatRetention.NONE);
     }
 }

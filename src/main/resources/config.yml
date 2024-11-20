@@ -50,7 +50,7 @@
 config-version: 1
 
 # The rendering distance of the vehicles.
-render-distance: 80
+render-distance: 72.0
 
 # Which economy provider to use (Vault / PlayerPoints).
 economy-provider: Vault
@@ -75,6 +75,17 @@ pick-up-on-remove: false
 # NOTE: The vehicle must not be locked and there must not be a driver.
 # NOTE 2: As with boats and minecarts, to remove nearby entities, you must remove the vehicle.
 pick-up-nearby-entities: false
+
+# Here you can customize some features of the tractor.
+tractor-features:
+  # At what interval (in ticks, 1 second = 20 ticks) should the current tractor mode be run?
+  # When a tractor mode is enabled, this can cause some TPS drops on the server.
+  # The lower the interval, the worse it will be for performance.
+  tick-delay: 2
+  # By default, the current tractor mode will only run when the tractor is moving (forward or backward).
+  # If the tractor is ONLY moving (rotating) sideways, the tractor mode will not run.
+  # If true, tractor mode will also be applied when the vehicle is only turning.
+  work-on-rotation: true
 
 # Here you can choose which entities can be added to the vehicle seats.
 # If type is set BLACKLIST, entities listed here will be ignored.
@@ -160,9 +171,9 @@ gps:
   # Whether this feature is enabled (requires EssentialsX).
   enabled: true
   # The maximum distance to a destination, be careful with this.
-  max-distance: 512
+  max-distance: 512.0
   # The minimum distance required before starting.
-  min-distance: 5
+  min-distance: 5.0
 
 # Here you can modify the arrows that the planes throw.
 plane-fire:
@@ -417,7 +428,7 @@ shop:
   preview:
     enabled: true
     # The seconds that the preview will last.
-    seconds: 10
+    seconds: 10.0
     # %remaining% - the remaining seconds of preview.
     message: "Preview finishing in %remaining% seconds! Shift + left click to cancel."
     # If true, the message will have a rainbow effect (similar to the jukebox effect when a record is playing).
@@ -447,34 +458,34 @@ shop:
         display-name: "&8&lBlack Bike"
         changes:
           - CHAIR:BLACK_CARPET
-        price: 5000
+        price: 5000.0
       '2':
         display-name: "&f&lWhite Bike"
         changes:
           - CHAIR:WHITE_CARPET
-        price: 5000
+        price: 5000.0
       '3':
         display-name: "&c&lRed Bike"
         changes:
           - CHAIR:RED_CARPET
-        price: 5000
+        price: 5000.0
     boat:
       '1':
         display-name: "&#73532c&lOak Boat"
         changes:
           - SECONDARY-COLOR:OAK_TRAPDOOR
-        price: 3000
+        price: 3000.0
       '2':
         display-name: "&#2b1f13&lSpruce Boat"
         changes:
           - COLOR:SPRUCE_LOG
-        price: 3000
+        price: 3000.0
       '3':
         display-name: "&#b85eac&lCherry Boat"
         changes:
           - COLOR:CHERRY_LOG
           - SECONDARY-COLOR:CHERRY_TRAPDOOR
-        price: 3000
+        price: 3000.0
     cybercar:
       '1':
         display-name: "&8&lBlack Cybercar"
@@ -482,21 +493,21 @@ shop:
           - COLOR:BLACK_CONCRETE
           - FENDER:BLACK_CONCRETE
           - GLASS:TINTED_GLASS
-        price: 7500
+        price: 7500.0
       '2':
         display-name: "&f&lWhite Cybercar"
         changes:
           - COLOR:WHITE_CONCRETE
           - FENDER:WHITE_CONCRETE
           - GLASS:TINTED_GLASS
-        price: 7500
+        price: 7500.0
       '3':
         display-name: "&c&lRed Cybercar"
         changes:
           - COLOR:RED_CONCRETE
           - FENDER:RED_CONCRETE
           - GLASS:TINTED_GLASS
-        price: 7500
+        price: 7500.0
     helicopter:
       '1':
         display-name: "&8&lGray Helicopter"
@@ -506,7 +517,7 @@ shop:
           - CHAIR:BLACK_CARPET
           - COLOR:CYAN_TERRACOTTA
           - BLADES:BLACK_BANNER
-        price: 8000
+        price: 8000.0
       '2':
         display-name: "&c&lRed Helicopter"
         changes:
@@ -515,7 +526,7 @@ shop:
           - CHAIR:BLACK_CARPET
           - COLOR:RED_TERRACOTTA
           - BLADES:LIGHT_GRAY_BANNER
-        price: 8000
+        price: 8000.0
       '3':
         display-name: "&8&lBlue Helicopter"
         changes:
@@ -523,7 +534,7 @@ shop:
           - BACK-CHAIR:BLACKSTONE_SLAB
           - CHAIR:BLACK_CARPET
           - COLOR:BLUE_TERRACOTTA
-        price: 8000
+        price: 8000.0
     kart:
       '1':
         display-name: "&3&lWarped Kart"
@@ -532,14 +543,14 @@ shop:
           - COLOR:WARPED_SLAB
           - SPOILER:WARPED_FENCE
           - SECONDARY-COLOR:WARPED_TRAPDOOR
-        price: 5000
+        price: 5000.0
       '2':
         display-name: "&c&lMangrove Kart"
         changes:
           - COLOR:MANGROVE_SLAB
           - SPOILER:MANGROVE_FENCE
           - SECONDARY-COLOR:MANGROVE_TRAPDOOR
-        price: 5000
+        price: 5000.0
       '3':
         display-name: "&e&lBamboo Kart"
         changes:
@@ -547,7 +558,7 @@ shop:
           - COLOR:BAMBOO_MOSAIC_SLAB
           - SPOILER:BAMBOO_FENCE
           - SECONDARY-COLOR:BAMBOO_TRAPDOOR
-        price: 5000
+        price: 5000.0
     plane:
       '1':
         display-name: "&#2b1f13&lSpruce Plane"
@@ -558,7 +569,7 @@ shop:
           - STAIRS:SPRUCE_STAIRS
           - TRAPDOOR:SPRUCE_TRAPDOOR
           - GLASS:GLASS_PANE
-        price: 8000
+        price: 8000.0
       '2':
         display-name: "&d&lCrimson Plane"
         changes:
@@ -568,7 +579,7 @@ shop:
           - STAIRS:CRIMSON_STAIRS
           - TRAPDOOR:CRIMSON_TRAPDOOR
           - GLASS:MAGENTA_STAINED_GLASS_PANE
-        price: 8000
+        price: 8000.0
       '3':
         display-name: "&#4d3a17Jungle Plane"
         changes:
@@ -578,7 +589,7 @@ shop:
           - STAIRS:JUNGLE_STAIRS
           - TRAPDOOR:JUNGLE_TRAPDOOR
           - GLASS:BROWN_STAINED_GLASS_PANE
-        price: 8000
+        price: 8000.0
     quad:
       '1':
         display-name: "&5&lDark Quad"
@@ -586,37 +597,37 @@ shop:
           - COLOR:GRAY_CONCRETE
           - SECONDARY-COLOR:BLACKSTONE_SLAB
           - TERTIARY-COLOR:CRIMSON_TRAPDOOR
-        price: 6000
+        price: 6000.0
       '2':
         display-name: "&d&lPink Quad"
         changes:
           - COLOR:PINK_CONCRETE
           - SECONDARY-COLOR:CHERRY_SLAB
           - TERTIARY-COLOR:CHERRY_TRAPDOOR
-        price: 6000
+        price: 6000.0
       '3':
         display-name: "&6&lOrange Quad"
         changes:
           - COLOR:ORANGE_CONCRETE
           - SECONDARY-COLOR:ACACIA_SLAB
           - TERTIARY-COLOR:ACACIA_TRAPDOOR
-        price: 6000
+        price: 6000.0
     tank:
       '1':
         display-name: "&c&lRed Tank"
         changes:
           - COLOR:RED_TERRACOTTA
-        price: 8000
+        price: 8000.0
       '2':
         display-name: "&8&lBlue Tank"
         changes:
           - COLOR:BLUE_TERRACOTTA
-        price: 8000
+        price: 8000.0
       '3':
         display-name: "&e&lGreen Tank"
         changes:
           - COLOR:GREEN_TERRACOTTA
-        price: 8000
+        price: 8000.0
     tractor:
       '1':
         display-name: "&#383838&lGray Tractor"
@@ -629,7 +640,7 @@ shop:
           - LIGHT:SOUL_LANTERN
           - BUTTON:POLISHED_BLACKSTONE_BUTTON
           - FENCE:WARPED_FENCE
-        price: 10000
+        price: 10000.0
       '2':
         display-name: "&#43803c&lGreen Tractor"
         changes:
@@ -640,7 +651,7 @@ shop:
           - MUFFLER:DIORITE_WALL
           - FENCE:BAMBOO_FENCE
           - TRAPDOOR:BAMBOO_TRAPDOOR
-        price: 10000
+        price: 10000.0
       '3':
         display-name: "&#643c80&lPurple Tractor"
         changes:
@@ -652,7 +663,7 @@ shop:
           - BUTTON:CRIMSON_BUTTON
           - FENCE:CRIMSON_FENCE
           - TRAPDOOR:CRIMSON_TRAPDOOR
-        price: 10000
+        price: 10000.0
 
 # Here you can specify the valid materials for each vehicle customization
 # (which can be applied in the customization menu).

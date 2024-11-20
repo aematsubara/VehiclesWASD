@@ -17,11 +17,10 @@ import io.github.retrooper.packetevents.util.SpigotConversionUtil;
 import io.github.retrooper.packetevents.util.SpigotReflectionUtil;
 import lombok.Getter;
 import lombok.Setter;
-import me.matsubara.vehicles.manager.StandManager;
-import me.matsubara.vehicles.model.Model;
+import me.matsubara.vehicles.VehiclesPlugin;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,41 +30,56 @@ import java.util.*;
 public final class PacketStand {
 
     private final ProtocolManager manager = PacketEvents.getAPI().getProtocolManager();
-    private final Model model;
+    private final VehiclesPlugin plugin;
     private final int id;
     private final UUID uniqueId;
     private final StandSettings settings;
     private @Setter Location location;
+    private World world;
     private List<EntityData> data;
+    private WrapperPlayServerDestroyEntities destroyEntities;
     private boolean destroyed;
 
     private static final float RADIANS_TO_DEGREES = 57.29577951308232f;
 
-    public PacketStand(@NotNull Model model, @NotNull Location location, StandSettings settings) {
-        this.model = model;
+    public PacketStand(VehiclesPlugin plugin, @NotNull Location location, StandSettings settings) {
+        this.plugin = plugin;
         this.id = SpigotReflectionUtil.generateEntityId();
         this.uniqueId = UUID.randomUUID();
         this.settings = settings;
         this.location = location;
+        this.world = location.getWorld();
     }
 
-    public void spawn() {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            spawn(player);
+    public void spawn(Location location) {
+        // Prevent errors when trying to send packets when the plugin is being disabled.
+        if (destroyed || !plugin.isEnabled()) return;
+
+        // Create the packets once and send them to the players.
+        PacketWrapper<?> spawn = createSpawnPacket();
+        WrapperPlayServerEntityTeleport teleport = createTeleport();
+        WrapperPlayServerEntityHeadLook rotation = createRotation();
+        WrapperPlayServerEntityMetadata metadata = createMetadataPacket();
+        List<WrapperPlayServerEntityEquipment> equipment = createEquipment();
+
+        for (Player player : world.getPlayers()) {
+            if (!plugin.getStandManager().isInRange(location, player.getLocation())) continue;
+
+            Object channel = SpigotReflectionUtil.getChannel(player);
+
+            manager.sendPacket(channel, spawn);
+            manager.sendPacket(channel, teleport);
+            manager.sendPacket(channel, rotation);
+            manager.sendPacket(channel, metadata);
+
+            for (WrapperPlayServerEntityEquipment wrapper : equipment) {
+                manager.sendPacket(channel, wrapper);
+            }
         }
     }
 
     public void spawn(@NotNull Player player) {
-        spawn(player, false);
-    }
-
-    public void spawn(@NotNull Player player, boolean ignore) {
         if (destroyed) return;
-
-        StandManager manager = model.getPlugin().getStandManager();
-        if (!ignore && !manager.isInRange(location, player.getLocation())) return;
-
-        model.getIgnored().remove(player.getUniqueId());
 
         sendSpawn(player);
         sendLocation(player);
@@ -123,13 +137,26 @@ public final class PacketStand {
     }
 
     public void teleport(Location location) {
+        if (invalidTeleport(location)) return;
+
         this.location = location;
+        this.world = location.getWorld();
+
         sendLocation();
     }
 
     public void teleport(Player player, Location location) {
+        if (invalidTeleport(location)) return;
+
         this.location = location;
+        this.world = location.getWorld();
+
         sendLocation(player);
+    }
+
+    private boolean invalidTeleport(@NotNull Location location) {
+        World world = location.getWorld();
+        return world == null || !Objects.equals(world, this.world);
     }
 
     private @NotNull List<WrapperPlayServerEntityEquipment> createEquipment() {
@@ -197,7 +224,7 @@ public final class PacketStand {
     }
 
     private @NotNull WrapperPlayServerDestroyEntities createDestroyEntitiesPacket() {
-        return new WrapperPlayServerDestroyEntities(id);
+        return destroyEntities != null ? destroyEntities : (destroyEntities = new WrapperPlayServerDestroyEntities(id));
     }
 
     // This method should only be called when removing the vehicle.
@@ -208,20 +235,22 @@ public final class PacketStand {
 
     public void destroy(Player player) {
         sendPacket(player, createDestroyEntitiesPacket());
-        model.getIgnored().add(player.getUniqueId());
     }
 
     private void sendPacket(PacketWrapper<?> wrapper) {
-        for (Player player : Bukkit.getOnlinePlayers()) {
+        for (Player player : world.getPlayers()) {
             sendPacket(player, wrapper);
         }
     }
 
     private void sendPacket(Player player, PacketWrapper<?> wrapper) {
+        // Prevent errors when trying to send packets when the plugin is being disabled.
+        if (!plugin.isEnabled()) return;
+
         // We only need to know if the player is ignored when we send a spawn packet,
         // but the checking is done in StandManager.
         Object channel = SpigotReflectionUtil.getChannel(player);
-        manager.sendPacketSilently(channel, wrapper);
+        manager.sendPacket(channel, wrapper);
     }
 
     @Getter
