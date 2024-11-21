@@ -82,9 +82,9 @@ tractor-features:
   # When a tractor mode is enabled, this can cause some TPS drops on the server.
   # The lower the interval, the worse it will be for performance.
   tick-delay: 2
-  # By default, the current tractor mode will only run when the tractor is moving (forward or backward).
-  # If the tractor is ONLY moving (rotating) sideways, the tractor mode will not run.
-  # If true, tractor mode will also be applied when the vehicle is only turning.
+  # If true, the tractor active mode will work with any movement of the tractor.
+  # If false, the tractor active mode will work if the tractor is moving forward or backward (regardless of whether it is also rotating);
+  # but it will not work if it is only rotating.
   work-on-rotation: true
 
 # Here you can choose which entities can be added to the vehicle seats.
