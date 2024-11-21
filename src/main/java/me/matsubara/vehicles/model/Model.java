@@ -15,7 +15,6 @@ import me.matsubara.vehicles.model.stand.PacketStand;
 import me.matsubara.vehicles.model.stand.StandSettings;
 import me.matsubara.vehicles.util.PluginUtils;
 import me.matsubara.vehicles.vehicle.VehicleType;
-import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -39,9 +38,6 @@ public final class Model {
     // The UUID of this model.
     private final UUID modelUniqueId;
 
-    // Name of the model.
-    private final String name;
-
     // Center point of the model.
     private Location location;
 
@@ -60,19 +56,14 @@ public final class Model {
             .arrayListValues()
             .build();
 
-    // File and configuration.
-    private File file;
+    // Configuration file.
     private FileConfiguration configuration;
 
     public Model(VehiclesPlugin plugin, @NotNull VehicleType type, @Nullable UUID oldUniqueId, Location location) {
         this.plugin = plugin;
         this.modelUniqueId = (oldUniqueId != null) ? oldUniqueId : UUID.randomUUID();
-        this.name = type.toPath();
         this.location = location;
-
-        loadFile();
         handleModel(type);
-
         // After loading the model, we want to add another stand which will be used for interactions.
         // The INTERACTIONS armor stand will be on the same location of the main chair.
         spawnInteractions();
@@ -81,6 +72,7 @@ public final class Model {
     private void handleModel(VehicleType type) {
         Collection<StandSettings> settings = MODEL_CACHE.get(type);
         if (settings.isEmpty()) {
+            loadFile(type);
             loadModel();
             MODEL_CACHE.putAll(type, Stream.concat(
                             stands.stream().map(PacketStand::getSettings),
@@ -111,16 +103,11 @@ public final class Model {
         addNew("INTERACTIONS", settings, at, null);
     }
 
-    private void loadFile() {
-        Map<String, Pair<File, FileConfiguration>> models = plugin.getVehicleManager().getModels();
-
-        Pair<File, FileConfiguration> pair = models.computeIfAbsent(name + ".yml", name -> {
-            File temp = new File(plugin.getModelFolder(), name);
-            return Pair.of(temp, YamlConfiguration.loadConfiguration(temp));
+    private void loadFile(@NotNull VehicleType type) {
+        configuration = plugin.getVehicleManager().getModels().computeIfAbsent(type.toPath() + ".yml", name -> {
+            File file = new File(plugin.getModelFolder(), name);
+            return YamlConfiguration.loadConfiguration(file);
         });
-
-        file = pair.getKey();
-        configuration = pair.getValue();
     }
 
     public boolean isInvalidName(String name) {

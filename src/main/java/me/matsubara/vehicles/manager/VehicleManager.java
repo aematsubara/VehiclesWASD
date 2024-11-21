@@ -66,7 +66,6 @@ import org.jetbrains.annotations.Nullable;
 import org.spigotmc.event.entity.EntityDismountEvent;
 
 import java.awt.Color;
-import java.io.File;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -76,7 +75,7 @@ public class VehicleManager implements Listener {
 
     private final VehiclesPlugin plugin;
     private final List<Vehicle> vehicles = new ArrayList<>();
-    private final Map<String, Pair<File, FileConfiguration>> models = new HashMap<>();
+    private final Map<String, FileConfiguration> models = new HashMap<>();
     private final Map<UUID, PreviewTick> previews = new HashMap<>();
     private final Map<UUID, VehicleType> selectedShopCategory = new HashMap<>();
     private final Map<UUID, GPSResultHandler> runningPaths = new HashMap<>();
