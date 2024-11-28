@@ -5,6 +5,7 @@ import me.matsubara.vehicles.files.Config;
 import me.matsubara.vehicles.vehicle.Vehicle;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
@@ -56,9 +57,9 @@ public class EntityListener implements Listener {
 
     private void handleVehicleDamage(Entity entity, Entity damager, Cancellable cancellable) {
         if (!(damager instanceof Projectile projectile)) return;
-        if (!entity.equals(projectile.getShooter())) return;
+        if (!entity.equals(projectile.getShooter()) || !(entity instanceof Player player)) return;
 
-        Vehicle vehicle = plugin.getVehicleManager().getVehicleByProjectile(projectile, entity);
+        Vehicle vehicle = plugin.getVehicleManager().getVehicleByProjectile(projectile, player);
         if (vehicle != null) cancellable.setCancelled(true);
     }
 }

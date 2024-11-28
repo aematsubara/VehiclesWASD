@@ -28,7 +28,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 public class VehicleGUI implements InventoryHolder {
 
@@ -74,7 +73,7 @@ public class VehicleGUI implements InventoryHolder {
         inventory.setItem(16, transferOwnership);
 
         if (vehicle instanceof Helicopter helicopter) {
-            UUID outsideDriver = helicopter.getOutsideDriver();
+            Player outsideDriver = helicopter.getOutsideDriver();
 
             inventory.setItem(28, createHelicopterChairItem(player, 1, outsideDriver));
             inventory.setItem(29, createHelicopterChairItem(player, 2, outsideDriver));
@@ -131,7 +130,7 @@ public class VehicleGUI implements InventoryHolder {
         }
     }
 
-    private @Nullable ItemStack createHelicopterChairItem(Player player, int chair, UUID outsideDriver) {
+    private @Nullable ItemStack createHelicopterChairItem(Player player, int chair, Player outsideDriver) {
         Pair<ArmorStand, StandSettings> firstPair = vehicle.getChairs().get(chair);
         if (firstPair == null) return null;
 
@@ -141,7 +140,7 @@ public class VehicleGUI implements InventoryHolder {
         ItemBuilder builder;
         if (passengers.isEmpty()) {
             builder = plugin.getItem("gui.vehicle.items.helicopter-chair-empty");
-        } else if ((passenger = passengers.get(0)).getUniqueId().equals(outsideDriver) && outsideDriver.equals(player.getUniqueId())) {
+        } else if ((passenger = passengers.get(0)).equals(outsideDriver) && outsideDriver.equals(player)) {
             builder = plugin.getItem("gui.vehicle.items.helicopter-chair-sitted");
         } else {
             builder = plugin.getItem("gui.vehicle.items.helicopter-chair-occupied")

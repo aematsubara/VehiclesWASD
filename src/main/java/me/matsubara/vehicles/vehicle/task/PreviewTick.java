@@ -5,7 +5,8 @@ import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.files.Config;
 import me.matsubara.vehicles.manager.VehicleManager;
 import me.matsubara.vehicles.model.Model;
-import me.matsubara.vehicles.model.stand.PacketStand;
+import me.matsubara.vehicles.model.stand.IStand;
+import me.matsubara.vehicles.model.stand.ModelLocation;
 import me.matsubara.vehicles.model.stand.StandSettings;
 import me.matsubara.vehicles.util.BlockUtils;
 import me.matsubara.vehicles.util.PluginUtils;
@@ -20,7 +21,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -33,7 +33,6 @@ import org.jetbrains.annotations.NotNull;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class PreviewTick extends BukkitRunnable {
 
@@ -41,7 +40,7 @@ public class PreviewTick extends BukkitRunnable {
     private final Player player;
     private final @Getter Model model;
     private final VehicleData data;
-    private final PacketStand center;
+    private final ModelLocation center;
     private final List<Customization> customizations = new ArrayList<>();
 
     private final int seconds = (int) (Config.SHOP_PREVIEW_SECONDS.asDouble() * 20);
@@ -61,26 +60,20 @@ public class PreviewTick extends BukkitRunnable {
         VehicleType type = data.type();
 
         Location targetLocation = getPlayerTargetLocation(player);
-        this.model = new Model(plugin, type, null, targetLocation);
+        this.model = new Model(plugin, type, null, targetLocation, true);
         this.data = data;
-        this.center = model.getStandByName("CENTER");
+        this.center = model.getLocationByName("CENTER");
 
         VehicleManager manager = plugin.getVehicleManager();
         manager.initCustomizations(model, customizations, type);
-
-        Map<String, Material> changes = data.customizationChanges();
-        if (changes != null) {
-            for (Map.Entry<String, Material> entry : changes.entrySet()) {
-                manager.applyCustomization(model, customizations, entry.getKey(), entry.getValue());
-            }
-        }
+        manager.applyCustomization(data, model, customizations);
 
         if (center != null) {
             centerStands(targetLocation, center.getSettings().getOffset());
         }
 
         // Only show to this player!
-        for (PacketStand stand : model.getStands()) {
+        for (IStand stand : model.getStands()) {
             stand.spawn(player);
         }
 
@@ -90,7 +83,7 @@ public class PreviewTick extends BukkitRunnable {
     }
 
     private void centerStands(Location location, Vector offset) {
-        for (PacketStand stand : model.getStands()) {
+        for (IStand stand : model.getStands()) {
             StandSettings settings = stand.getSettings();
             Vector temp = settings.getOffset().subtract(offset);
 
@@ -133,7 +126,7 @@ public class PreviewTick extends BukkitRunnable {
 
         if (ticks % 20 == 0) spawnParticles();
 
-        for (PacketStand stand : model.getStands()) {
+        for (IStand stand : model.getStands()) {
             Location correctLocation = BlockUtils.getCorrectLocation(null, data.type(), location, stand.getSettings());
             stand.teleport(player, correctLocation);
         }

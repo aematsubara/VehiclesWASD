@@ -6,6 +6,7 @@ import me.matsubara.vehicles.files.config.ConfigValue;
 @UtilityClass
 public class Config {
     // General.
+    public final ConfigValue ARMOR_STAND_TYPE = new ConfigValue("armor-stand-type");
     public final ConfigValue RENDER_DISTANCE = new ConfigValue("render-distance");
     public final ConfigValue OPPOSITE_FACE_SPAWN = new ConfigValue("opposite-face-spawn");
     public final ConfigValue ECONOMY_PROVIDER = new ConfigValue("economy-provider");
@@ -20,9 +21,14 @@ public class Config {
     public final ConfigValue STOP_VEHICLE_ON_DISMOUNT = new ConfigValue("stop-vehicle-on-dismount");
     public final ConfigValue SAFE_DISMOUNT_TELEPORT = new ConfigValue("safe-dismount-teleport");
 
+    // Performance.
+    public final ConfigValue VEHICLE_SPAWN_DELAY = new ConfigValue("performance.vehicle-spawn-delay");
+    public final ConfigValue ROTATE_WHEELS = new ConfigValue("performance.rotate-wheels");
+
     // Tractor.
     public final ConfigValue TRACTOR_TICK_DELAY = new ConfigValue("tractor-features.tick-delay");
     public final ConfigValue TRACTOR_WORK_ON_ROTATION = new ConfigValue("tractor-features.work-on-rotation");
+    public final ConfigValue TRACTOR_PARTICLE_DELAY = new ConfigValue("tractor-features.particle-delay");
 
     // Keybinds.
     public final ConfigValue KEYBINDS_OPEN_MENU = new ConfigValue("vehicle-keybinds.open-menu");

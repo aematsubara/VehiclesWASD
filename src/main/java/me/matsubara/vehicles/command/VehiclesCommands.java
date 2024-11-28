@@ -168,6 +168,7 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
 
             CompletableFuture.runAsync(plugin::updateConfigs).thenRun(() -> plugin.getServer().getScheduler().runTask(plugin, () -> {
                 ConfigValue.ALL_VALUES.forEach(ConfigValue::reloadValue);
+                plugin.getStandManager().handleReload();
 
                 plugin.resetEconomyProvider();
 

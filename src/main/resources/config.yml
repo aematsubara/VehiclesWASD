@@ -49,6 +49,11 @@
 # Don't touch this!
 config-version: 1
 
+# Here you can choose the type of armor stand to use.
+# PACKET: armor stands will be packets instead of real entities.
+# BUKKIT: armor stands will be real entities in the world.
+armor-stand-type: BUKKIT
+
 # The rendering distance of the vehicles.
 render-distance: 72.0
 
@@ -76,16 +81,28 @@ pick-up-on-remove: false
 # NOTE 2: As with boats and minecarts, to remove nearby entities, you must remove the vehicle.
 pick-up-nearby-entities: false
 
+# Here you will find settings that impact performance.
+performance:
+  # At what interval (in ticks, 1 second = 20 ticks) should vehicles spawn/despawn based on the players' locations?
+  # This function only works if {@armor-stand-type} = PACKET
+  vehicle-spawn-delay: 20
+  # Vehicles such as CYBERCAR, KART and QUAD can rotate their front wheels. Here you can toggle this function.
+  rotate-wheels: false
+
 # Here you can customize some features of the tractor.
 tractor-features:
   # At what interval (in ticks, 1 second = 20 ticks) should the current tractor mode be run?
   # When a tractor mode is enabled, this can cause some TPS drops on the server.
   # The lower the interval, the worse it will be for performance.
-  tick-delay: 2
+  # The default and recommended value is = 4.
+  tick-delay: 4
   # If true, the tractor active mode will work with any movement of the tractor.
   # If false, the tractor active mode will work if the tractor is moving forward or backward (regardless of whether it is also rotating);
   # but it will not work if it is only rotating.
-  work-on-rotation: true
+  work-on-rotation: false
+  # At what interval (in ticks, 1 second = 20 ticks) should the tractor particles spawn?
+  # To disable particles, set to = -1.
+  particle-delay: 40
 
 # Here you can choose which entities can be added to the vehicle seats.
 # If type is set BLACKLIST, entities listed here will be ignored.
@@ -633,35 +650,23 @@ shop:
         display-name: "&#383838&lGray Tractor"
         changes:
           - CHAIR:BLACKSTONE_STAIRS
-          - CARPET:LIGHT_GRAY_CARPET
           - COLOR:GRAY_CONCRETE
-          - FENDER:GRAY_CARPET
           - MUFFLER:POLISHED_BLACKSTONE_BRICK_WALL
-          - LIGHT:SOUL_LANTERN
-          - BUTTON:POLISHED_BLACKSTONE_BUTTON
-          - FENCE:WARPED_FENCE
         price: 10000.0
       '2':
         display-name: "&#43803c&lGreen Tractor"
         changes:
           - CHAIR:BAMBOO_STAIRS
-          - CARPET:GREEN_CARPET
           - COLOR:GREEN_CONCRETE
-          - FENDER:GREEN_CARPET
           - MUFFLER:DIORITE_WALL
-          - FENCE:BAMBOO_FENCE
           - TRAPDOOR:BAMBOO_TRAPDOOR
         price: 10000.0
       '3':
         display-name: "&#643c80&lPurple Tractor"
         changes:
           - CHAIR:CRIMSON_STAIRS
-          - CARPET:MAGENTA_CARPET
           - COLOR:PURPLE_TERRACOTTA
-          - FENDER:PURPLE_CARPET
           - MUFFLER:NETHER_BRICK_WALL
-          - BUTTON:CRIMSON_BUTTON
-          - FENCE:CRIMSON_FENCE
           - TRAPDOOR:CRIMSON_TRAPDOOR
         price: 10000.0
 
@@ -852,48 +857,21 @@ customizations:
         - $TERRACOTTA
         - $CONCRETE
         - $WOOL
-    light:
-      priority: 2
-      name: "Light"
-      items:
-        - $LANTERN
-    fender:
-      priority: 3
-      name: "Fender"
-      items:
-        - $CARPETS
-        - $WOOL_CARPETS
     muffler:
-      priority: 4
+      priority: 2
       name: "Muffler"
       items:
         - $WALLS
     trapdoor:
-      priority: 5
+      priority: 3
       name: "Trapdoor"
       items:
         - $TRAPDOORS
     chair:
-      priority: 6
+      priority: 4
       name: "Chair"
       items:
         - $STAIRS
-    carpet:
-      priority: 7
-      name: "Carpet"
-      items:
-        - $CARPETS
-        - $WOOL_CARPETS
-    fence:
-      priority: 8
-      name: "Fence"
-      items:
-        - $FENCES
-    button:
-      priority: 9
-      name: "Button"
-      items:
-        - $BUTTONS
 
 # Here you can modify the vehicle item obtained by using {/vwasd give} and the characteristics of each vehicle.
 #

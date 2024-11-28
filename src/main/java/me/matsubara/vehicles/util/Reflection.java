@@ -1,6 +1,7 @@
 package me.matsubara.vehicles.util;
 
 import com.cryptomorin.xseries.reflection.XReflection;
+import com.cryptomorin.xseries.reflection.minecraft.MinecraftClassHandle;
 import com.cryptomorin.xseries.reflection.minecraft.MinecraftMapping;
 import com.cryptomorin.xseries.reflection.minecraft.MinecraftPackage;
 import org.apache.commons.lang3.ArrayUtils;
@@ -180,11 +181,35 @@ public final class Reflection {
     }
 
     @SuppressWarnings("PatternValidation")
-    public static @NotNull Class<?> getNMSClass(String packageName, String mojangName, String spigotName) {
-        return XReflection.ofMinecraft()
-                .inPackage(MinecraftPackage.NMS, packageName)
+    public static @NotNull Class<?> getCraftClass(@Nullable String packageName, String className) {
+        MinecraftClassHandle handle = XReflection.ofMinecraft();
+
+        if (packageName != null) {
+            handle.inPackage(MinecraftPackage.CB, packageName);
+        } else {
+            handle.inPackage(MinecraftPackage.CB);
+        }
+
+        return handle.named(className).unreflect();
+    }
+
+    @SuppressWarnings("PatternValidation")
+    public static @NotNull Class<?> getNMSClass(@Nullable String packageName, String mojangName, String spigotName) {
+        MinecraftClassHandle handle = XReflection.ofMinecraft();
+
+        if (packageName != null) {
+            handle.inPackage(MinecraftPackage.NMS, packageName);
+        } else {
+            handle.inPackage(MinecraftPackage.NMS);
+        }
+
+        return handle
                 .map(MinecraftMapping.MOJANG, mojangName)
                 .map(MinecraftMapping.SPIGOT, spigotName)
                 .unreflect();
+    }
+
+    public static @NotNull Class<?> getNMSClass(@Nullable String packageName, String sameName) {
+        return getNMSClass(packageName, sameName, sameName);
     }
 }

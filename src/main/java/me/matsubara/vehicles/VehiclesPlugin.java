@@ -121,6 +121,10 @@ public final class VehiclesPlugin extends JavaPlugin {
 
         // WG needs to be registered onLoad to be able to register the flags.
         wgExtension = registerExtension(WGExtension.class, "WorldGuard");
+
+        messages = new Messages(this);
+        saveDefaultConfig();
+        updateConfigs();
     }
 
     @Override
@@ -158,11 +162,6 @@ public final class VehiclesPlugin extends JavaPlugin {
         inputManager = new InputManager(this);
         standManager = new StandManager(this);
         vehicleManager = new VehicleManager(this);
-
-        messages = new Messages(this);
-
-        saveDefaultConfig();
-        updateConfigs();
 
         resetEconomyProvider();
         essentialsExtension = registerExtension(EssentialsExtension.class, "Essentials");

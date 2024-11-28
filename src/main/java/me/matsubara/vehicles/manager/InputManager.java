@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.spigotmc.event.entity.EntityDismountEvent;
 
 import java.util.Map;
@@ -30,8 +31,8 @@ public class InputManager extends SimplePacketListenerAbstract implements Listen
         PacketEvents.getAPI().getEventManager().registerListener(this);
     }
 
-    public PlayerInput getInput(UUID uuid) {
-        return uuid != null ? inputs.getOrDefault(uuid, PlayerInput.ZERO) : PlayerInput.ZERO;
+    public PlayerInput getInput(@Nullable Player player) {
+        return player != null ? inputs.getOrDefault(player.getUniqueId(), PlayerInput.ZERO) : PlayerInput.ZERO;
     }
 
     @Override

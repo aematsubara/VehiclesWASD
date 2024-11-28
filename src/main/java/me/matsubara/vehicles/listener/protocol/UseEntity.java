@@ -15,7 +15,7 @@ import me.matsubara.vehicles.files.config.ConfigValue;
 import me.matsubara.vehicles.gui.VehicleGUI;
 import me.matsubara.vehicles.manager.VehicleManager;
 import me.matsubara.vehicles.model.Model;
-import me.matsubara.vehicles.model.stand.PacketStand;
+import me.matsubara.vehicles.model.stand.IStand;
 import me.matsubara.vehicles.model.stand.StandSettings;
 import me.matsubara.vehicles.vehicle.FireballWeapon;
 import me.matsubara.vehicles.vehicle.Vehicle;
@@ -24,7 +24,10 @@ import me.matsubara.vehicles.vehicle.task.FireballTask;
 import me.matsubara.vehicles.vehicle.task.PreviewTick;
 import me.matsubara.vehicles.vehicle.type.Helicopter;
 import org.apache.commons.lang3.tuple.Pair;
-import org.bukkit.*;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Tag;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -157,8 +160,8 @@ public final class UseEntity extends SimplePacketListenerAbstract implements Lis
 
         Model model = vehicle.getModel();
 
-        PacketStand firstScope = model.getStandByName("FRONT_PART_5");
-        PacketStand secondScope = model.getStandByName("FRONT_PART_6");
+        IStand firstScope = model.getStandByName("FRONT_PART_5");
+        IStand secondScope = model.getStandByName("FRONT_PART_6");
         if (firstScope == null || secondScope == null) return true;
 
         runnable.run();
@@ -244,7 +247,7 @@ public final class UseEntity extends SimplePacketListenerAbstract implements Lis
         boolean plane = type == VehicleType.PLANE;
         if (!vehicle.canMove() || (plane && vehicle.isOnGround())) return true;
 
-        PacketStand scope = vehicle.getModel().getStandByName(weapon.getScope());
+        IStand scope = vehicle.getModel().getStandByName(weapon.getScope());
         if (scope == null) return true;
 
         runnable.run();
@@ -305,7 +308,7 @@ public final class UseEntity extends SimplePacketListenerAbstract implements Lis
         while (iterator.hasNext()) { // We use an iterator because, when doing PreviewTick#cancel, we're removing the preview from the map.
             PreviewTick preview = iterator.next();
 
-            PacketStand stand = preview.getModel().getStandById(entityId);
+            IStand stand = preview.getModel().getStandById(entityId);
             if (stand == null) continue;
 
             preview.cancel();
@@ -409,7 +412,7 @@ public final class UseEntity extends SimplePacketListenerAbstract implements Lis
         if (chair == null) return;
 
         if (firstChair) {
-            vehicle.setDriver(playerUUID);
+            vehicle.setDriver(player);
 
             // Re-apply cooldown.
             Multimap<UUID, Pair<Material, Integer>> cooldowns = vehicle.getCooldowns();
@@ -418,7 +421,7 @@ public final class UseEntity extends SimplePacketListenerAbstract implements Lis
             }
             cooldowns.removeAll(playerUUID);
         } else {
-            vehicle.getPassengers().put(playerUUID, chair.getValue().getPartName());
+            vehicle.getPassengers().put(player, chair.getValue().getPartName());
             handleOwnerLeftOut(player, vehicle, false);
         }
 
@@ -427,15 +430,11 @@ public final class UseEntity extends SimplePacketListenerAbstract implements Lis
 
     private boolean kickDriverIfPossible(@NotNull Player player, @NotNull Vehicle vehicle) {
         UUID ownerUUID = vehicle.getOwner();
-        UUID driverUUID = vehicle.getDriver();
 
-        UUID temp = driverUUID != null ? driverUUID : vehicle instanceof Helicopter helicopter ? helicopter.getOutsideDriver() : null;
-        if (temp == null
-                || temp.equals(ownerUUID)
+        Player driver = vehicle.getDriver() != null ? vehicle.getDriver() : vehicle instanceof Helicopter helicopter ? helicopter.getOutsideDriver() : null;
+        if (driver == null
+                || driver.getUniqueId().equals(ownerUUID)
                 || !ownerUUID.equals(player.getUniqueId())) return false;
-
-        Player driver = Bukkit.getPlayer(temp);
-        if (driver == null) return false;
 
         Entity chair = driver.getVehicle();
         if (chair == null) return false;

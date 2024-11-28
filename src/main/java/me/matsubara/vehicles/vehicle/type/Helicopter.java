@@ -6,7 +6,7 @@ import lombok.Setter;
 import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.data.PlayerInput;
 import me.matsubara.vehicles.model.Model;
-import me.matsubara.vehicles.model.stand.PacketStand;
+import me.matsubara.vehicles.model.stand.IStand;
 import me.matsubara.vehicles.model.stand.StandSettings;
 import me.matsubara.vehicles.util.PluginUtils;
 import me.matsubara.vehicles.vehicle.Vehicle;
@@ -14,6 +14,7 @@ import me.matsubara.vehicles.vehicle.VehicleData;
 import me.matsubara.vehicles.vehicle.VehicleType;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,7 +28,7 @@ public class Helicopter extends Vehicle {
 
     private static final float BLADES_ROTATION_SPEED = 25.0f;
 
-    private UUID outsideDriver;
+    private Player outsideDriver;
     private final Set<UUID> transfers = new HashSet<>();
 
     public Helicopter(@NotNull VehiclesPlugin plugin, VehicleData data, @NotNull Model model) {
@@ -49,8 +50,8 @@ public class Helicopter extends Vehicle {
     }
 
     @Override
-    public boolean isDriver(@NotNull UUID uuid) {
-        return super.isDriver(uuid) || uuid.equals(outsideDriver);
+    public boolean isDriver(@NotNull Player player) {
+        return super.isDriver(player) || player.equals(outsideDriver);
     }
 
     private void handleRotors() {
@@ -58,7 +59,7 @@ public class Helicopter extends Vehicle {
                 || !canMove()
                 || (driver == null && outsideDriver == null)) return;
 
-        for (PacketStand stand : model.getStands()) {
+        for (IStand stand : model.getStands()) {
             StandSettings settings = stand.getSettings();
             if (!settings.getPartName().startsWith("ROTOR")) continue;
 

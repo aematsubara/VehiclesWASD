@@ -1,10 +1,8 @@
 package me.matsubara.vehicles.util;
 
 import com.cryptomorin.xseries.reflection.XReflection;
-import com.github.retrooper.packetevents.protocol.item.ItemStack;
-import com.github.retrooper.packetevents.protocol.player.EquipmentSlot;
-import io.github.retrooper.packetevents.util.SpigotConversionUtil;
 import me.matsubara.vehicles.model.stand.StandSettings;
+import me.matsubara.vehicles.model.stand.data.ItemSlot;
 import me.matsubara.vehicles.vehicle.VehicleType;
 import org.apache.commons.lang3.ArrayUtils;
 import org.bukkit.*;
@@ -14,6 +12,7 @@ import org.bukkit.block.data.*;
 import org.bukkit.block.data.type.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -75,13 +74,13 @@ public class BlockUtils {
     private static final Class<?> BLOCK_CONTEXT = Reflection.getNMSClass("world.level", "ClipContext$Block", "RayTrace$BlockCollisionOption");
     private static final Class<?> FLUID_CONTEXT = Reflection.getNMSClass("world.level", "ClipContext$Fluid", "RayTrace$FluidCollisionOption");
     private static final Class<?> ENTITY = Reflection.getNMSClass("world.entity", "Entity", "Entity");
-    private static final Class<?> CRAFT_WORLD = XReflection.getCraftClass("CraftWorld");
-    private static final Class<?> CRAFT_PLAYER = XReflection.getCraftClass("entity.CraftPlayer");
+    private static final Class<?> CRAFT_WORLD = Reflection.getCraftClass(null, "CraftWorld");
+    private static final Class<?> CRAFT_PLAYER = Reflection.getCraftClass("entity", "CraftPlayer");
     private static final Class<?> MOVING_OBJECT_POSITION = Reflection.getNMSClass("world.phys", "HitResult", "MovingObjectPosition");
     private static final Class<?> MOVING_OBJECT_POSITION_BLOCK = Reflection.getNMSClass("world.phys", "BlockHitResult", "MovingObjectPositionBlock");
     private static final Class<?> BLOCK_POSITION = Reflection.getNMSClass("core", "BlockPos", "BlockPosition");
     private static final Class<?> BASE_BLOCK_POSITION = Reflection.getNMSClass("core", "Vec3i", "BaseBlockPosition");
-    private static final Class<?> CRAFT_BLOCK_DATA = XReflection.getCraftClass("block.data.CraftBlockData");
+    private static final Class<?> CRAFT_BLOCK_DATA = Reflection.getCraftClass("block.data", "CraftBlockData");
     private static final Class<?> BLOCK = Reflection.getNMSClass("world.level.block", "Block", "Block");
     private static final Class<?> BLOCK_STATE = Reflection.getNMSClass("world.level.block.state", "BlockState", "IBlockData");
 
@@ -120,7 +119,7 @@ public class BlockUtils {
         // https://minecraft.fandom.com/wiki/Solid_block
 
         // 0.9375 (includes no-tilt big dripleaf and bell attached to a wall)
-        fillHeights(data -> 0.9375d, Material.DIRT_PATH, Material.FARMLAND, Material.HONEY_BLOCK, Material.CACTUS);
+        fillHeights(data -> 0.9375d, Material.DIRT_PATH, Material.FARMLAND, Material.HONEY_BLOCK, Material.CACTUS, Material.SOUL_SAND);
 
         // 0.875 (includes grindstone attached to a wall)
         fillHeights(data -> 0.875d, builder()
@@ -275,15 +274,12 @@ public class BlockUtils {
                 material);
     }
 
-    public static @NotNull Location getCorrectLocation(@Nullable UUID driverUUID, VehicleType type, @NotNull Location main, @NotNull StandSettings settings) {
+    public static @NotNull Location getCorrectLocation(@Nullable Player driver, VehicleType type, @NotNull Location main, @NotNull StandSettings settings) {
         Location location = main.clone();
 
-        Player driver;
         if (type == VehicleType.TANK
                 && settings.getPartName().startsWith("TOP_PART")
-                && driverUUID != null
-                && (driver = Bukkit.getPlayer(driverUUID)) != null
-                && driver.isOnline()) {
+                && driver != null) {
             location.setYaw(driver.getLocation().getYaw());
         }
 
@@ -296,12 +292,9 @@ public class BlockUtils {
         ItemStack item;
         if (XReflection.supports(21, 2)
                 && settings.isSmall()
-                && (item = settings.getEquipment().get(EquipmentSlot.HELMET)) != null
-                && !item.isEmpty()) {
-            Material material = SpigotConversionUtil.toBukkitItemMaterial(item.getType());
-            if (HEIGHT_FIX.contains(material)) {
-                location.add(0.0d, 0.02125d, 0.0d);
-            }
+                && (item = settings.getEquipment().get(ItemSlot.HEAD)) != null
+                && HEIGHT_FIX.contains(item.getType())) {
+            location.add(0.0d, 0.02125d, 0.0d);
         }
 
         return location;

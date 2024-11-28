@@ -12,7 +12,6 @@ import me.matsubara.vehicles.data.PlayerInput;
 import me.matsubara.vehicles.event.protocol.WrapperPlayServerEffect;
 import me.matsubara.vehicles.files.Config;
 import me.matsubara.vehicles.model.Model;
-import me.matsubara.vehicles.model.stand.ModelLocation;
 import me.matsubara.vehicles.util.BlockUtils;
 import me.matsubara.vehicles.util.Crop;
 import me.matsubara.vehicles.util.PluginUtils;
@@ -32,7 +31,9 @@ import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -47,7 +48,6 @@ public class Generic extends Vehicle {
     private @Setter int currentDistance = Integer.MIN_VALUE;
     private GPSTick gpsTick;
     private @Setter TractorMode tractorMode;
-    private final List<ModelLocation> tractorLocations = new ArrayList<>();
 
     private final int tractorTickDelay = Math.max(1, Config.TRACTOR_TICK_DELAY.asInt());
     private final boolean workOnRotation = Config.TRACTOR_WORK_ON_ROTATION.asBool();
@@ -92,10 +92,6 @@ public class Generic extends Vehicle {
                         "CRIMSON_ROOTS")
                 .get();
         this.tractorMode = data.tractorMode();
-        for (int i = 1; i <= 3; i++) {
-            ModelLocation location = model.getLocationByName("TRACTOR_CHECK_" + i);
-            if (location != null) this.tractorLocations.add(location);
-        }
     }
 
     public Generic setGPSTick(GPSTick gpsTick) {
@@ -136,7 +132,7 @@ public class Generic extends Vehicle {
         boolean hasSpeed = currentSpeed != 0.0f;
 
         if (!hasZMovement && !hasSpeed && onGround) {
-            if (input.sideways() != 0.0f && workOnRotation) {
+            if (input.sideways() != 0.0f && (workOnRotation || getDirectionDot() != 0.0d)) {
                 handleTractor();
             }
             return;
@@ -185,13 +181,11 @@ public class Generic extends Vehicle {
                 .multiply(multiplier)
                 .setY(-0.5d);
 
-        Player player;
         if (driver != null
                 && is(VehicleType.PLANE)
-                && currentSpeed > liftingSpeed
-                && (player = Bukkit.getPlayer(driver)) != null) {
+                && currentSpeed > liftingSpeed) {
 
-            float pitch = player.getLocation().getPitch(), alternate;
+            float pitch = driver.getLocation().getPitch(), alternate;
             if (pitch >= 0.0f && pitch <= UP_EXTRA_PITCH) {
                 alternate = UP_EXTRA_PITCH - pitch;
             } else {
@@ -254,8 +248,10 @@ public class Generic extends Vehicle {
         // We need at least 1 bone meal for BONE_MEAL mode.
         if (tractorMode == TractorMode.BONE_MEAL && !hasBoneMeal()) return;
 
-        handleTractor(0);
-        handleTractor(1);
+        if (!handleTractorMode(0)) {
+            // Check a block below.
+            handleTractorMode(1);
+        }
 
         if (tractorStackWheat) stackWheat();
     }
@@ -266,57 +262,45 @@ public class Generic extends Vehicle {
                 && inventory.firstEmpty() != -1);
     }
 
-    private void handleTractor(int step) {
-        Set<Block> checked = new HashSet<>();
+    private boolean handleTractorMode(int step) {
+        Location temp = velocityStand.getLocation();
+        Location back = temp.add(temp.getDirection().normalize().multiply(-1.0d));
+        back.setY(temp.getY() - step);
 
-        // The location of these parts is where we want to break the crops.
-        for (ModelLocation location : tractorLocations) {
-            Location clone = location.getLocation().clone();
-            clone.setY(velocityStand.getLocation().getY());
+        Block block = back.getBlock();
 
-            for (int j = 0; j < step; j++) {
-                clone.setY(clone.getY() - 1);
-            }
+        Block up = block.getRelative(BlockFace.UP);
+        BlockData upData = up.getBlockData();
 
-            Block block = clone.getBlock();
-            if (!checked.add(block)) continue;
-
-            Block up = block.getRelative(BlockFace.UP);
-            BlockData upData = up.getBlockData();
-
-            if (tractorMode == TractorMode.DIRT_PATH || tractorMode == TractorMode.FARMLAND) {
-                handlePathOrFarmland(block, up, upData);
-                continue;
-            }
-
-            if (tractorMode == TractorMode.PLANT) {
-                handlePlant(block, up, upData);
-                continue;
-            }
-
-            // For BONE_MEAL & HARVEST we need an Ageable.
-            if (!(upData instanceof Ageable ageable)) continue;
-
-            // For BONE_MEAL & HARVEST we need a crop.
-            Crop crop = Crop.getByPlaceType(up.getType());
-            if (crop == null || !crop.getOn().contains(block.getType())) continue;
-
-            if (tractorMode == TractorMode.BONE_MEAL) {
-                handleBoneMeal(ageable, crop, up);
-                continue;
-            }
-
-            handleHarvest(ageable, crop, up);
+        if (tractorMode == TractorMode.DIRT_PATH || tractorMode == TractorMode.FARMLAND) {
+            return handlePathOrFarmland(block, up, upData);
         }
+
+        if (tractorMode == TractorMode.PLANT) {
+            return handlePlant(block, up, upData);
+        }
+
+        // For BONE_MEAL & HARVEST we need an Ageable.
+        if (!(upData instanceof Ageable ageable)) return false;
+
+        // For BONE_MEAL & HARVEST we need a crop.
+        Crop crop = Crop.getByPlaceType(up.getType());
+        if (crop == null || !crop.getOn().contains(block.getType())) return false;
+
+        if (tractorMode == TractorMode.BONE_MEAL) {
+            return handleBoneMeal(ageable, crop, up);
+        }
+
+        return handleHarvest(ageable, crop, up);
     }
 
-    private void handlePathOrFarmland(@NotNull Block block, @NotNull Block up, BlockData upData) {
-        if (upData instanceof Ageable) return;
+    private boolean handlePathOrFarmland(@NotNull Block block, @NotNull Block up, BlockData upData) {
+        if (upData instanceof Ageable) return false;
 
         Material upType = up.getType();
-        if (!upType.isAir() && !up.isPassable()) return;
+        if (!upType.isAir() && !up.isPassable()) return false;
 
-        if (!tractorMode.getFrom().contains(block.getType())) return;
+        if (!tractorMode.getFrom().contains(block.getType())) return false;
 
         block.setType(tractorMode.getTo());
         playBlockSound(block, block.getBlockData(), group -> tractorMode.getConvertSound());
@@ -327,29 +311,33 @@ public class Generic extends Vehicle {
                 && farmlandTopRemove.contains(upType)) {
             breakAndPlaySound(up, true);
         }
+
+        return true;
     }
 
-    private void handlePlant(@NotNull Block block, @NotNull Block up, BlockData upData) {
-        if (upData instanceof Ageable || !up.getType().isAir()) return;
+    private boolean handlePlant(@NotNull Block block, @NotNull Block up, BlockData upData) {
+        if (upData instanceof Ageable || !up.getType().isAir()) return false;
 
         Crop crop = Crop.getBySeeds(block.getType(), inventory);
-        if (crop == null) return;
+        if (crop == null) return false;
 
         up.setType(crop.getPlace());
         playBlockSound(up, upData, SoundGroup::getPlaceSound);
 
         inventory.removeItem(new ItemStack(crop.getSeeds()));
+        return true;
     }
 
-    private void handleBoneMeal(@NotNull Ageable ageable, Crop crop, Block up) {
-        if (ageable.getAge() == ageable.getMaximumAge()) return;
-        if (tick % tractorTickDelay * 2 != 0 || crop == Crop.WART) return;
+    private boolean handleBoneMeal(@NotNull Ageable ageable, Crop crop, Block up) {
+        if (ageable.getAge() == ageable.getMaximumAge()) return false;
+        if (tick % tractorTickDelay * 2 != 0 || crop == Crop.WART) return false;
 
         boolean hasBoneMeal = inventory.contains(Material.BONE_MEAL);
         if (!hasBoneMeal && (!tractorBlockToMeal
                 || !inventory.contains(Material.BONE_BLOCK)
-                || inventory.firstEmpty() == -1))
-            return;
+                || inventory.firstEmpty() == -1)) {
+            return false;
+        }
 
         if (!hasBoneMeal) { // Convert BONE_BLOCK (1) to BONE_MEAL (9).
             inventory.removeItem(new ItemStack(Material.BONE_BLOCK));
@@ -358,10 +346,11 @@ public class Generic extends Vehicle {
 
         up.applyBoneMeal(BlockFace.UP);
         inventory.removeItem(new ItemStack(Material.BONE_MEAL));
+        return true;
     }
 
-    private void handleHarvest(@NotNull Ageable ageable, @NotNull Crop crop, @NotNull Block up) {
-        if (ageable.getAge() != ageable.getMaximumAge()) return;
+    private boolean handleHarvest(@NotNull Ageable ageable, @NotNull Crop crop, @NotNull Block up) {
+        if (ageable.getAge() != ageable.getMaximumAge()) return false;
 
         ageable.setAge(0);
         up.setBlockData(ageable);
@@ -389,6 +378,7 @@ public class Generic extends Vehicle {
         }
 
         breakAndPlaySound(up, false);
+        return true;
     }
 
     public void stackWheat() {

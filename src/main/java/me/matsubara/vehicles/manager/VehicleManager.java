@@ -1,9 +1,7 @@
 package me.matsubara.vehicles.manager;
 
 import com.cryptomorin.xseries.reflection.XReflection;
-import com.github.retrooper.packetevents.protocol.player.EquipmentSlot;
 import com.google.common.collect.Multimap;
-import io.github.retrooper.packetevents.util.SpigotConversionUtil;
 import lombok.Getter;
 import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.event.VehicleDespawnEvent;
@@ -13,8 +11,9 @@ import me.matsubara.vehicles.files.Messages;
 import me.matsubara.vehicles.files.config.ConfigValue;
 import me.matsubara.vehicles.manager.targets.TypeTarget;
 import me.matsubara.vehicles.model.Model;
-import me.matsubara.vehicles.model.stand.PacketStand;
+import me.matsubara.vehicles.model.stand.IStand;
 import me.matsubara.vehicles.model.stand.StandSettings;
+import me.matsubara.vehicles.model.stand.data.ItemSlot;
 import me.matsubara.vehicles.util.BlockUtils;
 import me.matsubara.vehicles.util.PluginUtils;
 import me.matsubara.vehicles.vehicle.Customization;
@@ -142,6 +141,8 @@ public class VehicleManager implements Listener {
                 continue;
             }
 
+            vehicle.resetRealEntities(world);
+
             // Restart tick if needed.
             VehicleTick tick = vehicle.getVehicleTick();
             if (tick == null || tick.isCancelled()) {
@@ -152,7 +153,7 @@ public class VehicleManager implements Listener {
         }
     }
 
-    public @Nullable Vehicle getVehicleByProjectile(@NotNull Projectile projectile, @Nullable Entity driver) {
+    public @Nullable Vehicle getVehicleByProjectile(@NotNull Projectile projectile, @Nullable Player driver) {
         for (MetadataValue value : projectile.getMetadata("VehicleSource")) {
             if (!(value.value() instanceof Vehicle vehicle)) continue;
             if (driver != null && !vehicle.isDriver(driver)) continue;
@@ -174,7 +175,8 @@ public class VehicleManager implements Listener {
 
     public Vehicle getVehicleByEntity(Entity entity, boolean checkPassenger) {
         for (Vehicle vehicle : vehicles) {
-            if (vehicle.isDriver(entity) || (checkPassenger && vehicle.isPassenger(entity))) {
+            if ((entity instanceof Player player && vehicle.isDriver(player))
+                    || (checkPassenger && vehicle.isPassenger(entity))) {
                 return vehicle;
             }
         }
@@ -236,7 +238,7 @@ public class VehicleManager implements Listener {
         // This may be null if it's a new vehicle.
         UUID modelUniqueId = data.modelUniqueId();
 
-        Model model = new Model(plugin, type, modelUniqueId, location);
+        Model model = new Model(plugin, type, modelUniqueId, location, false);
         Vehicle vehicle = type.create(plugin, data, model);
 
         // Start after 10 ticks to add small velocity to the helicopter ONLY if the chunk is loaded.
@@ -353,7 +355,7 @@ public class VehicleManager implements Listener {
     }
 
     private void handleDismount(@NotNull Entity entity, @NotNull Vehicle vehicle) {
-        boolean driver = vehicle.isDriver(entity);
+        boolean driver = entity instanceof Player player && vehicle.isDriver(player);
         UUID entityUUID = entity.getUniqueId();
 
         if (vehicle instanceof Helicopter helicopter) {
@@ -361,7 +363,7 @@ public class VehicleManager implements Listener {
 
             if (driver) {
                 helicopter.setOutsideDriver(null);
-                helicopter.getPassengers().remove(entityUUID);
+                helicopter.getPassengers().remove(entity);
             }
         }
 
@@ -374,7 +376,7 @@ public class VehicleManager implements Listener {
             vehicle.setDriver(null);
             invalidateGPSResult(entityUUID);
         } else {
-            vehicle.getPassengers().remove(entityUUID);
+            vehicle.getPassengers().remove(entity);
         }
 
         // Remove speed and velocity.
@@ -677,7 +679,7 @@ public class VehicleManager implements Listener {
     }
 
     public void initCustomizations(@NotNull Model model, @NotNull List<Customization> customizations, VehicleType type) {
-        for (PacketStand stand : model.getStands()) {
+        for (IStand stand : model.getStands()) {
             handleCustomizations(customizations, stand, type);
         }
 
@@ -700,7 +702,7 @@ public class VehicleManager implements Listener {
         customizations.sort(Comparator.comparingInt(Customization::getPriority));
     }
 
-    private void handleCustomizations(List<Customization> customizations, @NotNull PacketStand stand, VehicleType type) {
+    private void handleCustomizations(List<Customization> customizations, @NotNull IStand stand, VehicleType type) {
         // Format: CUSTOMIZABLE:{NAME}:{SLOT}:{PARENT(optional)}
         StandSettings settings = stand.getSettings();
 
@@ -712,7 +714,7 @@ public class VehicleManager implements Listener {
 
             String customizationName = data[1].replace("_", "-");
 
-            PacketStand.ItemSlot slot = PluginUtils.getOrNull(PacketStand.ItemSlot.class, data[2].toUpperCase(Locale.ROOT));
+            ItemSlot slot = PluginUtils.getOrNull(ItemSlot.class, data[2].toUpperCase(Locale.ROOT));
             if (slot == null) continue;
 
             Set<TypeTarget> typeTargets = new HashSet<>();
@@ -741,14 +743,14 @@ public class VehicleManager implements Listener {
                 customization = new Customization(
                         customizationName,
                         customizationNameFromConfig,
-                        SpigotConversionUtil.toBukkitItemMaterial(settings.getEquipment().get(slot.getSlot()).getType()),
+                        settings.getEquipment().get(slot).getType(),
                         typeTargets,
                         override != null ? override.getRight() : Integer.MAX_VALUE);
                 customization.setParent(parent);
                 customizations.add(customization);
             }
 
-            customization.getStands().put(settings.getPartName(), slot.getSlot());
+            customization.getStands().put(settings.getPartName(), slot);
         }
     }
 
@@ -789,23 +791,32 @@ public class VehicleManager implements Listener {
         return null;
     }
 
-    public void applyCustomization(Model model, List<Customization> customizations, String customizationName, Material newType) {
-        Customization customization = getCustomizationByName(customizations, customizationName);
-        if (customization != null) applyCustomization(model, customization, newType);
+    public void applyCustomization(@NotNull VehicleData data, Model model, List<Customization> customizations) {
+        // There is no need to send equipment packets after applying the customizations here since the vehicle has not spawned yet (on both usages).
+        Map<String, Material> changes = data.customizationChanges();
+        if (changes == null) return;
+
+        for (Map.Entry<String, Material> entry : changes.entrySet()) {
+            String customizationName = entry.getKey();
+            Material newType = entry.getValue();
+
+            Customization customization = getCustomizationByName(customizations, customizationName);
+            if (customization != null) applyCustomization(model, customization, newType, null);
+        }
     }
 
-    public void applyCustomization(Model model, @NotNull Customization customization, Material newType) {
+    public void applyCustomization(Model model, @NotNull Customization customization, Material newType, @Nullable Set<Player> to) {
         customization.setNewType(newType);
 
-        for (Map.Entry<String, EquipmentSlot> standEntry : customization.getStands().entrySet()) {
+        for (Map.Entry<String, ItemSlot> standEntry : customization.getStands().entrySet()) {
             String standName = standEntry.getKey();
-            EquipmentSlot slot = standEntry.getValue();
+            ItemSlot slot = standEntry.getValue();
 
-            PacketStand stand = model.getStandByName(standName);
+            IStand stand = model.getStandByName(standName);
             if (stand == null) continue;
 
-            stand.getSettings().getEquipment().put(slot, SpigotConversionUtil.fromBukkitItemStack(new ItemStack(newType)));
-            stand.sendEquipment();
+            stand.getSettings().getEquipment().put(slot, new ItemStack(newType));
+            if (to != null) stand.sendEquipment(to);
         }
     }
 

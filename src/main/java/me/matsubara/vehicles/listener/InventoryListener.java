@@ -413,7 +413,7 @@ public final class InventoryListener implements Listener {
                 y,
                 box.getWidthZ() / 2);
 
-        plugin.getVehicleManager().applyCustomization(vehicle.getModel(), customizationByName, newType);
+        plugin.getVehicleManager().applyCustomization(vehicle.getModel(), customizationByName, newType, vehicle.getSeeingPlayers());
     }
 
     private void completePurchase(Player player, double money, @NotNull VehicleData data, String shopDisplayName) {
@@ -538,7 +538,7 @@ public final class InventoryListener implements Listener {
                                 for (Pair<ArmorStand, StandSettings> chair : vehicle.getChairs()) {
                                     String partName = chair.getValue().getPartName();
 
-                                    String newOwnerChair = vehicle.getPassengers().get(ownerUUID);
+                                    String newOwnerChair = vehicle.getPassengers().get(newOwner);
                                     if (newOwnerChair != null && newOwnerChair.equals(partName)) {
                                         continue;
                                     }
@@ -594,9 +594,9 @@ public final class InventoryListener implements Listener {
             return;
         }
 
-        UUID passengerUUID;
-        if ((passengerUUID = passengers.get(0).getUniqueId()).equals(helicopter.getOutsideDriver())
-                && passengerUUID.equals(playerUUID)) { // Go back to the main chair if the player that clicked is the driver.
+        Entity passenger;
+        if ((passenger = passengers.get(0)).equals(helicopter.getOutsideDriver())
+                && passenger.equals(player)) { // Go back to the main chair if the player that clicked is the driver.
             helicopter.setOutsideDriver(null);
             helicopter.getTransfers().add(playerUUID);
 
@@ -604,8 +604,8 @@ public final class InventoryListener implements Listener {
             Pair<ArmorStand, StandSettings> driverPair = vehicle.getChair(0);
             if (driverPair != null) driverPair.getKey().addPassenger(player);
 
-            vehicle.getPassengers().remove(playerUUID);
-            vehicle.setDriverRaw(playerUUID);
+            vehicle.getPassengers().remove(player);
+            vehicle.setDriverRaw(player);
         }
 
         closeInventory(player);
@@ -633,21 +633,19 @@ public final class InventoryListener implements Listener {
     }
 
     private void sitOnChair(@NotNull Helicopter helicopter, @NotNull Player player, int chair) {
-        UUID playerUUID = player.getUniqueId();
-
         // The driver is moving to outside (or was outside, and it's moving to another outside chair).
-        if (helicopter.isDriver(playerUUID)) {
-            helicopter.setOutsideDriver(playerUUID);
+        if (helicopter.isDriver(player)) {
+            helicopter.setOutsideDriver(player);
             helicopter.setDriverRaw(null);
         }
 
         // Mark as transfer.
-        helicopter.getTransfers().add(playerUUID);
+        helicopter.getTransfers().add(player.getUniqueId());
 
         Pair<ArmorStand, StandSettings> pair = helicopter.getChairs().get(chair);
         if (pair != null) {
             pair.getKey().addPassenger(player);
-            helicopter.getPassengers().put(playerUUID, pair.getValue().getPartName());
+            helicopter.getPassengers().put(player, pair.getValue().getPartName());
         }
 
         closeInventory(player);
