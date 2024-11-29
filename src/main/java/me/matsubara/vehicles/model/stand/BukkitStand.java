@@ -95,14 +95,8 @@ public class BukkitStand implements IStand {
     private void initStand(@NotNull ArmorStand stand) {
         setSettings(stand);
 
-        // Fix for paper: config -> paper-world-defaults.yml -> entities.armor-stands.tick = false
-        if (Vehicle.SET_CAN_TICK != null) {
-            try {
-                Vehicle.SET_CAN_TICK.invoke(stand, true);
-            } catch (Throwable ignored) {
-
-            }
-        }
+        // For these armor stands, we don't want the tick (if possible).
+        Vehicle.setTick(stand, false);
 
         Vehicle.lockSlots(stand);
         Vehicle.LISTEN_MODE_IGNORE.accept(plugin, stand);

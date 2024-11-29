@@ -168,7 +168,10 @@ public abstract class Vehicle implements InventoryHolder {
     private static final int SAVE_INVENTORY_INTERVAL = 6000;
     private static float VEHICLE_FOV = 85.0f;
     private static final ChatColor TARGET_COLOR = ChatColor.RED;
-    public static final MethodHandle SET_CAN_TICK = Reflection.getMethod(ArmorStand.class, "setCanTick", MethodType.methodType(void.class, boolean.class), false, false);
+
+    private static final MethodHandle SET_CAN_TICK = Reflection.getMethod(ArmorStand.class, "setCanTick", MethodType.methodType(void.class, boolean.class), false, false);
+    private static final MethodHandle SET_CAN_MOVE = Reflection.getMethod(ArmorStand.class, "setCanMove", MethodType.methodType(void.class, boolean.class), false, false);
+
     private static final Multimap<VehicleType, Triple<String, ItemStack, ItemStack>> LIGHTS = MultimapBuilder
             .hashKeys()
             .arrayListValues()
@@ -289,17 +292,12 @@ public abstract class Vehicle implements InventoryHolder {
                     stand.setInvulnerable(true);
                     stand.setSilent(true);
                     stand.getPersistentDataContainer().set(plugin.getVehicleModelIdKey(), PersistentDataType.STRING, getModelUUID().toString());
+
                     lockSlots(stand);
                     LISTEN_MODE_IGNORE.accept(plugin, stand);
 
                     // Fix for paper: config -> paper-world-defaults.yml -> entities.armor-stands.tick = false
-                    if (SET_CAN_TICK != null) {
-                        try {
-                            SET_CAN_TICK.invoke(stand, true);
-                        } catch (Throwable ignored) {
-
-                        }
-                    }
+                    setTick(stand, true);
                 });
     }
 
@@ -356,7 +354,11 @@ public abstract class Vehicle implements InventoryHolder {
                     AttributeInstance attribute = stand.getAttribute(Attribute.GENERIC_MAX_HEALTH);
                     if (attribute != null) attribute.setBaseValue(1);
 
+                    lockSlots(stand);
                     LISTEN_MODE_IGNORE.accept(plugin, stand);
+
+                    // For these armor stands, we don't want the tick (if possible).
+                    setTick(stand, false);
                 }
         ), temp.getSettings());
     }
@@ -384,14 +386,6 @@ public abstract class Vehicle implements InventoryHolder {
 
             String partName = pair.getValue().getPartName();
             chairs.set(i, spawnChair(world, partName));
-        }
-    }
-
-    public static void lockSlots(ArmorStand stand) {
-        for (EquipmentSlot slot : EquipmentSlot.values()) {
-            for (ArmorStand.LockType type : ArmorStand.LockType.values()) {
-                stand.addEquipmentLock(slot, type);
-            }
         }
     }
 
@@ -1219,5 +1213,22 @@ public abstract class Vehicle implements InventoryHolder {
 
     public UUID getModelUUID() {
         return model.getModelUniqueId();
+    }
+
+    public static void setTick(ArmorStand stand, boolean tick) {
+        try {
+            if (SET_CAN_TICK != null) SET_CAN_TICK.invoke(stand, tick);
+            if (SET_CAN_MOVE != null) SET_CAN_MOVE.invoke(stand, tick);
+        } catch (Throwable ignored) {
+
+        }
+    }
+
+    public static void lockSlots(ArmorStand stand) {
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            for (ArmorStand.LockType type : ArmorStand.LockType.values()) {
+                stand.addEquipmentLock(slot, type);
+            }
+        }
     }
 }
