@@ -1,4 +1,4 @@
-package me.matsubara.vehicles.hook;
+package me.matsubara.vehicles.hook.economy;
 
 import me.matsubara.vehicles.VehiclesPlugin;
 import org.black_ixx.playerpoints.PlayerPoints;

@@ -4,7 +4,7 @@ import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.files.Config;
 import me.matsubara.vehicles.files.Messages;
 import me.matsubara.vehicles.gui.*;
-import me.matsubara.vehicles.hook.EconomyExtension;
+import me.matsubara.vehicles.hook.economy.EconomyExtension;
 import me.matsubara.vehicles.manager.VehicleManager;
 import me.matsubara.vehicles.manager.targets.TypeTarget;
 import me.matsubara.vehicles.model.stand.StandSettings;

@@ -11,6 +11,7 @@ import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.tchristofferson.configupdater.ConfigUpdater;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
+import lombok.AccessLevel;
 import lombok.Getter;
 import me.matsubara.vehicles.command.VehiclesCommands;
 import me.matsubara.vehicles.data.ActionKeybind;
@@ -18,7 +19,12 @@ import me.matsubara.vehicles.data.ShopVehicle;
 import me.matsubara.vehicles.files.Config;
 import me.matsubara.vehicles.files.Messages;
 import me.matsubara.vehicles.files.config.ConfigValue;
-import me.matsubara.vehicles.hook.*;
+import me.matsubara.vehicles.hook.AVExtension;
+import me.matsubara.vehicles.hook.EssentialsExtension;
+import me.matsubara.vehicles.hook.WGExtension;
+import me.matsubara.vehicles.hook.economy.EconomyExtension;
+import me.matsubara.vehicles.hook.economy.PlayerPointsExtension;
+import me.matsubara.vehicles.hook.economy.VaultExtension;
 import me.matsubara.vehicles.listener.EntityListener;
 import me.matsubara.vehicles.listener.InventoryListener;
 import me.matsubara.vehicles.listener.protocol.UseEntity;
@@ -74,7 +80,7 @@ public final class VehiclesPlugin extends JavaPlugin {
     private VehicleManager vehicleManager;
 
     private Messages messages;
-    private GlowingEntities glowingEntities;
+    private @Getter(AccessLevel.NONE) GlowingEntities glowingEntities;
 
     private final ExecutorService pool = new ThreadPoolExecutor(
             0,
@@ -168,7 +174,6 @@ public final class VehiclesPlugin extends JavaPlugin {
 
         // Initialize pathetic after Vault.
         PatheticMapper.initialize(this);
-        glowingEntities = new GlowingEntities(this);
 
         reloadExtraTags();
         reloadFuelItems();
@@ -208,6 +213,10 @@ public final class VehiclesPlugin extends JavaPlugin {
         } catch (InterruptedException exception) {
             throw new RuntimeException(exception);
         }
+    }
+
+    public GlowingEntities getGlowingEntities() {
+        return glowingEntities != null ? glowingEntities : (glowingEntities = new GlowingEntities(this));
     }
 
     public ActionKeybind getOpenMenuKeybind() {
@@ -398,12 +407,11 @@ public final class VehiclesPlugin extends JavaPlugin {
         return builder.setAmount(1).build();
     }
 
-    @SuppressWarnings("unchecked")
     public <T> @Nullable T registerExtension(@NotNull Class<T> extensionClazz, String pluginName) {
         if (getServer().getPluginManager().getPlugin(pluginName) == null) return null;
 
         try {
-            AVExtension<T> extension = (AVExtension<T>) extensionClazz.getConstructor().newInstance();
+            @SuppressWarnings("unchecked") AVExtension<T> extension = (AVExtension<T>) extensionClazz.getConstructor().newInstance();
             extensions.put(pluginName, extension);
 
             return extension.init(this);

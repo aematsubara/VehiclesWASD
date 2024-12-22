@@ -11,6 +11,7 @@ import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.data.PlayerInput;
 import me.matsubara.vehicles.event.protocol.WrapperPlayServerEffect;
 import me.matsubara.vehicles.files.Config;
+import me.matsubara.vehicles.hook.WGExtension;
 import me.matsubara.vehicles.model.Model;
 import me.matsubara.vehicles.util.BlockUtils;
 import me.matsubara.vehicles.util.Crop;
@@ -234,6 +235,7 @@ public class Generic extends Vehicle {
     private void handleTractor() {
         if (tractorMode == null || tick % tractorTickDelay != 0) return;
         if (!is(VehicleType.TRACTOR) || !hasFuel()) return;
+        if (tractorNotAllowedHere(velocityStand.getLocation())) return;
 
         // For DIRT_PATH & FARMLAND we don't need storage.
         if (storageRows <= 0
@@ -262,6 +264,15 @@ public class Generic extends Vehicle {
                 && inventory.firstEmpty() != -1);
     }
 
+    public boolean tractorNotAllowedHere(Location location) {
+        if (notAllowedHere(location)) return true;
+
+        WGExtension wgExtension = plugin.getWgExtension();
+        if (wgExtension == null) return false;
+
+        return !wgExtension.canBreakHere(driver, location);
+    }
+
     private boolean handleTractorMode(int step) {
         Location temp = velocityStand.getLocation();
         Location back = temp.add(temp.getDirection().normalize().multiply(-1.0d));
@@ -271,6 +282,8 @@ public class Generic extends Vehicle {
 
         Block up = block.getRelative(BlockFace.UP);
         BlockData upData = up.getBlockData();
+
+        if (tractorNotAllowedHere(back) || tractorNotAllowedHere(up.getLocation())) return false;
 
         if (tractorMode == TractorMode.DIRT_PATH || tractorMode == TractorMode.FARMLAND) {
             return handlePathOrFarmland(block, up, upData);

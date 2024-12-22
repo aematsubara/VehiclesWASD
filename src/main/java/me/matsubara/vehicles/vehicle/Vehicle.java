@@ -162,11 +162,10 @@ public abstract class Vehicle implements InventoryHolder {
     private final String actionBarEmpty = Config.ACTION_BAR_EMPTY.asString();
     private final String actionBarWarning = Config.ACTION_BAR_WARNING.asString();
 
-    private static final String[] VALID_REGISTRIES = {Tag.REGISTRY_ITEMS, Tag.REGISTRY_BLOCKS};
     private static final float WHEEL_ROTATION_SPEED_MULTIPLIER = 5.0f;
 
     private static final int SAVE_INVENTORY_INTERVAL = 6000;
-    private static float VEHICLE_FOV = 85.0f;
+    private static final float VEHICLE_FOV = 85.0f;
     private static final ChatColor TARGET_COLOR = ChatColor.RED;
 
     private static final MethodHandle SET_CAN_TICK = Reflection.getMethod(ArmorStand.class, "setCanTick", MethodType.methodType(void.class, boolean.class), false, false);

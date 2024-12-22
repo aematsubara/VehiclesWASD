@@ -1,4 +1,4 @@
-package me.matsubara.vehicles.hook;
+package me.matsubara.vehicles.hook.economy;
 
 import lombok.Getter;
 import me.matsubara.vehicles.VehiclesPlugin;

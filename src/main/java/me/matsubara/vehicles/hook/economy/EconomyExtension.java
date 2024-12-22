@@ -1,5 +1,6 @@
-package me.matsubara.vehicles.hook;
+package me.matsubara.vehicles.hook.economy;
 
+import me.matsubara.vehicles.hook.AVExtension;
 import org.bukkit.entity.Player;
 
 public interface EconomyExtension<T> extends AVExtension<T> {

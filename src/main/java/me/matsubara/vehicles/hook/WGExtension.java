@@ -7,11 +7,13 @@ import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.Flag;
+import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
+import com.sk89q.worldguard.session.SessionManager;
 import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.event.VehicleSpawnEvent;
 import org.bukkit.Location;
@@ -73,7 +75,15 @@ public class WGExtension implements AVExtension<WGExtension>, Listener {
         return placeFlag != null && allowed(player, location, useFlag);
     }
 
-    private boolean allowed(@Nullable Player player, @NotNull Location location, StateFlag flag) {
+    public boolean canBreakHere(Player player, Location location) {
+        LocalPlayer wrapped;
+        if (player == null || (wrapped = wrapPlayer(player)) == null) return false;
+
+        SessionManager manager = WorldGuard.getInstance().getPlatform().getSessionManager();
+        return manager.hasBypass(wrapped, wrapped.getWorld()) || allowed(player, location, Flags.BUILD);
+    }
+
+    private boolean allowed(@Nullable Player player, @NotNull Location location, StateFlag... flags) {
         World world = location.getWorld();
         Preconditions.checkNotNull(world);
 
@@ -81,7 +91,7 @@ public class WGExtension implements AVExtension<WGExtension>, Listener {
         RegionQuery query = container.createQuery();
 
         ApplicableRegionSet set = query.getApplicableRegions(BukkitAdapter.adapt(location));
-        return set == null || set.testState(wrapPlayer(player), flag);
+        return set == null || set.testState(wrapPlayer(player), flags);
     }
 
     private @Nullable LocalPlayer wrapPlayer(@Nullable Player player) {

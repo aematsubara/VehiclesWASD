@@ -8,8 +8,8 @@ public class Config {
     // General.
     public final ConfigValue ARMOR_STAND_TYPE = new ConfigValue("armor-stand-type");
     public final ConfigValue RENDER_DISTANCE = new ConfigValue("render-distance");
-    public final ConfigValue OPPOSITE_FACE_SPAWN = new ConfigValue("opposite-face-spawn");
     public final ConfigValue ECONOMY_PROVIDER = new ConfigValue("economy-provider");
+    public final ConfigValue OPPOSITE_FACE_SPAWN = new ConfigValue("opposite-face-spawn");
     public final ConfigValue CLOSE_CUSTOMIZATION_GUI_IF_SUCCESSFUL = new ConfigValue("close-customization-gui-if-successful");
     public final ConfigValue PICK_UP_ON_DISMOUNT = new ConfigValue("pick-up-on-dismount");
     public final ConfigValue PICK_UP_ON_REMOVE = new ConfigValue("pick-up-on-remove");
