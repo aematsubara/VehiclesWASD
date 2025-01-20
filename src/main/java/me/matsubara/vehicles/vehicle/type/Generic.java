@@ -235,7 +235,7 @@ public class Generic extends Vehicle {
     private void handleTractor() {
         if (tractorMode == null || tick % tractorTickDelay != 0) return;
         if (!is(VehicleType.TRACTOR) || !hasFuel()) return;
-        if (tractorNotAllowedHere(velocityStand.getLocation())) return;
+        if (notMoveOrBreakAllowed(velocityStand.getLocation())) return;
 
         // For DIRT_PATH & FARMLAND we don't need storage.
         if (storageRows <= 0
@@ -264,7 +264,7 @@ public class Generic extends Vehicle {
                 && inventory.firstEmpty() != -1);
     }
 
-    public boolean tractorNotAllowedHere(Location location) {
+    public boolean notMoveOrBreakAllowed(Location location) {
         if (notAllowedHere(location)) return true;
 
         WGExtension wgExtension = plugin.getWgExtension();
@@ -283,7 +283,7 @@ public class Generic extends Vehicle {
         Block up = block.getRelative(BlockFace.UP);
         BlockData upData = up.getBlockData();
 
-        if (tractorNotAllowedHere(back) || tractorNotAllowedHere(up.getLocation())) return false;
+        if (notMoveOrBreakAllowed(back) || notMoveOrBreakAllowed(up.getLocation())) return false;
 
         if (tractorMode == TractorMode.DIRT_PATH || tractorMode == TractorMode.FARMLAND) {
             return handlePathOrFarmland(block, up, upData);
@@ -444,7 +444,7 @@ public class Generic extends Vehicle {
 
         Block top = block.getRelative(BlockFace.UP);
 
-        if (breakBlock(block)) {
+        if (breakBlock(block) && !notMoveOrBreakAllowed(frontOrBack)) {
             breakAndPlaySound(block, true);
             return;
         }

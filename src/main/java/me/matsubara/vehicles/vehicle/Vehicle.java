@@ -681,8 +681,10 @@ public abstract class Vehicle implements InventoryHolder {
             // Ignore entities riding a vehicle or entities with passengers.
             if (near.isInsideVehicle() || !near.getPassengers().isEmpty()) continue;
 
+            // Check if the entity can sit.
+            if (!chair.getKey().addPassenger(near)) continue;
+
             passengers.put(near, chair.getValue().getPartName());
-            chair.getKey().addPassenger(near);
             break;
         }
     }

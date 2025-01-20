@@ -1,10 +1,10 @@
 package me.matsubara.vehicles.hook;
 
-import com.google.common.base.Preconditions;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.internal.platform.WorldGuardPlatform;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.Flags;
@@ -17,7 +17,6 @@ import com.sk89q.worldguard.session.SessionManager;
 import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.event.VehicleSpawnEvent;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -72,29 +71,28 @@ public class WGExtension implements AVExtension<WGExtension>, Listener {
     }
 
     public boolean canMoveHere(Player player, Location location) {
-        return placeFlag != null && allowed(player, location, useFlag);
+        return useFlag != null && allowed(player, location, useFlag, Flags.ENTRY);
     }
 
     public boolean canBreakHere(Player player, Location location) {
-        LocalPlayer wrapped;
-        if (player == null || (wrapped = wrapPlayer(player)) == null) return false;
-
-        SessionManager manager = WorldGuard.getInstance().getPlatform().getSessionManager();
-        return manager.hasBypass(wrapped, wrapped.getWorld()) || allowed(player, location, Flags.BUILD);
+        return allowed(player, location, Flags.BUILD);
     }
 
     private boolean allowed(@Nullable Player player, @NotNull Location location, StateFlag... flags) {
-        World world = location.getWorld();
-        Preconditions.checkNotNull(world);
+        WorldGuardPlatform platform = WorldGuard.getInstance().getPlatform();
 
-        RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        RegionContainer container = platform.getRegionContainer();
         RegionQuery query = container.createQuery();
 
         ApplicableRegionSet set = query.getApplicableRegions(BukkitAdapter.adapt(location));
-        return set == null || set.testState(wrapPlayer(player), flags);
-    }
+        if (set == null) return true;
 
-    private @Nullable LocalPlayer wrapPlayer(@Nullable Player player) {
-        return player == null ? null : WorldGuardPlugin.inst().wrapPlayer(player);
+        LocalPlayer wrapped = player != null ? WorldGuardPlugin.inst().wrapPlayer(player) : null;
+        if (set.testState(wrapped, flags)) return true;
+
+        if (wrapped == null) return false;
+
+        SessionManager manager = platform.getSessionManager();
+        return manager.hasBypass(wrapped, wrapped.getWorld());
     }
 }

@@ -409,7 +409,7 @@ public final class UseEntity extends SimplePacketListenerAbstract implements Lis
             }
         }
 
-        if (chair == null) return;
+        if (chair == null || !chair.getKey().addPassenger(player)) return;
 
         if (firstChair) {
             vehicle.setDriver(player);
@@ -424,8 +424,6 @@ public final class UseEntity extends SimplePacketListenerAbstract implements Lis
             vehicle.getPassengers().put(player, chair.getValue().getPartName());
             handleOwnerLeftOut(player, vehicle, false);
         }
-
-        chair.getKey().addPassenger(player);
     }
 
     private boolean kickDriverIfPossible(@NotNull Player player, @NotNull Vehicle vehicle) {
