@@ -15,26 +15,6 @@ commands:
   shop:
     # %alias% - the alias of the command used (vehicleswasd/vwasd/vw).
     economy-disabled: "&cEconomy is disabled, use /%alias% give <type> to get a vehicle."
-  gps:
-    disabled: "&cThis feature is disabled."
-    essentials-not-found: "&cEssentialsX is required for the GPS function."
-    not-driving: "&cYou must be driving a vehicle to use this command!"
-    not-generic: "&cThis vehicle doesn't have an integrated GPS system!"
-    specify-home: "&cYou must specify a destination home!"
-    home-not-found: "&cThat home could not be found!"
-    different-world: "&cThe destination home is in a different world!"
-    vehicles-denied: "&cThe location of the home does not allow the entry of vehicles."
-    # %max-distance% - the maximum distance allowed.
-    too-far: "&cThat home is too far away (>%max-distance%m)!"
-    # %min-distance% - the minimum distance allowed.
-    too-close: "&cThat home is too close (<%min-distance%m)!"
-    previous-cancelled: "&cThe previous path was cancelled!"
-    starting: "&aStarting GPS, wait a moment..."
-    path-not-found: "&cA suitable route to the destination could not be found!"
-    full-of-water: "&cThe road home has plenty of water ahead!"
-    went-crazy: "&cGPS went crazy, canceling destination! Try restarting the GPS."
-    stopped: "&cThe GPS has been stopped."
-    arrived: "&aYou have arrived at your destination!"
   give:
     specify-type: "&cYou must specify a vehicle type!"
     type-not-found: "&cThis type of vehicle doesn't exist!"

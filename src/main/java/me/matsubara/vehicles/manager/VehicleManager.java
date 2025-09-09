@@ -20,7 +20,6 @@ import me.matsubara.vehicles.vehicle.Customization;
 import me.matsubara.vehicles.vehicle.Vehicle;
 import me.matsubara.vehicles.vehicle.VehicleData;
 import me.matsubara.vehicles.vehicle.VehicleType;
-import me.matsubara.vehicles.vehicle.gps.GPSResultHandler;
 import me.matsubara.vehicles.vehicle.task.KeybindTask;
 import me.matsubara.vehicles.vehicle.task.PreviewTick;
 import me.matsubara.vehicles.vehicle.task.VehicleTick;
@@ -64,9 +63,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spigotmc.event.entity.EntityDismountEvent;
 
+import java.awt.*;
 import java.awt.Color;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
@@ -77,7 +77,6 @@ public class VehicleManager implements Listener {
     private final Map<String, FileConfiguration> models = new HashMap<>();
     private final Map<UUID, PreviewTick> previews = new HashMap<>();
     private final Map<UUID, VehicleType> selectedShopCategory = new HashMap<>();
-    private final Map<UUID, GPSResultHandler> runningPaths = new HashMap<>();
     private final Set<UUID> conflictTeleport = new HashSet<>();
     private final Map<UUID, KeybindTask> keybindTasks = new ConcurrentHashMap<>();
 
@@ -103,18 +102,9 @@ public class VehicleManager implements Listener {
         UUID playerUUID = player.getUniqueId();
 
         selectedShopCategory.remove(playerUUID);
-        invalidateGPSResult(playerUUID);
 
         Vehicle vehicle = getVehicleByEntity(player, true);
         if (vehicle != null) handleDismountLocation(player, vehicle, true);
-    }
-
-    public boolean invalidateGPSResult(UUID uuid) {
-        GPSResultHandler result = runningPaths.remove(uuid);
-        if (result == null) return false;
-
-        result.invalidate();
-        return true;
     }
 
     @EventHandler
@@ -374,7 +364,6 @@ public class VehicleManager implements Listener {
 
         if (driver) {
             vehicle.setDriver(null);
-            invalidateGPSResult(entityUUID);
         } else {
             vehicle.getPassengers().remove(entity);
         }

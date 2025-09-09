@@ -20,7 +20,6 @@ import me.matsubara.vehicles.vehicle.TractorMode;
 import me.matsubara.vehicles.vehicle.Vehicle;
 import me.matsubara.vehicles.vehicle.VehicleData;
 import me.matsubara.vehicles.vehicle.VehicleType;
-import me.matsubara.vehicles.vehicle.gps.GPSTick;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -47,7 +46,6 @@ public class Generic extends Vehicle {
     private float previousForward;
     private @Setter int previousDistance = Integer.MIN_VALUE;
     private @Setter int currentDistance = Integer.MIN_VALUE;
-    private GPSTick gpsTick;
     private @Setter TractorMode tractorMode;
 
     private final int tractorTickDelay = Math.max(1, Config.TRACTOR_TICK_DELAY.asInt());
@@ -95,26 +93,14 @@ public class Generic extends Vehicle {
         this.tractorMode = data.tractorMode();
     }
 
-    public Generic setGPSTick(GPSTick gpsTick) {
-        this.gpsTick = gpsTick;
-        forceActionBarMessage();
-        return this;
-    }
-
     @Override
     public boolean canPlayEngineSound() {
-        return canMove(true) && driver != null;
+        return canMove() && driver != null;
     }
 
     @Override
     public boolean canMove() {
-        return canMove(false);
-    }
-
-    public boolean canMove(boolean ignoreGPS) {
-        return super.canMove()
-                && (ignoreGPS || gpsTick == null)
-                && !isOnLiquid();
+        return super.canMove() && !isOnLiquid();
     }
 
     @Override
@@ -158,8 +144,6 @@ public class Generic extends Vehicle {
 
         moveUpOrDownIfNeeded(backwards);
 
-        // We could make this easier using the direction of the stand like we do in GPSTick,
-        // but this implementation works fine with the GPS.
         Location standLocation = velocityStand.getLocation();
 
         Vector offset;

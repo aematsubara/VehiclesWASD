@@ -57,17 +57,11 @@ public class Config {
     public final ConfigValue TRACTOR_STACK_WHEAT = new ConfigValue("vehicles.tractor.settings.stack-wheat");
     public final ConfigValue TRACTOR_BLOCK_TO_BONE_MEAL = new ConfigValue("vehicles.tractor.settings.block-to-bone-meal");
 
-    // Gps.
-    public final ConfigValue GPS_ENABLED = new ConfigValue("gps.enabled");
-    public final ConfigValue GPS_MAX_DISTANCE = new ConfigValue("gps.max-distance");
-    public final ConfigValue GPS_MIN_DISTANCE = new ConfigValue("gps.min-distance");
-
     // Action bar.
     public final ConfigValue ACTION_BAR_ENABLED = new ConfigValue("action-bar.enabled");
     public final ConfigValue ACTION_BAR_SEPARATOR = new ConfigValue("action-bar.message.separator");
     public final ConfigValue ACTION_BAR_FUEL = new ConfigValue("action-bar.message.fuel");
     public final ConfigValue ACTION_BAR_SPEED = new ConfigValue("action-bar.message.speed");
-    public final ConfigValue ACTION_BAR_GPS = new ConfigValue("action-bar.message.gps");
     public final ConfigValue ACTION_BAR_PLANE_TARGET = new ConfigValue("action-bar.message.plane-target");
     public final ConfigValue ACTION_BAR_SYMBOL = new ConfigValue("action-bar.fuel-bar.symbol");
     public final ConfigValue ACTION_BAR_WARNING_FUEL_BELOW = new ConfigValue("action-bar.fuel-bar.warning.fuel-below");

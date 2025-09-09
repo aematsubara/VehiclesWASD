@@ -183,15 +183,6 @@ input-gui:
     title: "Transfer ownership"
     text: "Search"
 
-# This feature allows the vehicle to automatically drive to an EssentialsX home.
-gps:
-  # Whether this feature is enabled (requires EssentialsX).
-  enabled: true
-  # The maximum distance to a destination, be careful with this.
-  max-distance: 512.0
-  # The minimum distance required before starting.
-  min-distance: 5.0
-
 # Here you can modify the arrows that the planes throw.
 plane-fire:
   # If true, creepers will explode instantly after being hit by a weapon from this plane.
@@ -325,12 +316,8 @@ action-bar:
     # If the vehicle doesn't have fuel enabled, it won't be shown in the message, only @speed. If not, it'll be displayed as: %fuel%|%separator%|%speed%
     # %bar% - the bar that represents the remaining fuel, you can modify it below in @{action-bar.fuel-bar}.
     fuel: "&6&lFuel: &8[%bar%&8]"
-    # %speed% - the current speed of the vehicle, or the distance to the destination if the GPS is running.
+    # %speed% - the current speed of the vehicle.
     speed: "&e&lSpeed: &f%speed%"
-    # If GPS is running, the distance to the destination will be shown instead of the speed.
-    # %distance% - the distance to the destination.
-    # %home% - the name of the home.
-    gps: "GPS (%distance%m away - ≪%home%≫)"
     # If @{follow-target} is enabled, the name of the current target will be displayed.
     # %name% - the name of the entity.
     # %distance% - the distance to the target.

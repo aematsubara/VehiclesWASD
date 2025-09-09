@@ -57,7 +57,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.patheloper.mapping.PatheticMapper;
 
 import java.io.File;
 import java.io.IOException;
@@ -172,9 +171,6 @@ public final class VehiclesPlugin extends JavaPlugin {
         resetEconomyProvider();
         essentialsExtension = registerExtension(EssentialsExtension.class, "Essentials");
 
-        // Initialize pathetic after Vault.
-        PatheticMapper.initialize(this);
-
         reloadExtraTags();
         reloadFuelItems();
         reloadBreakBlocks();
@@ -197,7 +193,6 @@ public final class VehiclesPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         PacketEvents.getAPI().terminate();
-        PatheticMapper.shutdown();
 
         if (vehicleManager == null) return;
 

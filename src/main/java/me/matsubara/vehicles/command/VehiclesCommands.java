@@ -7,24 +7,15 @@ import me.matsubara.vehicles.files.Config;
 import me.matsubara.vehicles.files.Messages;
 import me.matsubara.vehicles.files.config.ConfigValue;
 import me.matsubara.vehicles.gui.*;
-import me.matsubara.vehicles.hook.EssentialsExtension;
 import me.matsubara.vehicles.hook.economy.EconomyExtension;
 import me.matsubara.vehicles.manager.VehicleManager;
 import me.matsubara.vehicles.util.PluginUtils;
 import me.matsubara.vehicles.vehicle.Vehicle;
 import me.matsubara.vehicles.vehicle.VehicleData;
 import me.matsubara.vehicles.vehicle.VehicleType;
-import me.matsubara.vehicles.vehicle.gps.GPSResultHandler;
-import me.matsubara.vehicles.vehicle.gps.GPSTick;
-import me.matsubara.vehicles.vehicle.gps.filter.DangerousMaterialsFilter;
-import me.matsubara.vehicles.vehicle.gps.filter.WalkableFilter;
-import me.matsubara.vehicles.vehicle.gps.filter.WorldBorderFilter;
-import me.matsubara.vehicles.vehicle.type.Generic;
 import net.md_5.bungee.api.chat.*;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -37,31 +28,18 @@ import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
-import org.patheloper.api.pathing.Pathfinder;
-import org.patheloper.api.pathing.configuration.PathfinderConfiguration;
-import org.patheloper.api.pathing.filter.PathFilter;
-import org.patheloper.api.pathing.filter.filters.PassablePathFilter;
-import org.patheloper.api.pathing.result.PathfinderResult;
-import org.patheloper.mapping.PatheticMapper;
-import org.patheloper.mapping.bukkit.BukkitMapper;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 import java.util.stream.Stream;
 
 public class VehiclesCommands implements CommandExecutor, TabCompleter {
 
     private final VehiclesPlugin plugin;
-    private final Pathfinder pathfinder;
-    private final List<PathFilter> defaultFilters = List.of(
-            new WalkableFilter(4),
-            new PassablePathFilter(),
-            new DangerousMaterialsFilter(EnumSet.of(Material.CACTUS, Material.LAVA), 3));
 
     private static final List<String> NONE = List.of("none");
     private static final List<String> VALID_TYPES = Stream.of(VehicleType.values()).map(VehicleType::toPath).toList();
-    private static final List<String> COMMAND_ARGS = List.of("reload", "shop", "give", "gps", "fuel", "preview", "vehicles", "customization");
+    private static final List<String> COMMAND_ARGS = List.of("reload", "shop", "give", "fuel", "preview", "vehicles", "customization");
     private static final List<String> HELP = Stream.of(
             "&8----------------------------------------",
             "&9&lVehiclesWASD &f&oCommands &c<required> | [optional]",
@@ -71,8 +49,6 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             "&e/vwasd give <type> [player] &f- &7Gives a vehicle.",
             "&e/vwasd preview <type> <none/shop-id> [player] &f- &7Preview a vehicle.",
             "&e/vwasd vehicles &f- &7Manage your vehicles.",
-            "&e/vwasd gps <home> &f- &7Automatically drives to a home.",
-            "&8(requires EssentialsX)",
             "&e/vwasd fuel [player] &f- &7Gives a fuel can.",
             "&e/vswad customization &f- &7Copy customizations from the current vehicle.",
             "&8----------------------------------------").map(PluginUtils::translate).toList();
@@ -80,13 +56,6 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
 
     public VehiclesCommands(@NotNull VehiclesPlugin plugin) {
         this.plugin = plugin;
-        this.pathfinder = PatheticMapper.newPathfinder(PathfinderConfiguration.createAsyncConfiguration()
-                .withAllowingFailFast(true)
-                .withAllowingFallback(true)
-                .withAllowingDiagonal(true)
-                .withLoadingChunks(true)
-                .withMaxIterations(24000)
-                .withAsync(true));
     }
 
     @Override
@@ -215,103 +184,6 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
             plugin.reloadShopItemsIfNeeded();
 
             new ShopGUI(plugin, player, manager.getSelectedType(player));
-        }
-
-        if (sub.equalsIgnoreCase("gps")) {
-            Player player = isPlayer(sender);
-            if (player == null) return true;
-
-            if (notAllowed(player, "vehicleswasd.command.gps")) return true;
-
-            EssentialsExtension essentials = plugin.getEssentialsExtension();
-            if (essentials == null) {
-                messages.send(player, Messages.Message.GPS_ESSENTIALS_NOT_FOUND);
-                return true;
-            }
-
-            if (!Config.GPS_ENABLED.asBool()) {
-                messages.send(player, Messages.Message.GPS_DISABLED);
-                return true;
-            }
-
-            Vehicle vehicle = manager.getVehicleByEntity(player);
-            if (vehicle == null) {
-                messages.send(player, Messages.Message.GPS_NOT_DRIVING);
-                return true;
-            }
-
-            // We could add GPS for helicopters in a future update using DirectPathfinderStrategy.
-            if (!(vehicle instanceof Generic generic) || generic.is(VehicleType.PLANE)) {
-                messages.send(player, Messages.Message.GPS_NOT_GENERIC);
-                return true;
-            }
-
-            if (args.length == 1) {
-                messages.send(player, Messages.Message.GPS_SPECIFY_HOME);
-                return true;
-            }
-
-            Location home = essentials.getHome(player, args[1]);
-            if (home == null) {
-                messages.send(player, Messages.Message.GPS_NOT_FOUND);
-                return true;
-            }
-
-            UUID playerUUID = player.getUniqueId();
-
-            if (manager.invalidateGPSResult(playerUUID)) {
-                messages.send(player, Messages.Message.GPS_STOPPED);
-            }
-
-            Location start = generic.getVelocityStand().getLocation().clone();
-
-            double maxDistance = Config.GPS_MAX_DISTANCE.asDouble();
-            double minDistance = Config.GPS_MIN_DISTANCE.asDouble();
-
-            if (start.getWorld() != null && !start.getWorld().equals(home.getWorld())) {
-                messages.send(player, Messages.Message.GPS_DIFFERENT_WORLD);
-                return true;
-            }
-
-            if (generic.notAllowedHere(home)) {
-                messages.send(player, Messages.Message.GPS_VEHICLES_DENIED);
-                return true;
-            }
-
-            double distance = start.distance(home);
-            if (distance > maxDistance) {
-                messages.send(player,
-                        Messages.Message.GPS_TOO_FAR,
-                        string -> string.replace("%max-distance%", String.valueOf(maxDistance)));
-                return true;
-            } else if (distance < minDistance) {
-                messages.send(player,
-                        Messages.Message.GPS_TOO_CLOSE,
-                        string -> string.replace("%min-distance%", String.valueOf(minDistance)));
-                return true;
-            }
-
-            GPSTick gpsTick;
-            if ((gpsTick = generic.getGpsTick()) != null && !gpsTick.isCancelled()) {
-                gpsTick.cancel(null);
-                messages.send(player, Messages.Message.GPS_PREVIOUS_CANCELLED);
-            }
-
-            messages.send(player, Messages.Message.GPS_STARTING);
-
-            // Create final filters.
-            List<PathFilter> filters = new ArrayList<>(defaultFilters);
-            filters.add(new WorldBorderFilter(generic));
-
-            CompletionStage<PathfinderResult> stage = pathfinder.findPath(
-                    BukkitMapper.toPathPosition(start),
-                    BukkitMapper.toPathPosition(home),
-                    filters);
-
-            GPSResultHandler result = new GPSResultHandler(player, generic, args[1]);
-            stage.thenAccept(result);
-
-            manager.getRunningPaths().put(playerUUID, result);
         }
 
         if (sub.equalsIgnoreCase("fuel")) {
@@ -488,20 +360,6 @@ public class VehiclesCommands implements CommandExecutor, TabCompleter {
                 && args[0].equalsIgnoreCase("preview")
                 && VALID_TYPES.contains(args[1])) {
             return null; // Return player list.
-        }
-
-        if (args.length == 2
-                && args[0].equalsIgnoreCase("gps")
-                && sender instanceof Player player
-                && plugin.getVehicleManager().getVehicleByEntity(player) != null
-                && Config.GPS_ENABLED.asBool()) {
-            EssentialsExtension essentials = plugin.getEssentialsExtension();
-
-            List<String> homes;
-            if (essentials != null) homes = essentials.getHomes(player);
-            else homes = Collections.emptyList();
-
-            return StringUtil.copyPartialMatches(args[1], homes, new ArrayList<>());
         }
 
         return Collections.emptyList();

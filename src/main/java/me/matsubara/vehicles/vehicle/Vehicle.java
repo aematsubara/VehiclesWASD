@@ -65,11 +65,12 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
 import java.awt.Color;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -152,7 +153,6 @@ public abstract class Vehicle implements InventoryHolder {
     private final boolean actionBarEnabled = Config.ACTION_BAR_ENABLED.asBool();
     private final int actionBarwarningDelay = (int) (Config.ACTION_BAR_WARNING_DELAY.asDouble() * 20);
     private final double actionBarfuelBelow = Config.ACTION_BAR_WARNING_FUEL_BELOW.asDouble();
-    private final String actionBarGPS = Config.ACTION_BAR_GPS.asString();
     private final String actionBarPlaneTarget = Config.ACTION_BAR_PLANE_TARGET.asString();
     private final String actionBarSeparator = Config.ACTION_BAR_SEPARATOR.asString();
     private final String actionBarFuel = Config.ACTION_BAR_FUEL.asString();
@@ -798,9 +798,6 @@ public abstract class Vehicle implements InventoryHolder {
             return;
         }
 
-        boolean gpsRunning = this instanceof Generic generic && generic.getGpsTick() != null;
-        int distance = gpsRunning ? ((Generic) this).getCurrentDistance() : Integer.MIN_VALUE;
-
         int bars = 20;
         float percent = (float) (int) fuel / (int) maxFuel;
         int filled = (int) (bars * percent);
@@ -814,8 +811,6 @@ public abstract class Vehicle implements InventoryHolder {
 
         // We only want to update the message when the fuel or the speed changed or every 2 seconds.
         if (previousProgressed == filled
-                && (gpsRunning || previousSpeed == speedAsInt)
-                && (!gpsRunning || ((Generic) this).getPreviousDistance() == distance)
                 && tick % 40 != 0
                 && previousWarning == fuelWarning
                 && !forceActionBarMessage) {
@@ -823,14 +818,10 @@ public abstract class Vehicle implements InventoryHolder {
         }
         forceActionBarMessage = false;
 
-        if (gpsRunning) {
-            ((Generic) this).setPreviousDistance(distance);
-        }
         previousSpeed = speedAsInt;
         previousProgressed = filled;
 
-        String speed = gpsRunning ? actionBarGPS : String.valueOf(speedAsInt);
-        String home = gpsRunning ? (((Generic) this).getGpsTick().getHomeName()) : "";
+        String speed = String.valueOf(speedAsInt);
 
         String planeTarget;
         if (is(VehicleType.PLANE) && currentTarget != null) {
@@ -844,16 +835,14 @@ public abstract class Vehicle implements InventoryHolder {
                 + actionBarSpeed
                 + (planeTarget != null ? separator + planeTarget : "");
 
-        @SuppressWarnings("DataFlowIssue") Player driver = this.driver != null ?
+        Player driver = this.driver != null ?
                 this.driver :
                 ((Helicopter) this).getOutsideDriver();
         if (driver == null) return;
 
         BaseComponent[] components = TextComponent.fromLegacyText(PluginUtils.translate(message
                 .replace("%bar%", getProgressBar(filled, bars, actionBarfuelBelow))
-                .replace("%speed%", speed)
-                .replace("%distance%", String.valueOf(distance))
-                .replace("%home%", home)));
+                .replace("%speed%", speed)));
 
         VehicleManager manager = plugin.getVehicleManager();
         manager.cancelKeybindTask(driver);
@@ -1065,7 +1054,9 @@ public abstract class Vehicle implements InventoryHolder {
     }
 
     public Set<Player> getSeeingPlayers() {
-        if (plugin.getStandManager().isBukkitArmorStand()) return null;
+        if (plugin.getStandManager().isBukkitArmorStand()) {
+            return Set.copyOf(Bukkit.getOnlinePlayers());
+        }
 
         Set<Player> to = new HashSet<>(velocityStand.getWorld().getPlayers());
         to.removeIf(player -> model.getOut().contains(player.getUniqueId()));

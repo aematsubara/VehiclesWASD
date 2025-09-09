@@ -249,8 +249,12 @@ public class BlockUtils {
     }
 
     public static Double getMaterialHeight(@NotNull Block block) {
+        return getMaterialHeightOrElse(block, Double.MIN_VALUE);
+    }
+
+    public static Double getMaterialHeightOrElse(@NotNull Block block, double defaultHeight) {
         Function<BlockData, Double> function = HEIGHTS.get(block.getType());
-        return function != null ? function.apply(block.getBlockData()) : Double.MIN_VALUE;
+        return function != null ? function.apply(block.getBlockData()) : defaultHeight;
     }
 
     private static void fillHeights(Function<BlockData, Double> function, Material... materials) {
