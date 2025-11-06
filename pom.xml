@@ -6,7 +6,7 @@
 
     <groupId>me.matsubara</groupId>
     <artifactId>VehiclesWASD</artifactId>
-    <version>1.2.7</version>
+    <version>1.2.7.1</version>
     <packaging>jar</packaging>
 
     <name>VehiclesWASD</name>
@@ -61,6 +61,10 @@
                         <relocation>
                             <pattern>io.papermc.lib</pattern>
                             <shadedPattern>me.matsubara.vehicles.util.paperlib</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.bstats</pattern>
+                            <shadedPattern>me.matsubara.vehicles.util.bstats</shadedPattern>
                         </relocation>
                     </relocations>
                     <filters>
@@ -296,6 +300,12 @@
             <groupId>io.papermc</groupId>
             <artifactId>paperlib</artifactId>
             <version>1.0.7</version>
+        </dependency>
+        <!-- bStats -->
+        <dependency>
+            <groupId>org.bstats</groupId>
+            <artifactId>bstats-bukkit</artifactId>
+            <version>3.0.2</version>
         </dependency>
     </dependencies>
 </project>

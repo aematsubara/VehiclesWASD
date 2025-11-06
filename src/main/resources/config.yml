@@ -74,6 +74,9 @@ pick-up-on-dismount: false
 # If false, the vehicle will be thrown to the ground.
 pick-up-on-remove: false
 
+# If true, the player who puts the vehicle on the ground (or water) will become the owner of the vehicle.
+place-set-owner: false
+
 # If true, nearby entities will be added to the vehicle seats.
 # This function follows the same rules as boats and minecarts.
 # Ignored: non-living entities, water entities, bosses and players.

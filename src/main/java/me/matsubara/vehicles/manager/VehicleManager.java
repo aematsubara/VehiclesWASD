@@ -242,6 +242,11 @@ public class VehicleManager implements Listener {
 
             // Let the player know the controls.
             handleKeybindMessage(player, vehicle);
+
+            // Set as new owner if possible.
+            if (Config.PLACE_SET_OWNER.asBool()) {
+                vehicle.setOwner(player.getUniqueId());
+            }
         }
 
         vehicles.add(vehicle);

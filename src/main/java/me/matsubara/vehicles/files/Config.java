@@ -13,6 +13,7 @@ public class Config {
     public final ConfigValue CLOSE_CUSTOMIZATION_GUI_IF_SUCCESSFUL = new ConfigValue("close-customization-gui-if-successful");
     public final ConfigValue PICK_UP_ON_DISMOUNT = new ConfigValue("pick-up-on-dismount");
     public final ConfigValue PICK_UP_ON_REMOVE = new ConfigValue("pick-up-on-remove");
+    public final ConfigValue PLACE_SET_OWNER = new ConfigValue("place-set-owner");
     public final ConfigValue PICK_UP_NEARBY_ENTITIES = new ConfigValue("pick-up-nearby-entities");
     public final ConfigValue ENTITIES_FILTER_TYPE = new ConfigValue("entities-filter.type");
     public final ConfigValue ENTITIES_FILTER_WORLDS = new ConfigValue("entities-filter.entities");

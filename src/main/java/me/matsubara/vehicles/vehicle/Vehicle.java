@@ -811,6 +811,7 @@ public abstract class Vehicle implements InventoryHolder {
 
         // We only want to update the message when the fuel or the speed changed or every 2 seconds.
         if (previousProgressed == filled
+                && previousSpeed == speedAsInt
                 && tick % 40 != 0
                 && previousWarning == fuelWarning
                 && !forceActionBarMessage) {

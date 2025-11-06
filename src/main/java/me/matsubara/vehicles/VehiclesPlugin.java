@@ -41,6 +41,7 @@ import me.matsubara.vehicles.vehicle.Vehicle;
 import me.matsubara.vehicles.vehicle.VehicleData;
 import me.matsubara.vehicles.vehicle.VehicleType;
 import org.apache.commons.lang3.text.WordUtils;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.*;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.ConfigurationSection;
@@ -114,6 +115,7 @@ public final class VehiclesPlugin extends JavaPlugin {
     private static final List<String> GUI_TYPES = List.of("vehicle", "shop", "shop-confirm", "customizations");
     private static final Set<String> SPECIAL_SECTIONS = Sets.newHashSet("extra-tags", "shop");
     private static final Set<String> ECONOMY_PROVIDER = Set.of("Vault", "PlayerPoints");
+    private static final int BSTATS_ID = 27888;
 
     static {
         ConfigurationSerialization.registerClass(VehicleData.class);
@@ -150,6 +152,9 @@ public final class VehiclesPlugin extends JavaPlugin {
             pluginManager.disablePlugin(this);
             return;
         }
+
+        // Enable bStats.
+        new Metrics(this, BSTATS_ID);
 
         // Both listeners.
         UseEntity useEntity = new UseEntity(this);
