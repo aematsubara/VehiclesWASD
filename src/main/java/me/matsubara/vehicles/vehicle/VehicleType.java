@@ -3,9 +3,9 @@ package me.matsubara.vehicles.vehicle;
 
 import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.model.Model;
-import me.matsubara.vehicles.vehicle.type.Boat;
 import me.matsubara.vehicles.vehicle.type.Generic;
-import me.matsubara.vehicles.vehicle.type.Helicopter;
+import me.matsubara.vehicles.vehicle.type.UpAndDown;
+import me.matsubara.vehicles.vehicle.type.Water;
 import org.apache.commons.lang3.function.TriFunction;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,14 +13,16 @@ import java.util.Locale;
 
 public enum VehicleType {
     BIKE,
-    BOAT(Boat::new),
+    BOAT(Water::new),
     CYBERCAR,
-    HELICOPTER(5, Helicopter::new),
+    HELICOPTER(5, UpAndDown::new),
+    JETSKI(Water::new),
     KART,
     PLANE,
     QUAD,
     TANK,
-    TRACTOR(6);
+    TRACTOR(6),
+    UFO(UpAndDown::new);
 
     private final int inventorySize;
     private final TriFunction<VehiclesPlugin, VehicleData, Model, Vehicle> getter;
@@ -52,5 +54,13 @@ public enum VehicleType {
 
     public int getSize() {
         return inventorySize * 9;
+    }
+
+    public boolean isAirVehicle() {
+        return this == HELICOPTER || this == PLANE || this == UFO;
+    }
+
+    public boolean isWaterVehicle() {
+        return this == BOAT || this == JETSKI;
     }
 }

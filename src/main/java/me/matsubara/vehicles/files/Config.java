@@ -114,6 +114,17 @@ public class Config {
     public final ConfigValue TANK_FIRE_SOUND = new ConfigValue("tank-fire.sound");
     public final ConfigValue TANK_FIRE_FIREBALL_ITEM = new ConfigValue("tank-fire.fireball-item");
 
+    // UFO abduction.
+    public final ConfigValue UFO_ABDUCTION_ENABLED = new ConfigValue("ufo-abduction.enabled");
+    public final ConfigValue UFO_ABDUCTION_RANGE_XZ = new ConfigValue("ufo-abduction.range-xz");
+    public final ConfigValue UFO_ABDUCTION_RANGE_Y = new ConfigValue("ufo-abduction.range-y");
+    public final ConfigValue UFO_ABDUCTION_CONVERT_TO_SPAWN_EGG = new ConfigValue("ufo-abduction.convert-to-spawn-egg");
+    public final ConfigValue UFO_ABDUCTION_IGNORE_WATER = new ConfigValue("ufo-abduction.ignore.water");
+    public final ConfigValue UFO_ABDUCTION_IGNORE_TAMED = new ConfigValue("ufo-abduction.ignore.tamed");
+    public final ConfigValue UFO_ABDUCTION_IGNORE_INVISIBLE = new ConfigValue("ufo-abduction.ignore.invisible");
+    public final ConfigValue UFO_ABDUCTION_GLOWING_ENABLED = new ConfigValue("ufo-abduction.glowing.enabled");
+    public final ConfigValue UFO_ABDUCTION_GLOWING_COLOR = new ConfigValue("ufo-abduction.glowing.color");
+
     // Other.
     public final ConfigValue PREMIUM_FUEL = new ConfigValue("premium-fuel");
     public final ConfigValue CUSTOMIZATIONS_REQUIRE_PERMISSION = new ConfigValue("customizations.require-permission");

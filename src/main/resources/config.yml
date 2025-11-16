@@ -167,14 +167,17 @@ vehicle-keybinds:
       up:
         helicopter: "&7Up &a"
         plane: "&7Up &aLook Up"
+        ufo: "&7Up &a"
       down:
         helicopter: "&7Down &a"
         plane: "&7Down &aLook Down"
+        ufo: "&7Down &a"
       forward: "&7Forward &a"
       back: "&7Back &a"
       left: "&7Left &a"
       right: "&7Right &a"
       shoot: "&7Shoot &a"
+      abduct: "&7Abduct &a"
       leave: "&7Leave &a"
       menu: "&7Menu &a"
 
@@ -278,6 +281,32 @@ tank-fire:
     url: 25dffc5e53c837385f5d7863935bc5afa3e4a8176ae52e2f8d7d797c952e3f
     material: PLAYER_HEAD
 
+# Here you can modify the UFO entity abduction (only for 1.21.2+).
+ufo-abduction:
+  # Whether players can abduct entities.
+  enabled: true
+  # The range of blocks to search for entities (on the X & Z axis).
+  range-xz: 3.5
+  # The range of blocks to search for entities (on the Y axis).
+  range-y: 30
+  # If true, the abducted entity will be removed from the world and the spawn egg will be added to the player's inventory.
+  # If false, the "abducted" entity will only be thrown into the air.
+  convert-to-spawn-egg: true
+  # Here you can choose which entities to ignore.
+  ignore:
+    # If true, water entities will be ignored.
+    water: true
+    # If true, tamed entities will be ignored.
+    tamed: true
+    # If true, invisible entities will be ignored.
+    invisible: true
+  # To better see the selected target, a glowing effect can be applied to it.
+  glowing:
+    # Whether to add glowing effect to the target.
+    enabled: true
+    # The color to use.
+    color: GREEN
+
 # Here you can choose which blocks a vehicle can break when colliding with it.
 # You should use this for bisected (TALL_GRASS/DOOR) or passable blocks (SHORT_GRASS/DEAD_BUSH),
 # not solid since they might not respond as you would like.
@@ -379,7 +408,7 @@ extra-tags:
 # For example,
 # * ?TANK:NETHERITE_INGOT(30) - Each netherite ingot will add 30 of fuel ONLY to the tanks.
 #
-# Types of vehicles: BIKE, BOAT, CYBERCAR, HELICOPTER, KART, PLANE, QUAD, TANK, TRACTOR.
+# Types of vehicles: BIKE, BOAT, CYBERCAR, HELICOPTER, JETSKI, KART, PLANE, QUAD, TANK, TRACTOR, UFO.
 fuel-items:
   - COAL(3)
   - LAVA_BUCKET(10)
@@ -402,11 +431,13 @@ translations:
     boat: "Boat"
     cybercar: "Cybercar"
     helicopter: "Helicopter"
+    jetski: "Jetski"
     kart: "Kart"
     plane: "Plane"
     quad: "Quad"
     tank: "Tank"
     tractor: "Tractor"
+    ufo: "UFO"
   material:
     coal: "Coal"
     lava-bucket: "Lava Bucket"
@@ -427,6 +458,7 @@ translations:
     trapdoors: "Trapdoor*"
     stairs: "Stairs*"
     planks: "Planks*"
+    other-group: "(Block)/Slab/Stair variant*"
 
 shop:
   # If you must confirm the purchase instead of buying instantly with a single click.
@@ -542,6 +574,30 @@ shop:
           - CHAIR:BLACK_CARPET
           - COLOR:BLUE_TERRACOTTA
         price: 8000.0
+    jetski:
+      '1':
+        display-name: "&c&lRed Jetski"
+        changes:
+          - SECONDARY-COLOR:RED_NETHER_BRICKS
+          - CHAIR-COLOR:NETHER_BRICKS
+          - MAIN-COLOR:RED_NETHER_BRICKS
+          - SIDE-COLOR:MANGROVE_SLAB
+        price: 7000.0
+      '2':
+        display-name: "&8&lBlack Jetski"
+        changes:
+          - SECONDARY-COLOR:BLACKSTONE
+          - CHAIR-COLOR:DEEPSLATE_TILES
+          - MAIN-COLOR:DEEPSLATE_BRICKS
+          - SIDE-COLOR:BLACKSTONE_SLAB
+        price: 7000.0
+      '3':
+        display-name: "&d&lPink Jetski"
+        changes:
+          - SECONDARY-COLOR:CHERRY_PLANKS
+          - CHAIR-COLOR:CRIMSON_PLANKS
+          - MAIN-COLOR:PURPUR_BLOCK
+        price: 7000.0
     kart:
       '1':
         display-name: "&3&lWarped Kart"
@@ -659,6 +715,31 @@ shop:
           - MUFFLER:NETHER_BRICK_WALL
           - TRAPDOOR:CRIMSON_TRAPDOOR
         price: 10000.0
+    ufo:
+      '1':
+        display-name: "&c&lRed UFO"
+        changes:
+          - GLASS:RED_STAINED_GLASS_PANE
+          - CARPET:RED_CARPET
+          - SECONDARY-COLOR:RED_CONCRETE
+          - PRIMARY-COLOR:RED_BANNER
+        price: 10000.0
+      '2':
+        display-name: "&9&lBlue UFO"
+        changes:
+          - GLASS:BLUE_STAINED_GLASS_PANE
+          - CARPET:LIGHT_BLUE_CARPET
+          - SECONDARY-COLOR:LIGHT_BLUE_CONCRETE
+          - PRIMARY-COLOR:BLUE_BANNER
+        price: 10000.0
+      '3':
+        display-name: "&f&lWhite UFO"
+        changes:
+          - GLASS:WHITE_STAINED_GLASS_PANE
+          - CARPET:WHITE_CARPET
+          - SECONDARY-COLOR:WHITE_CONCRETE
+          - PRIMARY-COLOR:WHITE_BANNER
+        price: 10000.0
 
 # Here you can specify the valid materials for each vehicle customization
 # (which can be applied in the customization menu).
@@ -757,6 +838,27 @@ customizations:
       name: "Glass"
       items:
         - $GLASS_PANE
+  jetski:
+    chair-color:
+      priority: 1
+      name: "Chair color"
+      items:
+        - $OTHER_GROUP
+    main-color:
+      priority: 2
+      name: "Primary color"
+      items:
+        - $OTHER_GROUP
+    secondary-color:
+      priority: 3
+      name: "Secondary color"
+      items:
+        - $OTHER_GROUP
+    side-color:
+      priority: 4
+      name: "Side color"
+      items:
+        - $SLABS
   kart:
     color:
       priority: 1
@@ -862,6 +964,30 @@ customizations:
       name: "Chair"
       items:
         - $STAIRS
+  ufo:
+    glass:
+      priority: 1
+      name: "Glass"
+      items:
+        - $GLASS_PANE
+    carpet:
+      priority: 2
+      name: "Carpet"
+      items:
+        - $CARPETS
+        - $WOOL_CARPETS
+    primary-color:
+      priority: 3
+      name: "Primary color"
+      items:
+        - $BANNERS
+    secondary-color:
+      priority: 4
+      name: "Secondary color"
+      items:
+        - $TERRACOTTA
+        - $CONCRETE
+        - $WOOL
 
 # Here you can modify the vehicle item obtained by using {/vwasd give} and the characteristics of each vehicle.
 #
@@ -975,6 +1101,25 @@ vehicles:
       refuel: ITEM_BUCKET_FILL, 1.0, 1.0
       turn-on: BLOCK_PISTON_EXTEND, 0.7725, 0.75
       turn-off: BLOCK_PISTON_CONTRACT, 0.7725, 0.75
+  jetski:
+    item:
+      url: 3f31b7a633414278d1cc1845245cdfa83c9f1fa4105c3a34c007853d7351f20a
+      material: PLAYER_HEAD
+      display-name: "&9&lJetski"
+      lore:
+        - "&7Right click (on water) to place it!"
+    min-speed: -35.0
+    max-speed: 75.0
+    acceleration: 0.475
+    storage-rows: 3
+    fuel:
+      max-fuel: 1800.0
+      reduction-per-second: 2.0
+    sounds:
+      engine: ENTITY_ENDER_DRAGON_FLAP, 0.475, 1.5
+      refuel: ITEM_BUCKET_FILL, 1.0, 1.0
+      turn-on: BLOCK_PISTON_EXTEND, 0.7725, 0.75
+      turn-off: BLOCK_PISTON_CONTRACT, 0.7725, 0.75
   kart:
     item:
       url: 2ce0746b12ee4053958e140ba29593272bd84ca34baf50d0d80b5bc3c615e9c6
@@ -1078,6 +1223,26 @@ vehicles:
       stack-wheat: true
       # If true, 1 BONE_BLOCK will be converted into 9 BONE_MEAL, which can be used to fertilize crops.
       block-to-bone-meal: true
+  ufo:
+    item:
+      url: 5d176c5b9204a16ee9909f2e9a4f0fa82502552efcf6ee852a6ac091be661e02
+      material: PLAYER_HEAD
+      display-name: "&f&lUFO"
+      lore:
+        - "&7Right click to place it!"
+    down-speed: -55.0
+    up-speed: 55.0
+    max-speed: 90.0
+    acceleration: 0.45
+    storage-rows: 3
+    fuel:
+      max-fuel: 3000.0
+      reduction-per-second: 1.25
+    sounds:
+      engine: ENTITY_WOLF_SHAKE, 0.475, 1.5
+      refuel: ITEM_BUCKET_FILL, 1.0, 1.0
+      turn-on: BLOCK_PISTON_EXTEND, 0.7725, 0.75
+      turn-off: BLOCK_PISTON_CONTRACT, 0.7725, 0.75
 
 gui:
   vehicle:

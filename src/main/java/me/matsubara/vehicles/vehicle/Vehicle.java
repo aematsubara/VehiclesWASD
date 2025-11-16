@@ -13,6 +13,7 @@ import com.google.common.collect.Multimaps;
 import com.jeff_media.morepersistentdatatypes.DataType;
 import com.jeff_media.morepersistentdatatypes.datatypes.collections.CollectionDataType;
 import com.jeff_media.morepersistentdatatypes.datatypes.serializable.ConfigurationSerializableDataType;
+import fr.skytasul.guardianbeam.Laser;
 import io.papermc.lib.PaperLib;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -25,10 +26,7 @@ import me.matsubara.vehicles.hook.WGExtension;
 import me.matsubara.vehicles.manager.StandManager;
 import me.matsubara.vehicles.manager.VehicleManager;
 import me.matsubara.vehicles.model.Model;
-import me.matsubara.vehicles.model.stand.BukkitStand;
-import me.matsubara.vehicles.model.stand.IStand;
-import me.matsubara.vehicles.model.stand.ModelLocation;
-import me.matsubara.vehicles.model.stand.StandSettings;
+import me.matsubara.vehicles.model.stand.*;
 import me.matsubara.vehicles.model.stand.data.ItemSlot;
 import me.matsubara.vehicles.util.BlockUtils;
 import me.matsubara.vehicles.util.InventoryUpdate;
@@ -36,7 +34,7 @@ import me.matsubara.vehicles.util.PluginUtils;
 import me.matsubara.vehicles.util.Reflection;
 import me.matsubara.vehicles.vehicle.task.VehicleTick;
 import me.matsubara.vehicles.vehicle.type.Generic;
-import me.matsubara.vehicles.vehicle.type.Helicopter;
+import me.matsubara.vehicles.vehicle.type.UpAndDown;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -48,10 +46,7 @@ import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.*;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.*;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.Metadatable;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -90,8 +85,8 @@ public abstract class Vehicle implements InventoryHolder {
     protected float minSpeed;
     protected float maxSpeed;
     protected float acceleration;
-    protected float upSpeed; // HELICOPTER
-    protected float downSpeed; // HELICOPTER
+    protected float upSpeed; // HELICOPTER, UFO
+    protected float downSpeed; // HELICOPTER, UFO
     protected float liftingSpeed; // PLANE
     protected int storageRows;
     protected float maxFuel;
@@ -106,6 +101,8 @@ public abstract class Vehicle implements InventoryHolder {
 
     private ModelLocation tractorMuffler;
     protected LivingEntity currentTarget;
+    private Laser.GuardianLaser laser;
+    private final Set<Player> glowing = new HashSet<>();
     private int targetDistance = Integer.MIN_VALUE;
     private Float wheelRotation;
 
@@ -144,11 +141,21 @@ public abstract class Vehicle implements InventoryHolder {
 
     private final boolean planeTargetEnabled = Config.PLANE_FIRE_SECONDARY_FOLLOW_TARGET_ENABLED.asBool();
     private final boolean planeTargetGlowing = Config.PLANE_FIRE_SECONDARY_FOLLOW_TARGET_GLOWING_ENABLED.asBool();
-    private final String planeTargetGlowingColor = Config.PLANE_FIRE_SECONDARY_FOLLOW_TARGET_GLOWING_COLOR.asString(TARGET_COLOR.name());
+    private final String planeTargetGlowingColor = Config.PLANE_FIRE_SECONDARY_FOLLOW_TARGET_GLOWING_COLOR.asString(PLANE_TARGET_COLOR.name());
     private final double planeTargetRange = Config.PLANE_FIRE_SECONDARY_FOLLOW_TARGET_RANGE.asDouble();
     private final boolean planeTargetIgnoreWater = Config.PLANE_FIRE_SECONDARY_FOLLOW_TARGET_IGNORE_WATER.asBool();
     private final boolean planeTargetIgnoreTamed = Config.PLANE_FIRE_SECONDARY_FOLLOW_TARGET_IGNORE_TAMED.asBool();
     private final boolean planeTargetIgnoreInvisible = Config.PLANE_FIRE_SECONDARY_FOLLOW_TARGET_IGNORE_INVISIBLE.asBool();
+
+    private final boolean ufoAbductionEnabled = XReflection.supports(21, 2) && Config.UFO_ABDUCTION_ENABLED.asBool();
+    private final boolean ufoTargetGlowing = Config.UFO_ABDUCTION_GLOWING_ENABLED.asBool();
+    private final String ufoTargetGlowingColor = Config.UFO_ABDUCTION_GLOWING_COLOR.asString(UFO_TARGET_COLOR.name());
+    private final double ufoTargetRangeXZ = Config.UFO_ABDUCTION_RANGE_XZ.asDouble();
+    private final double ufoTargetRangeY = Config.UFO_ABDUCTION_RANGE_Y.asDouble();
+    private final boolean ufoConvertToSpawnEgg = Config.UFO_ABDUCTION_CONVERT_TO_SPAWN_EGG.asBool();
+    private final boolean ufoTargetIgnoreWater = Config.UFO_ABDUCTION_IGNORE_WATER.asBool();
+    private final boolean ufoTargetIgnoreTamed = Config.UFO_ABDUCTION_IGNORE_TAMED.asBool();
+    private final boolean ufoTargetIgnoreInvisible = Config.UFO_ABDUCTION_IGNORE_INVISIBLE.asBool();
 
     private final boolean actionBarEnabled = Config.ACTION_BAR_ENABLED.asBool();
     private final int actionBarwarningDelay = (int) (Config.ACTION_BAR_WARNING_DELAY.asDouble() * 20);
@@ -166,7 +173,8 @@ public abstract class Vehicle implements InventoryHolder {
 
     private static final int SAVE_INVENTORY_INTERVAL = 6000;
     private static final float VEHICLE_FOV = 85.0f;
-    private static final ChatColor TARGET_COLOR = ChatColor.RED;
+    private static final ChatColor PLANE_TARGET_COLOR = ChatColor.RED;
+    private static final ChatColor UFO_TARGET_COLOR = ChatColor.GREEN;
 
     private static final MethodHandle SET_CAN_TICK = Reflection.getMethod(ArmorStand.class, "setCanTick", MethodType.methodType(void.class, boolean.class), false, false);
     private static final MethodHandle SET_CAN_MOVE = Reflection.getMethod(ArmorStand.class, "setCanMove", MethodType.methodType(void.class, boolean.class), false, false);
@@ -180,17 +188,26 @@ public abstract class Vehicle implements InventoryHolder {
             VehicleType.KART, 0.0f,
             VehicleType.QUAD, 90.0f);
 
+    private static final EnumMap<VehicleType, Material> TARGET_REQUIREMENT = new EnumMap<>(Map.of(
+            VehicleType.PLANE, Material.FIRE_CHARGE,
+            VehicleType.UFO, Material.SLIME_BALL));
+
     public static boolean MY_VEHICLES_FEATURE_MODERN = XReflection.supports(18, 1);
-    public static final Map<VehicleType, Vector> VEHICLE_BOX = Map.of(
-            VehicleType.BIKE, new Vector(1.5d, 1.0d, 1.5d),
-            VehicleType.BOAT, new Vector(1.5d, 1.0d, 1.5d),
-            VehicleType.CYBERCAR, new Vector(2.0d, 1.0d, 2.0d),
-            VehicleType.HELICOPTER, new Vector(3.0d, 1.5d, 3.0d),
-            VehicleType.KART, new Vector(2.0d, 1.0d, 2.0d),
-            VehicleType.PLANE, new Vector(2.5d, 1.0d, 2.5d),
-            VehicleType.QUAD, new Vector(2.0d, 1.0d, 2.0d),
-            VehicleType.TANK, new Vector(2.0d, 1.0d, 2.0d),
-            VehicleType.TRACTOR, new Vector(2.0d, 1.0d, 2.0d));
+    public static final Map<VehicleType, Vector> VEHICLE_BOX = new HashMap<>();
+
+    static {
+        VEHICLE_BOX.put(VehicleType.BIKE, new Vector(1.5d, 1.0d, 1.5d));
+        VEHICLE_BOX.put(VehicleType.BOAT, new Vector(1.5d, 1.0d, 1.5d));
+        VEHICLE_BOX.put(VehicleType.CYBERCAR, new Vector(2.0d, 1.0d, 2.0d));
+        VEHICLE_BOX.put(VehicleType.HELICOPTER, new Vector(3.0d, 1.5d, 3.0d));
+        VEHICLE_BOX.put(VehicleType.JETSKI, new Vector(2.0d, 1.0d, 2.0d));
+        VEHICLE_BOX.put(VehicleType.KART, new Vector(2.0d, 1.0d, 2.0d));
+        VEHICLE_BOX.put(VehicleType.PLANE, new Vector(2.5d, 1.0d, 2.5d));
+        VEHICLE_BOX.put(VehicleType.QUAD, new Vector(2.0d, 1.0d, 2.0d));
+        VEHICLE_BOX.put(VehicleType.TANK, new Vector(2.0d, 1.0d, 2.0d));
+        VEHICLE_BOX.put(VehicleType.TRACTOR, new Vector(2.0d, 1.0d, 2.0d));
+        VEHICLE_BOX.put(VehicleType.UFO, new Vector(2.5d, 1.0d, 2.5d));
+    }
 
     // We want ListenMode to ignore our entities.
     public static final BiConsumer<JavaPlugin, Metadatable> LISTEN_MODE_IGNORE = (plugin, living) -> living.setMetadata("RemoveGlow", new FixedMetadataValue(plugin, true));
@@ -452,13 +469,20 @@ public abstract class Vehicle implements InventoryHolder {
         float side = input.sideways();
 
         // Rotate vehicle.
-        if (canRotate() && side != 0.0f) {
-            float rotation = (isMovingBackwards(input) ? side : -side) * 5.0f;
+        boolean ufo = is(VehicleType.UFO);
+        if (canRotate() && (side != 0.0f || (ufo && driver != null))) {
+            if (ufo) {
+                velocityStand.setRotation(
+                        driver.getLocation().getYaw(),
+                        velocityStand.getLocation().getPitch());
+            } else {
+                float rotation = (isMovingBackwards(input) ? side : -side) * 5.0f;
 
-            Location standLocation = velocityStand.getLocation();
-            velocityStand.setRotation(BlockUtils.yaw(standLocation.getYaw() + rotation), standLocation.getPitch());
+                Location standLocation = velocityStand.getLocation();
+                velocityStand.setRotation(BlockUtils.yaw(standLocation.getYaw() + rotation), standLocation.getPitch());
 
-            rotateWheels(side);
+                rotateWheels(side);
+            }
         } else if (canMove()) {
             rotateWheels(0.0f);
         }
@@ -495,7 +519,7 @@ public abstract class Vehicle implements InventoryHolder {
 
         handleCurrentTarget();
 
-        if (currentTarget != null) {
+        if (currentTarget != null && is(VehicleType.PLANE)) {
             int temp = targetDistance;
             targetDistance = (int) currentTarget.getLocation().distance(velocityStand.getLocation());
             if (temp != targetDistance) forceActionBarMessage();
@@ -520,11 +544,13 @@ public abstract class Vehicle implements InventoryHolder {
     }
 
     private void handleCurrentTarget() {
-        if (!is(VehicleType.PLANE) || !planeTargetEnabled) return;
+        boolean ufo = is(VehicleType.UFO);
+        if ((!ufo || !ufoAbductionEnabled)
+                && (!is(VehicleType.PLANE) || !planeTargetEnabled)) return;
 
         if (!canMove()
                 || driver == null
-                || driver.getInventory().getItemInMainHand().getType() != Material.FIRE_CHARGE
+                || driver.getInventory().getItemInMainHand().getType() != TARGET_REQUIREMENT.get(type)
                 || isOnGround()) {
             invalidateCurrentTarget();
             return;
@@ -545,29 +571,85 @@ public abstract class Vehicle implements InventoryHolder {
 
         if (currentTarget == null || currentTarget.equals(closest)) {
             forceActionBarMessage();
+            if (handleUFOPulling()) return;
         }
+
+        boolean alreadyExist = currentTarget != null && currentTarget.equals(closest);
 
         currentTarget = closest;
 
-        if (!planeTargetGlowing) return;
+        try {
+            if (!alreadyExist) {
+                laser = new Laser.GuardianLaser(driver.getLocation(), currentTarget, -1, 50);
+                laser.start(plugin);
+                laser.attachEndEntity(currentTarget);
+            } else {
+                laser.moveStart(driver.getLocation());
+            }
+        } catch (ReflectiveOperationException exception) {
+            exception.printStackTrace();
+        }
+
+        if (!(ufo ? ufoTargetGlowing : planeTargetGlowing)) return;
 
         try {
+            ChatColor defaultColor = ufo ? UFO_TARGET_COLOR : PLANE_TARGET_COLOR;
             ChatColor color = PluginUtils.getOrDefault(
                     ChatColor.class,
-                    planeTargetGlowingColor,
-                    TARGET_COLOR);
+                    ufo ? ufoTargetGlowingColor : planeTargetGlowingColor,
+                    defaultColor);
 
-            plugin.getGlowingEntities().setGlowing(closest, driver, color.isColor() ? color : TARGET_COLOR);
+            plugin.getGlowingEntities().setGlowing(closest, driver, color.isColor() ? color : defaultColor);
+            glowing.add(driver);
         } catch (Throwable ignored) {
         }
+    }
+
+    private boolean handleUFOPulling() {
+        if (currentTarget == null || !is(VehicleType.UFO)) return false;
+
+        if (plugin.getInputManager().getInput(driver).sprint()) {
+            Vector direction = driver.getLocation().subtract(currentTarget.getLocation()).toVector();
+            currentTarget.setVelocity(direction.normalize().multiply(1.0d));
+
+            if (laser != null && tick % 20 == 0) {
+                try {
+                    laser.callColorChange();
+                } catch (ReflectiveOperationException exception) {
+                    exception.printStackTrace();
+                }
+            }
+        }
+
+        if (!ufoConvertToSpawnEgg) return false;
+
+        // Abduct if closer than 3 blocks.
+        if (driver.getLocation().distanceSquared(currentTarget.getLocation()) > 9) return false;
+
+        ItemFactory factory = Bukkit.getItemFactory();
+        Material egg = factory.getSpawnEgg(currentTarget.getType());
+
+        if (egg != null) driver.getInventory().addItem(new ItemStack(egg));
+
+        currentTarget.remove();
+        invalidateCurrentTarget();
+        return true;
     }
 
     public void invalidateCurrentTarget() {
         if (currentTarget == null) return;
 
         try {
-            plugin.getGlowingEntities().unsetGlowing(currentTarget);
+            for (Player player : glowing) {
+                plugin.getGlowingEntities().unsetGlowing(currentTarget, player);
+            }
+            glowing.clear();
         } catch (Throwable ignored) {
+        }
+
+        if (laser != null) {
+            laser.stop();
+            laser = null;
         }
 
         currentTarget = null;
@@ -581,11 +663,14 @@ public abstract class Vehicle implements InventoryHolder {
 
     // Credits to blablubbabc!
     private LivingEntity findTarget(@NotNull Player player) {
-        double minDot = Double.MIN_VALUE;
+        boolean plane = is(VehicleType.PLANE);
+
+        double minDot = plane ? Double.MIN_VALUE : Double.MAX_VALUE;
         LivingEntity target = null;
 
+        double rangeXZ = plane ? planeTargetRange : ufoTargetRangeXZ;
 
-        for (Entity nearby : player.getNearbyEntities(planeTargetRange, planeTargetRange, planeTargetRange)) {
+        for (Entity nearby : player.getNearbyEntities(rangeXZ, plane ? rangeXZ : ufoTargetRangeY, rangeXZ)) {
             // Ignore non-living entities.
             if (!(nearby instanceof LivingEntity living)) continue;
 
@@ -599,25 +684,34 @@ public abstract class Vehicle implements InventoryHolder {
             if (living instanceof Player temp && (isDriver(temp) || isPassenger(temp))) continue;
 
             // Ignore water mobs?
-            if (living instanceof WaterMob && planeTargetIgnoreWater) {
+            if (living instanceof WaterMob && (plane ? planeTargetIgnoreWater : ufoTargetIgnoreWater)) {
                 continue;
             }
 
             // Ignore tamed entities?
             if (living instanceof Tameable tameable
                     && tameable.isTamed()
-                    && planeTargetIgnoreTamed) {
+                    && (plane ? planeTargetIgnoreTamed : ufoTargetIgnoreTamed)) {
                 continue;
             }
 
             // Ignore invisible entities?
             if ((living.isInvisible() || living.hasPotionEffect(PotionEffectType.INVISIBILITY))
-                    && planeTargetIgnoreInvisible) {
+                    && (plane ? planeTargetIgnoreInvisible : ufoTargetIgnoreInvisible)) {
                 continue;
             }
 
             Location targetLocation = living.getEyeLocation();
             Location playerLocation = player.getEyeLocation();
+
+            if (!plane) {
+                double distanceSqr = targetLocation.distanceSquared(playerLocation);
+                if (distanceSqr < minDot && targetLocation.getY() <= playerLocation.getY() + 1.0d) {
+                    target = living;
+                    minDot = distanceSqr;
+                }
+                continue;
+            }
 
             // Target must be in front of the vehicle.
             Location location = velocityStand.getLocation();
@@ -781,7 +875,9 @@ public abstract class Vehicle implements InventoryHolder {
         if (!fuelEnabled()) return;
 
         // If the vehicle doesn't have a driver, then it's not moving.
-        if ((driver == null && (!(this instanceof Helicopter helicopter) || helicopter.getOutsideDriver() == null))
+        if ((driver == null && (!(this instanceof UpAndDown upAndDown)
+                || !is(VehicleType.HELICOPTER)
+                || upAndDown.getOutsideDriver() == null))
                 || fuel <= 0.0f
                 || tick % 20 != 0) return;
 
@@ -794,7 +890,9 @@ public abstract class Vehicle implements InventoryHolder {
     }
 
     private void showSpeedAndFuel() {
-        if (driver == null && (!(this instanceof Helicopter helicopter) || helicopter.getOutsideDriver() == null)) {
+        if (driver == null && (!(this instanceof UpAndDown upAndDown)
+                || !is(VehicleType.HELICOPTER)
+                || upAndDown.getOutsideDriver() == null)) {
             return;
         }
 
@@ -838,7 +936,7 @@ public abstract class Vehicle implements InventoryHolder {
 
         Player driver = this.driver != null ?
                 this.driver :
-                ((Helicopter) this).getOutsideDriver();
+                ((UpAndDown) this).getOutsideDriver();
         if (driver == null) return;
 
         BaseComponent[] components = TextComponent.fromLegacyText(PluginUtils.translate(message
@@ -916,6 +1014,29 @@ public abstract class Vehicle implements InventoryHolder {
 
     public void setDriver(@Nullable Player driver) {
         toggleLights((this.driver = driver) != null && hasFuel());
+        if (driver != null) toggleUFOVisibility(driver, false);
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    public void toggleUFOVisibility(Player player, boolean show) {
+        if (!is(VehicleType.UFO)) return;
+
+        Customization customization = plugin.getVehicleManager().getCustomizationByName(customizations, "SECONDARY-COLOR");
+        if (customization == null) return;
+
+        for (IStand stand : customization.getStandList(model)) {
+            if (stand instanceof PacketStand) {
+                if (show) stand.spawn(player);
+                else stand.destroy(player);
+                continue;
+            }
+
+            if (stand instanceof BukkitStand bukkit) {
+                ArmorStand temp = bukkit.getStand();
+                if (show) player.showEntity(plugin, temp);
+                else player.hideEntity(plugin, temp);
+            }
+        }
     }
 
     public void setDriverRaw(@Nullable Player driver) {

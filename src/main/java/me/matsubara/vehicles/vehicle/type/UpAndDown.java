@@ -24,14 +24,14 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class Helicopter extends Vehicle {
+public class UpAndDown extends Vehicle {
 
     private static final float BLADES_ROTATION_SPEED = 25.0f;
 
     private Player outsideDriver;
     private final Set<UUID> transfers = new HashSet<>();
 
-    public Helicopter(@NotNull VehiclesPlugin plugin, VehicleData data, @NotNull Model model) {
+    public UpAndDown(@NotNull VehiclesPlugin plugin, VehicleData data, @NotNull Model model) {
         super(plugin, data, model);
         currentSpeed = downSpeed;
         if (velocityStand != null && velocityStand.isValid()) {

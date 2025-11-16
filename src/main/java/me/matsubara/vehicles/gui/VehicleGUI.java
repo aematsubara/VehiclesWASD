@@ -10,7 +10,7 @@ import me.matsubara.vehicles.vehicle.TractorMode;
 import me.matsubara.vehicles.vehicle.Vehicle;
 import me.matsubara.vehicles.vehicle.VehicleType;
 import me.matsubara.vehicles.vehicle.type.Generic;
-import me.matsubara.vehicles.vehicle.type.Helicopter;
+import me.matsubara.vehicles.vehicle.type.UpAndDown;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -42,7 +42,8 @@ public class VehicleGUI implements InventoryHolder {
         this.plugin = plugin;
         this.vehicle = vehicle;
 
-        this.inventory = Bukkit.createInventory(this, vehicle.getType().getSize(), getTitle());
+        VehicleType type = vehicle.getType();
+        this.inventory = Bukkit.createInventory(this, type.getSize(), getTitle());
 
         ItemStack storageItem = vehicle.getStorageRows() == 0 ?
                 getItem(player, "no-storage") :
@@ -53,7 +54,7 @@ public class VehicleGUI implements InventoryHolder {
                 getItem(player, "unlock") :
                 getItem(player, "lock"));
 
-        List<String> fuelItems = plugin.typesToString(plugin.getFuelItems(), vehicle.getType(), true);
+        List<String> fuelItems = plugin.typesToString(plugin.getFuelItems(), type, true);
         ItemStack fuelRight = createFuelItem("fuel-right", fuelItems);
         ItemStack fuelLeft = createFuelItem("fuel-left", fuelItems);
 
@@ -72,18 +73,7 @@ public class VehicleGUI implements InventoryHolder {
         ItemStack transferOwnership = getItem(player, "transfer-ownership");
         inventory.setItem(16, transferOwnership);
 
-        if (vehicle instanceof Helicopter helicopter) {
-            Player outsideDriver = helicopter.getOutsideDriver();
-
-            inventory.setItem(28, createHelicopterChairItem(player, 1, outsideDriver));
-            inventory.setItem(29, createHelicopterChairItem(player, 2, outsideDriver));
-            inventory.setItem(30, createHelicopterChairItem(player, 3, outsideDriver));
-
-            inventory.setItem(32, createHelicopterChairItem(player, 4, outsideDriver));
-            inventory.setItem(33, createHelicopterChairItem(player, 5, outsideDriver));
-            inventory.setItem(34, createHelicopterChairItem(player, 6, outsideDriver));
-        }
-
+        handleHelicopterItems(player);
         handleTractorItems(player);
 
         ItemStack background = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE)
@@ -98,6 +88,21 @@ public class VehicleGUI implements InventoryHolder {
         }
 
         player.openInventory(inventory);
+    }
+
+    private void handleHelicopterItems(Player player) {
+        if (!(vehicle instanceof UpAndDown upAndDown)
+                || !vehicle.is(VehicleType.HELICOPTER)) return;
+
+        Player outsideDriver = upAndDown.getOutsideDriver();
+
+        inventory.setItem(28, createHelicopterChairItem(player, 1, outsideDriver));
+        inventory.setItem(29, createHelicopterChairItem(player, 2, outsideDriver));
+        inventory.setItem(30, createHelicopterChairItem(player, 3, outsideDriver));
+
+        inventory.setItem(32, createHelicopterChairItem(player, 4, outsideDriver));
+        inventory.setItem(33, createHelicopterChairItem(player, 5, outsideDriver));
+        inventory.setItem(34, createHelicopterChairItem(player, 6, outsideDriver));
     }
 
     private void handleTractorItems(Player player) {

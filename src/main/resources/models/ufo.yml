@@ -1,0 +1,1962 @@
+parts:
+  GLASS_1:
+    offset:
+      x: 0.05
+      y: -0.943
+      z: 0.0
+      yaw: 90.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    equipment:
+      helmet:
+        material: GRAY_STAINED_GLASS_PANE
+    tags:
+    - CUSTOMIZABLE:GLASS:HEAD
+  GLASS_2:
+    offset:
+      x: 0.0
+      y: -0.943
+      z: 0.05
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    equipment:
+      helmet:
+        material: GRAY_STAINED_GLASS_PANE
+    tags:
+    - CUSTOMIZABLE:GLASS:HEAD
+  GLASS_3:
+    offset:
+      x: 0.0
+      y: -0.943
+      z: -0.05
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    equipment:
+      helmet:
+        material: GRAY_STAINED_GLASS_PANE
+    tags:
+    - CUSTOMIZABLE:GLASS:HEAD
+  GLASS_4:
+    offset:
+      x: -0.05
+      y: -0.943
+      z: 0.0
+      yaw: -90.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    equipment:
+      helmet:
+        material: GRAY_STAINED_GLASS_PANE
+    tags:
+    - CUSTOMIZABLE:GLASS:HEAD
+  PART_2:
+    offset:
+      x: 0.31
+      y: -0.673
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      baseplate: false
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:SECONDARY_COLOR:HEAD
+  PART_4:
+    offset:
+      x: 0.0
+      y: -0.673
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      baseplate: false
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:SECONDARY_COLOR:HEAD
+  CARPET:
+    offset:
+      x: 0.0
+      y: 0.19
+      z: 0.0
+      yaw: 90.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    equipment:
+      helmet:
+        material: GRAY_CARPET
+    tags:
+    - CUSTOMIZABLE:CARPET:HEAD
+  PART_9:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 170.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: -3.3936
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_10:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 180.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: 4.4958
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_11:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 190.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: 0.9525
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_12:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 200.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: -1.8477
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_13:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 210.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: -2.2327
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_14:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 220.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: -3.7553
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_15:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 230.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: -3.8443
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_16:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 240.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: -0.6627
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_17:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 250.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: -1.8512
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_18:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 260.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: -1.7018
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_19:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 320.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: -3.9401
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_20:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 330.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: 2.9594
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_21:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 340.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: 3.3389
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_22:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 350.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: 4.6718
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_23:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 30.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: 4.163
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_24:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 20.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: -1.5953
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_25:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 0.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: -3.9855
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_26:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 10.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: 1.706
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_27:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 90.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: 1.3966
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_28:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 70.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: 2.5103
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_29:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 80.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: 4.1173
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_30:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 270.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: 3.3604
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_31:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 40.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: -0.0361
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_32:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 290.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: -3.2908
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_33:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 110.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: 0.3802
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_34:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 50.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: 0.7177
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_35:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 60.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: 3.796
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_36:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 280.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: -3.9118
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_37:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 310.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: 3.1662
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_38:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 300.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: -3.1713
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_39:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 100.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: 1.5879
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_40:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 120.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: -3.1007
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_41:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 130.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: -0.4159
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_42:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 140.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: -3.7683
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_43:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 150.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: -4.0961
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_44:
+    offset:
+      x: 0.0
+      y: -0.17
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: -105.0
+        y: 160.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: -1.8964
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_45:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: 90.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: 0.0
+        z: 0.0
+      body:
+        x: 0.0
+        y: -2.0392
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_46:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: 0.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_47:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: -10.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_48:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: -20.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_49:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: -30.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_50:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: -40.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_51:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: -50.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_52:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: -60.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_53:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: -70.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_54:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: -80.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_55:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: 10.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_56:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: 20.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_57:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: 30.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_58:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: 40.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_59:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: 90.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_60:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: 80.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_61:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: 70.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_62:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: 60.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_63:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: 50.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_64:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: 110.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_65:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: 100.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_66:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: 120.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_67:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: 130.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_68:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: 180.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_69:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: 170.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_70:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: 160.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_71:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: 150.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_72:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: 140.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_73:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: 190.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_74:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: 200.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_75:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: 210.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_76:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: 220.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_77:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: 230.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_78:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: 240.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_79:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: 250.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_80:
+    offset:
+      x: 0.03
+      y: -1.76
+      z: 0.0
+      yaw: -180.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      baseplate: false
+    pose:
+      head:
+        x: 75.0
+        y: 260.0
+        z: 0.0
+    equipment:
+      helmet:
+        material: GRAY_BANNER
+    tags:
+    - CUSTOMIZABLE:PRIMARY_COLOR:HEAD
+  PART_81:
+    offset:
+      x: 0.2
+      y: -0.178
+      z: -0.2
+      yaw: 45.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      baseplate: false
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:SECONDARY_COLOR:HEAD
+  PART_82:
+    offset:
+      x: -0.2
+      y: -0.178
+      z: -0.2
+      yaw: -45.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      baseplate: false
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:SECONDARY_COLOR:HEAD
+  PART_83:
+    offset:
+      x: 0.0
+      y: -0.178
+      z: -0.28
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      baseplate: false
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:SECONDARY_COLOR:HEAD
+  PART_84:
+    offset:
+      x: 0.2
+      y: -0.178
+      z: 0.2
+      yaw: 45.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      baseplate: false
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:SECONDARY_COLOR:HEAD
+  PART_85:
+    offset:
+      x: -0.2
+      y: -0.178
+      z: 0.2
+      yaw: 45.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      baseplate: false
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:SECONDARY_COLOR:HEAD
+  PART_86:
+    offset:
+      x: 0.0
+      y: -0.178
+      z: 0.28
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      baseplate: false
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:SECONDARY_COLOR:HEAD
+  PART_87:
+    offset:
+      x: 0.28
+      y: -0.178
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      baseplate: false
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:SECONDARY_COLOR:HEAD
+  PART_88:
+    offset:
+      x: -0.28
+      y: -0.178
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      baseplate: false
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:SECONDARY_COLOR:HEAD
+  PART_89:
+    offset:
+      x: 0.0
+      y: -0.178
+      z: 0.0
+      yaw: 90.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      baseplate: false
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:SECONDARY_COLOR:HEAD
+  PART_90:
+    offset:
+      x: 0.21
+      y: -0.673
+      z: -0.21
+      yaw: -45.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      baseplate: false
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:SECONDARY_COLOR:HEAD
+  PART_91:
+    offset:
+      x: -0.19
+      y: -0.673
+      z: 0.19
+      yaw: -45.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      baseplate: false
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:SECONDARY_COLOR:HEAD
+  PART_92:
+    offset:
+      x: -0.2
+      y: -0.673
+      z: -0.2
+      yaw: -45.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      baseplate: false
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:SECONDARY_COLOR:HEAD
+  PART_93:
+    offset:
+      x: 0.21
+      y: -0.673
+      z: 0.21
+      yaw: -45.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      baseplate: false
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:SECONDARY_COLOR:HEAD
+  PART_94:
+    offset:
+      x: 0.0
+      y: -0.673
+      z: -0.3
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      baseplate: false
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:SECONDARY_COLOR:HEAD
+  PART_95:
+    offset:
+      x: 0.0
+      y: -0.673
+      z: 0.3
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      baseplate: false
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:SECONDARY_COLOR:HEAD
+  PART_96:
+    offset:
+      x: -0.3
+      y: -0.673
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true
+      baseplate: false
+    equipment:
+      helmet:
+        material: CYAN_TERRACOTTA
+    tags:
+    - CUSTOMIZABLE:SECONDARY_COLOR:HEAD
+  CHAIR_1:
+    offset:
+      x: 0.0
+      y: -0.8
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+    settings:
+      invisible: true
+      small: true

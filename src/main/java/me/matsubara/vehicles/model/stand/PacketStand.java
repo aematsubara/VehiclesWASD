@@ -257,7 +257,7 @@ public final class PacketStand implements IStand {
         vec3d = Reflection.getConstructor(VEC_3D, double.class, double.class, double.class);
 
         // Initialize fields.
-        CONNECTION = Reflection.getField(ENTITY_PLAYER, GAME_PACKET_LISTENER, "connection", true, "f", "c", "b", "playerConnection");
+        CONNECTION = Reflection.getField(ENTITY_PLAYER, GAME_PACKET_LISTENER, "connection", true, "f", "c", "b", "g", "playerConnection");
         DWOData dwoData = DWOData.getByVersion();
         DWO_ENTITY_DATA = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY, dwoData.entityData));
         DWO_CUSTOM_NAME = Reflection.getFieldValue(Reflection.getFieldGetter(ENTITY, dwoData.customName));

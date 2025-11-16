@@ -8,18 +8,19 @@ import me.matsubara.vehicles.util.BlockUtils;
 import me.matsubara.vehicles.util.PluginUtils;
 import me.matsubara.vehicles.vehicle.Vehicle;
 import me.matsubara.vehicles.vehicle.VehicleData;
+import me.matsubara.vehicles.vehicle.VehicleType;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
-public class Boat extends Vehicle {
+public class Water extends Vehicle {
 
     private float previousForward;
     private boolean playEngineSound;
 
-    public Boat(@NotNull VehiclesPlugin plugin, VehicleData data, @NotNull Model model) {
+    public Water(@NotNull VehiclesPlugin plugin, VehicleData data, @NotNull Model model) {
         super(plugin, data, model);
     }
 
@@ -79,10 +80,11 @@ public class Boat extends Vehicle {
         Location temp = velocityStand.getLocation();
 
         if (!velocityStand.isInWater()) {
+            double extra = is(VehicleType.JETSKI) ? 2.0d : 1.0d;
             Vector direction = temp
                     .getDirection()
                     .multiply(0.75d)
-                    .multiply(backwards ? -1.0d : 1.0d);
+                    .multiply(backwards ? -extra : extra);
 
             Location frontOrBack = temp.clone().add(direction);
 

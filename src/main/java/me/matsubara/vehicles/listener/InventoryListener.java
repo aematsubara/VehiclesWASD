@@ -7,11 +7,13 @@ import me.matsubara.vehicles.gui.*;
 import me.matsubara.vehicles.hook.economy.EconomyExtension;
 import me.matsubara.vehicles.manager.VehicleManager;
 import me.matsubara.vehicles.manager.targets.TypeTarget;
+import me.matsubara.vehicles.model.Model;
+import me.matsubara.vehicles.model.stand.IStand;
 import me.matsubara.vehicles.model.stand.StandSettings;
 import me.matsubara.vehicles.util.PluginUtils;
 import me.matsubara.vehicles.vehicle.*;
 import me.matsubara.vehicles.vehicle.type.Generic;
-import me.matsubara.vehicles.vehicle.type.Helicopter;
+import me.matsubara.vehicles.vehicle.type.UpAndDown;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.*;
@@ -365,6 +367,42 @@ public final class InventoryListener implements Listener {
         Customization customizationByName = plugin.getVehicleManager().getCustomizationByName(vehicle.getCustomizations(), customizationName);
         if (customizationByName == null) return;
 
+        Model model = vehicle.getModel();
+        Set<Player> seeing = vehicle.getSeeingPlayers();
+
+        if (event.getClick().isRightClick()) {
+            List<IStand> stands = customizationByName.getStandList(model);
+
+            Set<String> changed = new HashSet<>();
+
+            for (IStand stand : stands) {
+                StandSettings settings = stand.getSettings();
+                if (settings.isGlow()) continue;
+
+                settings.setGlow(true);
+                settings.setMarker(true);
+                stand.sendMetadata(seeing);
+
+                changed.add(settings.getPartName());
+            }
+
+            // Glow for 3 seconds.
+            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                for (IStand stand : stands) {
+                    StandSettings settings = stand.getSettings();
+                    if (!settings.isGlow()
+                            || !changed.contains(settings.getPartName())) continue;
+
+                    settings.setGlow(false);
+                    settings.setMarker(false);
+                    stand.sendMetadata(seeing);
+                }
+            }, 60L);
+
+            closeInventory(player);
+            return;
+        }
+
         int hotbarButton = event.getHotbarButton();
         ItemStack cursor = hotbarButton != -1 ? player.getInventory().getItem(hotbarButton) : event.getCursor();
 
@@ -413,7 +451,7 @@ public final class InventoryListener implements Listener {
                 y,
                 box.getWidthZ() / 2);
 
-        plugin.getVehicleManager().applyCustomization(vehicle.getModel(), customizationByName, newType, vehicle.getSeeingPlayers());
+        plugin.getVehicleManager().applyCustomization(model, customizationByName, newType, seeing);
     }
 
     private void completePurchase(Player player, double money, @NotNull VehicleData data, String shopDisplayName) {
@@ -577,7 +615,8 @@ public final class InventoryListener implements Listener {
             }
         }
 
-        if (!(vehicle instanceof Helicopter helicopter)) return;
+        if (!(vehicle instanceof UpAndDown upAndDown)
+                || !vehicle.is(VehicleType.HELICOPTER)) return;
 
         ItemMeta meta = current.getItemMeta();
         if (meta == null) return;
@@ -590,15 +629,15 @@ public final class InventoryListener implements Listener {
 
         List<Entity> passengers = chairPair.getKey().getPassengers();
         if (passengers.isEmpty()) {
-            sitOnChair(helicopter, player, chair);
+            sitOnChair(upAndDown, player, chair);
             return;
         }
 
         Entity passenger;
-        if ((passenger = passengers.get(0)).equals(helicopter.getOutsideDriver())
+        if ((passenger = passengers.get(0)).equals(upAndDown.getOutsideDriver())
                 && passenger.equals(player)) { // Go back to the main chair if the player that clicked is the driver.
-            helicopter.setOutsideDriver(null);
-            helicopter.getTransfers().add(playerUUID);
+            upAndDown.setOutsideDriver(null);
+            upAndDown.getTransfers().add(playerUUID);
 
             // Sit player on the driver sit.
             Pair<ArmorStand, StandSettings> driverPair = vehicle.getChair(0);
@@ -632,20 +671,20 @@ public final class InventoryListener implements Listener {
                 gui.getItem(player, "enabled"));
     }
 
-    private void sitOnChair(@NotNull Helicopter helicopter, @NotNull Player player, int chair) {
+    private void sitOnChair(@NotNull UpAndDown upAndDown, @NotNull Player player, int chair) {
         // The driver is moving to outside (or was outside, and it's moving to another outside chair).
-        if (helicopter.isDriver(player)) {
-            helicopter.setOutsideDriver(player);
-            helicopter.setDriverRaw(null);
+        if (upAndDown.isDriver(player)) {
+            upAndDown.setOutsideDriver(player);
+            upAndDown.setDriverRaw(null);
         }
 
         // Mark as transfer.
-        helicopter.getTransfers().add(player.getUniqueId());
+        upAndDown.getTransfers().add(player.getUniqueId());
 
-        Pair<ArmorStand, StandSettings> pair = helicopter.getChairs().get(chair);
+        Pair<ArmorStand, StandSettings> pair = upAndDown.getChairs().get(chair);
         if (pair != null) {
             pair.getKey().addPassenger(player);
-            helicopter.getPassengers().put(player, pair.getValue().getPartName());
+            upAndDown.getPassengers().put(player, pair.getValue().getPartName());
         }
 
         closeInventory(player);

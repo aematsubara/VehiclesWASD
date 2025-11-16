@@ -8,6 +8,7 @@ import me.matsubara.vehicles.manager.VehicleManager;
 import me.matsubara.vehicles.util.PluginUtils;
 import me.matsubara.vehicles.vehicle.Vehicle;
 import me.matsubara.vehicles.vehicle.VehicleType;
+import me.matsubara.vehicles.vehicle.type.UpAndDown;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.*;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -75,10 +76,16 @@ public class KeybindTask extends BukkitRunnable {
             addKeybind(builder, shoot, new KeybindComponent(shootKeybind.getKeybind()));
         }
 
-        boolean helicopter = vehicle.is(VehicleType.HELICOPTER);
-        if (helicopter) {
-            String up = config.getString(path + "up.helicopter");
-            String down = config.getString(path + "down.helicopter");
+
+        boolean upAndDown = vehicle instanceof UpAndDown;
+        if (upAndDown) {
+            if (vehicle.is(VehicleType.UFO) && vehicle.isUfoAbductionEnabled()) {
+                String abduct = config.getString(path + "abduct");
+                addKeybind(builder, abduct, new KeybindComponent(Keybinds.SPRINT));
+            }
+            String type = vehicle.getType().toPath();
+            String up = config.getString(path + "up." + type);
+            String down = config.getString(path + "down." + type);
             addKeybind(builder, up, new KeybindComponent(Keybinds.JUMP));
             addKeybind(builder, down, new KeybindComponent(Keybinds.BACK));
         }
@@ -93,7 +100,7 @@ public class KeybindTask extends BukkitRunnable {
         String forward = config.getString(path + "forward");
         addKeybind(builder, forward, new KeybindComponent(Keybinds.FORWARD));
 
-        if (!helicopter) {
+        if (!upAndDown) {
             String back = config.getString(path + "back");
             addKeybind(builder, back, new KeybindComponent(Keybinds.BACK));
         }

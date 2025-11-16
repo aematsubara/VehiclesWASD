@@ -51,14 +51,16 @@ public class InputManager extends SimplePacketListenerAbstract implements Listen
                     wrapper.getSideways(),
                     wrapper.getForward(),
                     wrapper.isJump(),
-                    wrapper.isUnmount());
+                    wrapper.isUnmount(),
+                    false);
         } else {
             WrapperPlayClientPlayerInput wrapper = new WrapperPlayClientPlayerInput(event);
             input = new PlayerInput(
                     wrapper.isLeft() ? 0.98f : wrapper.isRight() ? -0.98f : 0.0f,
                     wrapper.isForward() ? 0.98f : wrapper.isBackward() ? -0.98f : 0.0f,
                     wrapper.isJump(),
-                    wrapper.isShift());
+                    wrapper.isShift(),
+                    wrapper.isSprint());
         }
 
         inputs.put(player.getUniqueId(), input);

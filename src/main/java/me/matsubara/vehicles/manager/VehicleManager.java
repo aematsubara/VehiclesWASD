@@ -16,14 +16,11 @@ import me.matsubara.vehicles.model.stand.StandSettings;
 import me.matsubara.vehicles.model.stand.data.ItemSlot;
 import me.matsubara.vehicles.util.BlockUtils;
 import me.matsubara.vehicles.util.PluginUtils;
-import me.matsubara.vehicles.vehicle.Customization;
-import me.matsubara.vehicles.vehicle.Vehicle;
-import me.matsubara.vehicles.vehicle.VehicleData;
-import me.matsubara.vehicles.vehicle.VehicleType;
+import me.matsubara.vehicles.vehicle.*;
 import me.matsubara.vehicles.vehicle.task.KeybindTask;
 import me.matsubara.vehicles.vehicle.task.PreviewTick;
 import me.matsubara.vehicles.vehicle.task.VehicleTick;
-import me.matsubara.vehicles.vehicle.type.Helicopter;
+import me.matsubara.vehicles.vehicle.type.UpAndDown;
 import net.md_5.bungee.api.ChatMessageType;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -353,12 +350,12 @@ public class VehicleManager implements Listener {
         boolean driver = entity instanceof Player player && vehicle.isDriver(player);
         UUID entityUUID = entity.getUniqueId();
 
-        if (vehicle instanceof Helicopter helicopter) {
-            if (helicopter.getTransfers().remove(entityUUID)) return;
+        if (vehicle instanceof UpAndDown upAndDown && vehicle.is(VehicleType.HELICOPTER)) {
+            if (upAndDown.getTransfers().remove(entityUUID)) return;
 
             if (driver) {
-                helicopter.setOutsideDriver(null);
-                helicopter.getPassengers().remove(entity);
+                upAndDown.setOutsideDriver(null);
+                upAndDown.getPassengers().remove(entity);
             }
         }
 
@@ -369,6 +366,7 @@ public class VehicleManager implements Listener {
 
         if (driver) {
             vehicle.setDriver(null);
+            vehicle.toggleUFOVisibility(((Player) entity), true);
         } else {
             vehicle.getPassengers().remove(entity);
         }
@@ -440,8 +438,7 @@ public class VehicleManager implements Listener {
 
         boolean useCurrent = !Config.SAFE_DISMOUNT_TELEPORT.asBool() && (vehicle.isOnGround() || (!bypass
                 && !vehicle.isRemoved()
-                && !vehicle.is(VehicleType.HELICOPTER)
-                && !vehicle.is(VehicleType.PLANE)));
+                && !vehicle.getType().isAirVehicle()));
 
         Location highest = useCurrent ? null : BlockUtils.getHighestLocation(entityLocation);
         Location current = vehicle.getVelocityStand().getLocation()
@@ -495,7 +492,7 @@ public class VehicleManager implements Listener {
 
         Block block = event.getClickedBlock();
 
-        boolean isBoat = vehicleType == VehicleType.BOAT;
+        boolean waterVehicle = vehicleType.isWaterVehicle();
         boolean waterReplaced = false;
 
         Messages messages = plugin.getMessages();
@@ -513,7 +510,7 @@ public class VehicleManager implements Listener {
                 messages.send(player, Messages.Message.PLACE_NOT_ON_LAVA);
                 return;
             } else if ((temp = interactedWithFluid(sight, Material.WATER)) != null) {
-                if (isBoat) {
+                if (waterVehicle) {
                     block = temp;
                     waterReplaced = true;
                 } else {
@@ -531,7 +528,7 @@ public class VehicleManager implements Listener {
         if (!waterReplaced) {
             Block temp;
             if ((temp = interactedWithFluid(sight, Material.WATER)) != null) {
-                if (isBoat) {
+                if (waterVehicle) {
                     block = temp;
                 } else {
                     messages.send(player, Messages.Message.PLACE_NOT_ON_WATER);
@@ -546,13 +543,13 @@ public class VehicleManager implements Listener {
             return;
         }
 
-        if (isBoat && blockType != Material.WATER) {
-            messages.send(player, Messages.Message.PLACE_BOAT_ON_WATER);
+        if (waterVehicle && blockType != Material.WATER) {
+            messages.send(player, Messages.Message.PLACE_VEHICLE_ON_WATER);
             return;
         }
 
-        if (isBoat && block.getRelative(BlockFace.UP).getType() == Material.WATER) {
-            messages.send(player, Messages.Message.PLACE_BOAT_ON_TOP_SURFACE);
+        if (waterVehicle && block.getRelative(BlockFace.UP).getType() == Material.WATER) {
+            messages.send(player, Messages.Message.PLACE_VEHICLE_ON_TOP_SURFACE);
             return;
         }
 
@@ -688,7 +685,7 @@ public class VehicleManager implements Listener {
             if (parent == null) continue;
 
             parent.getStands().putAll(customization.getStands());
-            parent.setStack(parent.getStack() + 1);
+            parent.getGroupHolder().putAll(customization.getGroupHolder());
             iterator.remove();
         }
 
@@ -697,14 +694,14 @@ public class VehicleManager implements Listener {
     }
 
     private void handleCustomizations(List<Customization> customizations, @NotNull IStand stand, VehicleType type) {
-        // Format: CUSTOMIZABLE:{NAME}:{SLOT}:{PARENT(optional)}
+        // Format: CUSTOMIZABLE:{NAME}:{SLOT}:{PARENT(optional)}:{GROUP_TYPE(optional,requires=PARENT)}
         StandSettings settings = stand.getSettings();
 
         for (String tagValue : settings.getTags()) {
             if (!tagValue.startsWith("CUSTOMIZABLE")) continue;
 
             String[] data = tagValue.split(":");
-            if (data.length < 3 || data.length > 4) continue;
+            if (data.length < 3 || data.length > 5) continue;
 
             String customizationName = data[1].replace("_", "-");
 
@@ -721,7 +718,7 @@ public class VehicleManager implements Listener {
                 customizationNameFromConfig = null;
             }
 
-            boolean isChild = data.length == 4;
+            boolean isChild = data.length >= 4 && !data[3].equals("SELF");
 
             if (override == null || !override.getMiddle()) {
                 // This may be a child customization.
@@ -730,7 +727,9 @@ public class VehicleManager implements Listener {
 
             if (typeTargets.isEmpty() && !isChild) continue;
 
-            String parent = isChild ? data[3] : null;
+            String parent = isChild ? data[3].replace("_", "-") : null;
+            CustomizationGroup.Type groupType = data.length == 5 ?
+                    PluginUtils.getOrNull(CustomizationGroup.Type.class, data[4]) : null;
 
             Customization customization = getCustomizationByName(customizations, customizationName);
             if (customization == null) {
@@ -745,6 +744,7 @@ public class VehicleManager implements Listener {
             }
 
             customization.getStands().put(settings.getPartName(), slot);
+            if (groupType != null) customization.getGroupHolder().put(settings.getPartName(), groupType);
         }
     }
 
@@ -809,9 +809,24 @@ public class VehicleManager implements Listener {
             IStand stand = model.getStandByName(standName);
             if (stand == null) continue;
 
-            stand.getSettings().getEquipment().put(slot, new ItemStack(newType));
+            ItemStack item = new ItemStack(getRequiredMaterial(customization, standName, newType));
+            stand.getSettings().getEquipment().put(slot, item);
+
             if (to != null) stand.sendEquipment(to);
         }
+    }
+
+    public Material getRequiredMaterial(@NotNull Customization customization, String standName, Material newType) {
+        CustomizationGroup.Type type = customization.getGroupHolder().get(standName);
+        if (type == null) return newType;
+
+        CustomizationGroup group = CustomizationGroup.getByAny(null, newType);
+        if (group != null) {
+            Material temp = type.getFromGroup(group);
+            if (temp != null) return temp;
+        }
+
+        return newType;
     }
 
     public void startPreview(@NotNull Player player, VehicleData data) {

@@ -22,7 +22,7 @@ import me.matsubara.vehicles.vehicle.Vehicle;
 import me.matsubara.vehicles.vehicle.VehicleType;
 import me.matsubara.vehicles.vehicle.task.FireballTask;
 import me.matsubara.vehicles.vehicle.task.PreviewTick;
-import me.matsubara.vehicles.vehicle.type.Helicopter;
+import me.matsubara.vehicles.vehicle.type.UpAndDown;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -244,7 +244,7 @@ public final class UseEntity extends SimplePacketListenerAbstract implements Lis
         if (!vehicle.is(type) || item.getType() != Material.FIRE_CHARGE) return false;
 
         // If it's a plane, we don't want to shoot if we're on the ground.
-        boolean plane = type == VehicleType.PLANE;
+        boolean plane = vehicle.is(VehicleType.PLANE);
         if (!vehicle.canMove() || (plane && vehicle.isOnGround())) return true;
 
         IStand scope = vehicle.getModel().getStandByName(weapon.getScope());
@@ -367,7 +367,7 @@ public final class UseEntity extends SimplePacketListenerAbstract implements Lis
         }
 
         Block block = vehicle.getVelocityStand().getLocation().getBlock();
-        if (vehicle.getType() != VehicleType.BOAT && block.isLiquid()) {
+        if (!vehicle.getType().isWaterVehicle() && block.isLiquid()) {
             Messages.Message message = block.getType() == Material.WATER ?
                     Messages.Message.VEHICLE_IN_WATER :
                     Messages.Message.VEHICLE_IN_LAVA;
@@ -375,7 +375,9 @@ public final class UseEntity extends SimplePacketListenerAbstract implements Lis
             return;
         }
 
-        boolean firstChair = vehicle.getDriver() == null && (!(vehicle instanceof Helicopter helicopter) || helicopter.getOutsideDriver() == null);
+        boolean firstChair = vehicle.getDriver() == null && (!(vehicle instanceof UpAndDown upAndDown)
+                || !vehicle.is(VehicleType.HELICOPTER)
+                || upAndDown.getOutsideDriver() == null);
         if (!firstChair && vehicle.getChairs().size() == 1) {
             // The driver slot is already occupied and there aren't any more chairs.
             handleOwnerLeftOut(player, vehicle, true);
@@ -404,7 +406,11 @@ public final class UseEntity extends SimplePacketListenerAbstract implements Lis
             }
 
             // Driver slot is empty but the vehicle it's locked.
-            if (notOwnerLocked && vehicle.getDriver() == null && (!(vehicle instanceof Helicopter helicopter) || helicopter.getOutsideDriver() == null)) {
+            if (notOwnerLocked
+                    && vehicle.getDriver() == null
+                    && (!(vehicle instanceof UpAndDown upAndDown)
+                    || !vehicle.is(VehicleType.HELICOPTER)
+                    || upAndDown.getOutsideDriver() == null)) {
                 messages.send(player, Messages.Message.VEHICLE_ALLOWED_AS_PASSENGER);
             }
         }
@@ -429,7 +435,11 @@ public final class UseEntity extends SimplePacketListenerAbstract implements Lis
     private boolean kickDriverIfPossible(@NotNull Player player, @NotNull Vehicle vehicle) {
         UUID ownerUUID = vehicle.getOwner();
 
-        Player driver = vehicle.getDriver() != null ? vehicle.getDriver() : vehicle instanceof Helicopter helicopter ? helicopter.getOutsideDriver() : null;
+        Player driver = vehicle.getDriver() != null ?
+                vehicle.getDriver() :
+                vehicle instanceof UpAndDown upAndDown && vehicle.is(VehicleType.HELICOPTER) ?
+                        upAndDown.getOutsideDriver() :
+                        null;
         if (driver == null
                 || driver.getUniqueId().equals(ownerUUID)
                 || !ownerUUID.equals(player.getUniqueId())) return false;

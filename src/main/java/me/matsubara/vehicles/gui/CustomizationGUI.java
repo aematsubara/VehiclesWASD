@@ -6,6 +6,7 @@ import me.matsubara.vehicles.util.InventoryUpdate;
 import me.matsubara.vehicles.util.ItemBuilder;
 import me.matsubara.vehicles.util.PluginUtils;
 import me.matsubara.vehicles.vehicle.Customization;
+import me.matsubara.vehicles.vehicle.CustomizationGroup;
 import me.matsubara.vehicles.vehicle.Vehicle;
 import org.apache.commons.lang3.ArrayUtils;
 import org.bukkit.Bukkit;
@@ -95,6 +96,12 @@ public final class CustomizationGUI implements InventoryHolder {
             List<String> validMaterialNames = plugin.typesToString(customization.getValidTypes(), vehicle.getType(), false);
 
             Material type = customization.getNewType() != null ? customization.getNewType() : customization.getDefaultType();
+
+            if (!customization.getGroupHolder().isEmpty()) {
+                CustomizationGroup group = CustomizationGroup.getByAny(null, type);
+                if (group != null) type = group.whole();
+            }
+
             inventory.setItem(slotIndex.get(index), plugin.getItem("gui.customizations.items.customization")
                     .setType(type)
                     .setAmount(customization.size())

@@ -10,6 +10,7 @@ import com.google.common.collect.MultimapBuilder;
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.tchristofferson.configupdater.ConfigUpdater;
+import fr.skytasul.glowingentities.GlowingEntities;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -33,10 +34,10 @@ import me.matsubara.vehicles.manager.StandManager;
 import me.matsubara.vehicles.manager.VehicleManager;
 import me.matsubara.vehicles.manager.targets.TypeTarget;
 import me.matsubara.vehicles.manager.targets.TypeTargetManager;
-import me.matsubara.vehicles.util.GlowingEntities;
 import me.matsubara.vehicles.util.ItemBuilder;
 import me.matsubara.vehicles.util.PluginUtils;
 import me.matsubara.vehicles.util.Shape;
+import me.matsubara.vehicles.vehicle.CustomizationGroup;
 import me.matsubara.vehicles.vehicle.Vehicle;
 import me.matsubara.vehicles.vehicle.VehicleData;
 import me.matsubara.vehicles.vehicle.VehicleType;
@@ -555,6 +556,14 @@ public final class VehiclesPlugin extends JavaPlugin {
             for (TypeTarget typeTarget : typeTargetManager.getTargetsFromConfig("extra-tags." + key)) {
                 extraTags.put(key.toLowerCase(Locale.ROOT).replace("-", "_"), typeTarget.getType());
             }
+        }
+
+        // Save special types.
+        for (CustomizationGroup.Family family : CustomizationGroup.Family.values()) {
+            List<Material> materials = CustomizationGroup.GROUPS.get(family).stream()
+                    .map(CustomizationGroup::whole)
+                    .toList();
+            extraTags.putAll(family.name().toLowerCase(Locale.ROOT) + "_group", materials);
         }
     }
 

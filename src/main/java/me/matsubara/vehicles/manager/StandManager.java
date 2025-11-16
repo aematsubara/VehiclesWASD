@@ -1,5 +1,6 @@
 package me.matsubara.vehicles.manager;
 
+import lombok.Getter;
 import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.files.Config;
 import me.matsubara.vehicles.model.Model;
@@ -24,7 +25,7 @@ import java.util.UUID;
 public final class StandManager implements Listener {
 
     private final VehiclesPlugin plugin;
-    private boolean isBukkitArmorStand;
+    private @Getter boolean isBukkitArmorStand;
 
     private static final Set<String> VALID_TYPES = Set.of("PACKET", "BUKKIT");
     private static final double BUKKIT_VIEW_DISTANCE = Math.pow(Bukkit.getViewDistance() << 4, 2);
@@ -42,10 +43,6 @@ public final class StandManager implements Listener {
         if (isPacketArmorStand()) {
             plugin.getServer().getPluginManager().registerEvents(this, plugin);
         }
-    }
-
-    public boolean isBukkitArmorStand() {
-        return isBukkitArmorStand;
     }
 
     public boolean isPacketArmorStand() {
