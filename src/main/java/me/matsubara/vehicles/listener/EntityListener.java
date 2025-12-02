@@ -2,11 +2,9 @@ package me.matsubara.vehicles.listener;
 
 import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.files.Config;
+import me.matsubara.vehicles.manager.VehicleManager;
 import me.matsubara.vehicles.vehicle.Vehicle;
-import org.bukkit.entity.Creeper;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
+import org.bukkit.entity.*;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,12 +23,26 @@ public class EntityListener implements Listener {
 
     @EventHandler
     public void onEntityDamage(@NotNull EntityDamageEvent event) {
-        // Prevent suffocation/contact when a player is inside a vehicle.
+        Entity entity = event.getEntity();
         EntityDamageEvent.DamageCause cause = event.getCause();
+
+        if (entity instanceof ArmorStand stand
+                && cause == EntityDamageEvent.DamageCause.VOID) {
+            VehicleManager manager = plugin.getVehicleManager();
+
+            Vehicle vehicle = manager.getVehicleByVelocityStand(stand);
+            if (vehicle == null) return;
+
+            manager.removeVehicle(vehicle, null, true);
+            manager.getVehicles().remove(vehicle);
+            return;
+        }
+
+        // Prevent suffocation/contact when a player is inside a vehicle.
         if (cause != EntityDamageEvent.DamageCause.SUFFOCATION
                 && cause != EntityDamageEvent.DamageCause.CONTACT) return;
 
-        Vehicle vehicle = plugin.getVehicleManager().getVehicleByEntity(event.getEntity(), true);
+        Vehicle vehicle = plugin.getVehicleManager().getVehicleByEntity(entity, true);
         if (vehicle != null) event.setCancelled(true);
     }
 

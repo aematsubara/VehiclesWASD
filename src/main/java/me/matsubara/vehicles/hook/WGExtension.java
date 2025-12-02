@@ -16,6 +16,7 @@ import com.sk89q.worldguard.protection.regions.RegionQuery;
 import com.sk89q.worldguard.session.SessionManager;
 import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.event.VehicleSpawnEvent;
+import me.matsubara.vehicles.vehicle.VehicleType;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,15 +24,24 @@ import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.EnumMap;
+
 public class WGExtension implements AVExtension<WGExtension>, Listener {
 
     private StateFlag placeFlag;
     private StateFlag useFlag;
+    private final EnumMap<VehicleType, StateFlag> vehiclePlaceFlag = new EnumMap<>(VehicleType.class);
+    private final EnumMap<VehicleType, StateFlag> vehicleUseFlag = new EnumMap<>(VehicleType.class);
 
     @Override
     public WGExtension init(@NotNull VehiclesPlugin plugin) {
         placeFlag = registerFlag("av-place", plugin);
         useFlag = registerFlag("av-use", plugin);
+        for (VehicleType type : VehicleType.values()) {
+            String name = type.toPath();
+            vehiclePlaceFlag.put(type, registerFlag("av-place-" + name, plugin));
+            vehicleUseFlag.put(type, registerFlag("av-use-" + name, plugin));
+        }
         return this;
     }
 
@@ -59,23 +69,28 @@ public class WGExtension implements AVExtension<WGExtension>, Listener {
 
     @EventHandler
     public void onVehicleSpawn(@NotNull VehicleSpawnEvent event) {
-        if (placeFlag == null) return;
+        StateFlag per;
+        if (placeFlag == null
+                || (per = vehiclePlaceFlag.get(event.getType())) == null) return;
 
         // If the player is null, then the server placed this vehicle.
         Player player = event.getPlayer();
         if (player == null) return;
 
-        if (!allowed(player, event.getLocation(), placeFlag)) {
+        if (!allowed(player, event.getLocation(), placeFlag, per)) {
             event.setCancelled(true);
         }
     }
 
-    public boolean canMoveHere(Player player, Location location) {
-        return useFlag != null && allowed(player, location, useFlag, Flags.ENTRY);
+    public boolean canMoveHere(Player player, Location location, VehicleType type) {
+        StateFlag per;
+        return useFlag != null
+                && (per = vehicleUseFlag.get(type)) != null
+                && allowed(player, location, useFlag, per, Flags.ENTRY);
     }
 
     public boolean canBreakHere(Player player, Location location) {
-        return allowed(player, location, Flags.BUILD);
+        return player != null && allowed(player, location, Flags.BUILD);
     }
 
     private boolean allowed(@Nullable Player player, @NotNull Location location, StateFlag... flags) {

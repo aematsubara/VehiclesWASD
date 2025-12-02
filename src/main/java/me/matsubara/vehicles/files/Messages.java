@@ -1,5 +1,6 @@
 package me.matsubara.vehicles.files;
 
+import com.cryptomorin.xseries.messages.ActionBar;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,6 +8,8 @@ import me.matsubara.vehicles.VehiclesPlugin;
 import me.matsubara.vehicles.util.PluginUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,27 +24,31 @@ public class Messages {
     private final VehiclesPlugin plugin;
     private @Setter FileConfiguration configuration;
 
+    private static final UnaryOperator<String> IDENTITY = UnaryOperator.identity();
+
     public Messages(@NotNull VehiclesPlugin plugin) {
         this.plugin = plugin;
         this.plugin.saveResource("messages.yml");
     }
 
-    public void send(CommandSender sender, Message message) {
+    public void send(CommandSender sender, @NotNull Message message) {
         send(sender, message, null);
     }
 
     public void send(CommandSender sender, @NotNull Message message, @Nullable UnaryOperator<String> operator) {
-        for (String line : getMessages(message)) {
-            if (!line.isEmpty()) sender.sendMessage(operator != null ? operator.apply(line) : line);
+        String path = message.getPath();
+        if (configuration.get(path) instanceof List) {
+            for (String line : configuration.getStringList(path)) {
+                sender.sendMessage(operator(operator).apply(PluginUtils.translate(line)));
+            }
+            return;
         }
-    }
-
-    public List<String> getMessages(@NotNull Message message) {
-        return getMessages(message.getPath());
+        sendSingleMessage(sender, configuration.getString(path), operator);
     }
 
     @SuppressWarnings("unchecked")
-    public List<String> getMessages(String path) {
+    public List<String> getMessages(@NotNull Message message) {
+        String path = message.getPath();
         if (!configuration.contains(path, true)) return Collections.emptyList();
 
         List<String> messages;
@@ -58,6 +65,32 @@ public class Messages {
         } else return Collections.emptyList();
 
         return PluginUtils.translate(messages);
+    }
+
+    private void sendSingleMessage(CommandSender sender, @Nullable String message, @Nullable UnaryOperator<String> operator) {
+        if (message == null) return;
+
+        String newMessage = (operator(operator)).apply(PluginUtils.translate(message.replace("[AB]", "")));
+
+        if (!message.startsWith("[AB]") || !(sender instanceof Player player)) {
+            sender.sendMessage(newMessage);
+            return;
+        }
+
+        new BukkitRunnable() {
+            long repeater = 50L;
+
+            @Override
+            public void run() {
+                ActionBar.sendActionBar(player, newMessage);
+                repeater -= 40L;
+                if (repeater - 40L < -20L) cancel();
+            }
+        }.runTaskTimerAsynchronously(plugin, 0L, 40L);
+    }
+
+    private UnaryOperator<String> operator(@Nullable UnaryOperator<String> operator) {
+        return operator != null ? operator : IDENTITY;
     }
 
     @Getter

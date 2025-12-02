@@ -1216,7 +1216,7 @@ public abstract class Vehicle implements InventoryHolder {
         WGExtension wgExtension = plugin.getWgExtension();
         if (wgExtension == null) return false;
 
-        return !wgExtension.canMoveHere(driver, location);
+        return !wgExtension.canMoveHere(driver, location, type);
     }
 
     protected void teleportChair(Location location, @NotNull Pair<ArmorStand, StandSettings> pair) {

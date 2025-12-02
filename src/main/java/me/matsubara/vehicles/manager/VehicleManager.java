@@ -149,6 +149,13 @@ public class VehicleManager implements Listener {
         return null;
     }
 
+    public @Nullable Vehicle getVehicleByVelocityStand(ArmorStand stand) {
+        for (Vehicle vehicle : vehicles) {
+            if (vehicle.getVelocityStand().equals(stand)) return vehicle;
+        }
+        return null;
+    }
+
     public @Nullable Vehicle getVehicleByModelId(UUID modelId) {
         for (Vehicle vehicle : vehicles) {
             if (vehicle.getModelUUID().equals(modelId)) return vehicle;
