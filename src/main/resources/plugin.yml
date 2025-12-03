@@ -19,6 +19,7 @@ softdepend:
   - Essentials
   - PlayerPoints
   - CMI
+  - CMIEInjector
 libraries:
   - org.apache.commons:commons-lang3:3.14.0
   - commons-io:commons-io:2.16.1
